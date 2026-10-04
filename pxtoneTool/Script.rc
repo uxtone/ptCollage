@@ -54,7 +54,7 @@ DLG_HEARSELECT DIALOGEX 0, 0, 200, 320
 STYLE DS_SETFONT | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_CLIENTEDGE
 CAPTION "Select Voice File"
-MENU "MENU_HEARSELECT"
+MENU MENU_HEARSELECT
 FONT 9, "MS UI Gothic", 400, 0, 0x80
 BEGIN
     CONTROL         "",IDC_LIST,"SysListView32",LVS_LIST | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,7,24,196,216
@@ -96,6 +96,7 @@ END
 // Version
 //
 
+#ifndef PXTONETOOL_STATIC // static builds use the executable's version info
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION 0,9,3,2
  PRODUCTVERSION 0,0,0,0
@@ -125,6 +126,7 @@ BEGIN
         VALUE "Translation", 0x411, 1200
     END
 END
+#endif
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -165,6 +167,7 @@ BEGIN
     END
 END
 
+#ifndef PXTONETOOL_STATIC // collides with the executables' MENU_DUMMY when merged
 MENU_DUMMY MENU
 BEGIN
     POPUP ""
@@ -182,6 +185,7 @@ BEGIN
     END
 END
 
+#endif
 #endif    // “ú–{Œê (“ú–{) resources
 /////////////////////////////////////////////////////////////////////////////
 

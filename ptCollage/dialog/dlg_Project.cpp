@@ -32,10 +32,10 @@ static bool _SetParameter( HWND hDlg )
 	int32_t beat_num, beat_clock, meas_num;
 	float   beat_tempo;
 
-	const char* name_c = NULL; 
+	const char* name_c = NULL;
 	if( name_c = g_pxtn->text->get_name_buf( NULL ) )
 	{
-		pxTText tt; if( tt.set_sjis_to_t( name_c ) ) return false;
+		pxTText tt; if( !tt.set_sjis_to_t( name_c ) ) return false;
 		SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
 	}
 
@@ -153,11 +153,7 @@ static void _TotalSampleSize( HWND hDlg )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	// IME off
@@ -191,7 +187,7 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		Japanese_DialogItem_Change( hDlg );
 		_InitDialog               ( hDlg );
 		_SetParameter             ( hDlg );
-		_TotalSampleSize          ( hDlg );	
+		_TotalSampleSize          ( hDlg );
 		break;
 
 	//ボタンクリック
@@ -235,13 +231,7 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

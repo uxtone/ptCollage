@@ -49,6 +49,20 @@ list(APPEND LIBRARY_SOURCES ${VORBIS_SOURCES})
 
 list(APPEND LIBRARY_DIRS "${VORBIS_SOURCE_DIR}/lib")
 list(APPEND LIBRARY_DIRS "${VORBIS_SOURCE_DIR}/include")
+list(APPEND LIBRARY_DIRS "${OGG_SOURCE_DIR}/include")
+
+# <ogg/os_types.h> includes <ogg/config_types.h> on every platform it has no special case for.
+# libogg's configure normally writes it; these are the values it finds on any C99 system.
+set(INCLUDE_INTTYPES_H 1)
+set(INCLUDE_STDINT_H 1)
+set(INCLUDE_SYS_TYPES_H 1)
+set(SIZE16 int16_t)
+set(USIZE16 uint16_t)
+set(SIZE32 int32_t)
+set(USIZE32 uint32_t)
+set(SIZE64 int64_t)
+configure_file("${OGG_SOURCE_DIR}/include/ogg/config_types.h.in" "${CMAKE_CURRENT_BINARY_DIR}/include/ogg/config_types.h" @ONLY)
+list(APPEND LIBRARY_DIRS "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 add_bundled_library(${PROJECT_NAME} SHARED "${LIBRARY_SOURCES}" "${LIBRARY_DIRS}")
 

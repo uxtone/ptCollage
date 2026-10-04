@@ -35,11 +35,7 @@ static bool _GetInputParameter( HWND hDlg, SAMPLINGQUALITY *p_c )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static SAMPLINGQUALITY *_p_config;
@@ -57,7 +53,7 @@ dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog(   hDlg );
 		_SetParameter( hDlg, _p_config );
 		_bInit = true;
-	
+
 		break;
 
 	//ボタンクリック
@@ -92,13 +88,7 @@ dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

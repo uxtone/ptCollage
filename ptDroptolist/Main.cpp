@@ -32,7 +32,7 @@ static int32_t _GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_
 	DWORD            dummy;
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
-	UINT             vSize; 
+	UINT             vSize;
 	TCHAR            path[ MAX_PATH ];
 
 	int32_t v[ 4 ];
@@ -45,10 +45,10 @@ static int32_t _GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_
 
 	GetModuleFileName( NULL, path, MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy ); 
+	size = GetFileVersionInfoSize( path, &dummy );
 	if( !size ) goto End;
 
-	p = malloc( size ); 
+	p = malloc( size );
 	if( !p                                                    ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )               ) goto End;
 	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
@@ -101,26 +101,20 @@ static BOOL CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 
 		default:return false;
-	
+
 	}
 	return true;
 }
 
-int WINAPI _tWinMain( HINSTANCE hInst, HINSTANCE hPrev, LPTSTR lpCmd, int nCmd )
+
+
+#include <pxwEntryPoint.h>
+#include <pxwRuntime.h>
+
+pxwENTRY_POINT( hInst, hPrev, lpCmd, nCmd )
 {
-	InitCommonControls();
-	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return 0;
-
-
-	// for xaudio2_7.dll_unloaded bug.
-	pxwXAudio2Keep_loadlib* xa2_keep = new pxwXAudio2Keep_loadlib();
-#ifdef _DEBUG
-	if( !xa2_keep->invoke( true  ) )
-#else
-	if( !xa2_keep->invoke( false ) )
-#endif
-	{ MessageBox( NULL, _T("keep XAudio2 Error"), _app_name_t_en, MB_OK|MB_ICONERROR ); return -1; }
-
+    pxwRuntime runtime;
+	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	pxwFilePath_GetModuleDirectory( g_dir_module );
 

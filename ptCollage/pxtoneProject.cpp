@@ -20,7 +20,7 @@ extern pxwAlteration* g_alte;
 
 #include "resource.h"
 
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 #include "../Generic/Japanese.h"
 
 #include "Project.h"
@@ -54,18 +54,10 @@ extern if_gen_Scroll g_ScrlKeyV  ;
 bool InquireOperation();
 bool SaveTune_Version( const TCHAR *path, bool bTune );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_ProjectOption( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo(         HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 void    MainWindow_SetTitle               ( const TCHAR *path        );
@@ -101,7 +93,7 @@ bool _SaveWithVersion( const TCHAR *path, bool bTune, pxtnERR* p_pxtn_err )
 
 	*p_pxtn_err = g_pxtn->write( fp, bTune, (unsigned short)GetCompileVersion( 0, 0, 0, 0 ) );
 	if( *p_pxtn_err != pxtnOK  ) goto term;
-	if( !bTune ) Menu_HistoryW_Add( path );
+	if( !bTune ) Menu_History_Add( path );
 
 	b_ret = true;
 term:
@@ -140,7 +132,7 @@ bool pxtoneProject_load_and_init_tools( HWND hWnd, const TCHAR *path, bool *pb_c
 		fclose( fp );
 		dlog_c( "LoadProject InitializeTool( read project ok )" );
 		g_path_dlg_proj->set_loaded_path( path_get );
-		Menu_HistoryW_Add               ( path_get );
+		Menu_History_Add               ( path_get );
 		MainWindow_SetTitle             ( path_get );
 	}
 
@@ -190,10 +182,10 @@ bool pxtoneProject_IDM_HISTORY( HWND hWnd, UINT idm )
 	bool b_cancel     = false;
 	bool b_save_failed = false;
 
-	if( !Menu_HistoryW_GetPath( idm, path ) ) return false;
+	if( !Menu_History_GetPath( idm, path ) ) return false;
 	if( !pxtoneProject_load_and_init_tools( hWnd, path, &b_cancel, &b_save_failed ) && !b_cancel && !b_save_failed )
 	{
-		Menu_HistoryW_Delete( idm );
+		Menu_History_Delete( idm );
 		return false;
 	}
 	return true;

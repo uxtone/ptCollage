@@ -82,25 +82,13 @@ void MainProc_set_file_profile( const pxFile2* file_profile )
 }
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_About(     HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo(     HWND hwnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 void MainWindow_SetTitle( const TCHAR *path )
@@ -204,8 +192,8 @@ static bool _SystemTask()
 	//メッセージループを生成
 	while( PeekMessage(   &msg, NULL, 0, 0, PM_NOREMOVE) || !_bInterfaceActive )
 	{
-		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false; 
-		TranslateMessage( &msg ); 
+		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false;
+		TranslateMessage( &msg );
 		DispatchMessage(  &msg );
 	}
 
@@ -244,8 +232,8 @@ static bool _call_main_proc( HWND hwnd, bool b_draw )
 	fRECT rc_d;
 	rc_d.l = (float)rc_c.left  ;
 	rc_d.t = (float)rc_c.top   ;
-	rc_d.r = (float)rc_c.right ;
-	rc_d.b = (float)rc_c.bottom;
+	rc_d.r = (float)rc_c.right  / g_dxdraw->get_screen_mag();
+	rc_d.b = (float)rc_c.bottom / g_dxdraw->get_screen_mag();
 
 	if( g_mouse ) g_mouse->trigger_update();
 
@@ -415,7 +403,7 @@ static bool _WM_MOUSE_CLICK( HWND hwnd, UINT msg, LPARAM l )
 	return false;
 }
 
-#include <Dbt.h> // DBT_DEVNODES_CHANGED
+#include <dbt.h> // DBT_DEVNODES_CHANGED
 
 LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 {
@@ -440,7 +428,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		{
 			HDC         hdc;
 			PAINTSTRUCT ps ;
-	
+
 			hdc = BeginPaint ( hwnd, &ps  );
 			_call_main_proc  ( hwnd, true );
 			EndPaint         ( hwnd, &ps  );
@@ -485,7 +473,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_INITIALIZE     : _Function_IDM_INITIALIZE  ( hwnd        ); break;
 		case IDM_SAVE_AS_PTVOICE: _Function_IDM_SAVE_PTVOICE( hwnd, true  ); break;
 		case IDM_OUTPUT_TEXT    : _Function_IDM_OUTPUT_TEXT ( hwnd        ); break;
-		case IDM_SAVE           : _Function_IDM_SAVE_PTVOICE( hwnd, false ); break;			 
+		case IDM_SAVE           : _Function_IDM_SAVE_PTVOICE( hwnd, false ); break;
 		case IDM_LOAD_PTVOICE   : _Function_IDM_LOAD_PTVOICE( hwnd        ); break;
 		case IDM_CONFIG         : _Function_IDM_CONFIG      ( hwnd        ); break;
 		case IDM_ABOUT          : DialogBox( g_hInst, _T("DLG_ABOUT"), hwnd, dlg_About   ); break;
@@ -508,7 +496,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case SIZE_MINIMIZED: _MinimizedWindow(); break;
 		case SIZE_MAXIMIZED:
 		case SIZE_RESTORED :
-			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hwnd, 0, LOWORD(l), HIWORD(l) );  
+			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hwnd, 0, LOWORD(l), HIWORD(l) );
 			pxwWindowRect_save( hwnd, g_main_rect_name );
 			break;
 		}
@@ -535,7 +523,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 	case WM_MOUSEMOVE  : g_mouse->set_position(); _call_main_proc( hwnd, true ); break;
 
 	case WM_LBUTTONUP  :
-	case WM_RBUTTONUP  : 
+	case WM_RBUTTONUP  :
 	case WM_LBUTTONDOWN:
 	case WM_RBUTTONDOWN: if( !_WM_MOUSE_CLICK( hwnd, msg, l ) ) return DefWindowProc( hwnd, msg, w, l ); break;
 

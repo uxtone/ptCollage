@@ -101,12 +101,12 @@ HINSTANCE      g_hInst                  = NULL;
 HWND           g_hWnd_Main              = NULL;
 HMENU          g_hMenu_Main             = NULL;
 fRECT          g_view_rect              = { 0, 0, PTVOICE_W, PTVOICE_H };
-			   
+
 TCHAR          g_dir_module[ MAX_PATH ] = { 0 };
 TCHAR          g_app_name  [       32 ] = { 0 };
 TCHAR*         g_dir_res                = NULL; // dummy for pxFile.
 TCHAR*         g_main_rect_name         = _T("main.rect");
-		   
+
 int32_t        g_client_min_w           = 0;
 int32_t        g_client_min_h           = 0;
 
@@ -190,9 +190,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -207,21 +207,14 @@ void GetCompileDate( int32_t *year, int32_t *month, int32_t *day );
 #define _WINDOW_STYLE (WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_THICKFRAME|WS_MINIMIZEBOX|WS_CLIPCHILDREN)
 //WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX
 
-int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPTSTR args, int nWinMode )
-{
-	InitCommonControls();
-	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return 0;
+#include <pxwEntryPoint.h>
+#include <pxwRuntime.h>
 
-	// for xaudio2_7.dll_unloaded bug.
-	pxwXAudio2Keep_loadlib* xa2_keep = new pxwXAudio2Keep_loadlib();
-	
-#ifdef _DEBUG
-	if( !xa2_keep->invoke( true  ) )
-#else
-	if( !xa2_keep->invoke( false ) )
-#endif
-	{ MessageBox( NULL, _T("keep XAudio2 Error"), _app_name_t_en, MB_OK|MB_ICONERROR ); return -1; }
-	
+pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
+{
+    pxwRuntime runtime;
+	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
+
 	cls_EXISTINGWINDOW existing_window;
 	static TCHAR *mutex_name   = _T("ptvoice"    );
 	static TCHAR *mapping_name = _T("map_ptvoice");
@@ -244,7 +237,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPTSTR args, int nWin
 	pxwWindowRect_init       ( _app_file_profile );
 
 	pxDebugLog_init( _T("temp_ptv"), _T("debuglog") );
-	{	
+	{
 		int32_t y, m, d;
 		GetCompileDate( &y, &m, &d );
 
@@ -269,7 +262,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPTSTR args, int nWin
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
 	{
-		RECT rc = { 0, 0, PTVOICE_W , PTVOICE_H };
+		RECT rc = { 0, 0, PTVOICE_W * pxwDx09Draw_system_mag(), PTVOICE_H * pxwDx09Draw_system_mag() };
 		AdjustWindowRectEx( &rc, _WINDOW_STYLE, TRUE, 0 );
 		g_client_min_w = abs(rc.left) + rc.right ;
 		g_client_min_h = abs(rc.top ) + rc.bottom;
@@ -437,38 +430,16 @@ term:
 	SAFE_DELETE( g_path_dlg_ptv );
 	SAFE_DELETE( g_strm_woi     );
 	SAFE_DELETE( g_freq         );
-	SAFE_DELETE( g_pxtn         ); 
-	SAFE_DELETE( g_midi_in      ); 
-	SAFE_DELETE( g_vunit        ); 
-	SAFE_DELETE( g_curkey       ); 
-	SAFE_DELETE( g_dxdraw       ); 
+	SAFE_DELETE( g_pxtn         );
+	SAFE_DELETE( g_midi_in      );
+	SAFE_DELETE( g_vunit        );
+	SAFE_DELETE( g_curkey       );
+	SAFE_DELETE( g_dxdraw       );
 
 	dlog_c( "pxtone Voice End ------" );
 
 	JapaneseTable_Release();
 	pxDebugLog_release();
 
-	SAFE_DELETE( xa2_keep );
-
 	return 1;
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR _lpCmdLine, int nCmdShow) {
-    WCHAR *lpCmdLine = GetCommandLineW();
-    if (__argc == 1) { // avoids GetCommandLineW bug that does not always quote the program name if no arguments
-        do { ++lpCmdLine; } while (*lpCmdLine);
-    } else {
-        BOOL quoted = lpCmdLine[0] == L'"';
-        ++lpCmdLine; // skips the " or the first letter (all paths are at least 1 letter)
-        while (*lpCmdLine) {
-            if (quoted && lpCmdLine[0] == L'"') { quoted = FALSE; } // found end quote
-            else if (!quoted && lpCmdLine[0] == L' ') {
-                // found an unquoted space, now skip all spaces
-                do { ++lpCmdLine; } while (lpCmdLine[0] == L' ');
-                break;
-            }
-            ++lpCmdLine;
-        }
-    }
-    return wWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 }

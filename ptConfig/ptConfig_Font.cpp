@@ -21,7 +21,7 @@ bool ptConfig_Font::write( pxDescriptor* desc ) const
 	bool b_ret = false;
 
 	if( !desc->w_asfile( _code, sizeof(char), _code_size      ) ) goto End;
-	if( !desc->w_asfile( name ,            1, BUFSIZE_FONTNAME) ) goto End;
+	if( !desc->w_asfile( name , sizeof(TCHAR), BUFSIZE_FONTNAME) ) goto End;
 
 	b_ret = true;
 End:
@@ -35,7 +35,7 @@ bool ptConfig_Font::read( pxDescriptor* desc )
 
 	if( !desc->r( code, sizeof(char), _code_size ) ) goto End;
 	if( memcmp( code, _code,          _code_size ) ) goto End;
-	if( !desc->r( name, 1, BUFSIZE_FONTNAME )      ) goto End;
+	if( !desc->r( name, sizeof(TCHAR), BUFSIZE_FONTNAME )      ) goto End;
 
 	b_ret = true;
 End:

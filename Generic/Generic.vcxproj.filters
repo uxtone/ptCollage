@@ -36,7 +36,7 @@
     <ClCompile Include="if_gen_Scroll.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Menu_HistoryW.cpp">
+    <ClCompile Include="Menu_History.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,7 +68,7 @@
     <ClInclude Include="if_gen_Scroll.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Menu_HistoryW.h">
+    <ClInclude Include="Menu_History.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,7 +20,7 @@ void GetCompileDate( int32_t *year, int32_t *month, int32_t *day )
 		"XXX",
 		"Jan","Feb","Mar","Apr",
 		"May","Jun","Jul","Aug",
-		"Sep","Oct","Nov","Dec" 
+		"Sep","Oct","Nov","Dec"
 	};
 
 	sscanf(__DATE__, "%s %d %d", strMonth, day, year );
@@ -40,7 +40,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            dummy;
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
-	UINT             vSize; 
+	UINT             vSize;
 	TCHAR path[ MAX_PATH ];
 
 	int32_t v[ 4 ];
@@ -53,10 +53,10 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 
 	GetModuleFileName( NULL, path, MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy ); 
+	size = GetFileVersionInfoSize( path, &dummy );
 	if( !size ) goto End;
 
-	p = malloc( size ); 
+	p = malloc( size );
 	if( !p                                                ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
 	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
@@ -78,11 +78,7 @@ End:
 }
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
@@ -118,7 +114,7 @@ dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 		default:return false;
-	
+
 	}
 	return true;
 }

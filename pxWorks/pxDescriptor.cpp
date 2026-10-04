@@ -74,11 +74,7 @@ bool pxDescriptor::set_file_r  ( FILE *fd )
 	if( fseek  ( fd, 0, SEEK_SET ) ) return false;
 	_p_desc = fd  ;
 
-#ifdef pxSCE
-	_size   = (int32_t)sz._Off;
-#else
-	_size   = (int32_t)sz;
-#endif
+	_size = pxFPOS_OFFSET(sz);
 
 	_b_file = true;
 	_b_read = true;
@@ -93,11 +89,7 @@ bool pxDescriptor::set_file_w  ( FILE *fd )
 	fpos_t sz;
 	if( fgetpos( fd, &sz ) ) return false;
 
-#ifdef pxSCE
-	_size   = (int32_t)sz._Off;
-#else
-	_size   = (int32_t)sz;
-#endif
+	_size = pxFPOS_OFFSET(sz);
 
 	_p_desc = fd   ;
 	_b_file = true ;
@@ -114,11 +106,7 @@ bool  pxDescriptor::get_pos( int32_t* p_pos ) const
 		fpos_t sz;
 		if( fgetpos( (FILE*)_p_desc, &sz ) ) return false;
 
-#ifdef pxSCE
-		*p_pos   = (int32_t)sz._Off;
-#else
-		*p_pos   = (int32_t)sz;
-#endif
+	*p_pos = pxFPOS_OFFSET(sz);
 
 	}
 	else
@@ -187,7 +175,7 @@ bool pxDescriptor::w_arg_asfile( const char *fmt, ... )
 
 	len = strlen( _heep_str );
 	if( fwrite(   _heep_str, 1, len, (FILE*)_p_desc ) != len ) goto End;
-	
+
 	b_ret = true;
 End:
 	return b_ret;
@@ -201,11 +189,11 @@ bool pxDescriptor::w_asfile( const void *p, int size, int num )
 	if( !size || !num ) return true; // ignore
 
 	if( !_p_desc || !_b_file || _b_read ) goto End;
-	
+
 	if( fwrite( p, size, num, (FILE*)_p_desc ) != num ) goto End;
 	_cur  += size * num;
 	if( _size < _cur ) _size = _cur;
-	
+
 	b_ret = true;
 End:
 	return b_ret;
@@ -286,7 +274,7 @@ bool pxDescriptor::r(       void *p, int size, int num )
 			_cur += size;
 		}
 	}
-	
+
 	b_ret = true;
 End:
 	return b_ret;
@@ -358,7 +346,7 @@ void pxDescriptor_int_to_v( uint8_t* bytes5, int* p_byte_num, uint32_t i )
 	bytes5[ 2 ] = 0; a[ 2 ] = *( (uint8_t *)(&i) + 2 );
 	bytes5[ 3 ] = 0; a[ 3 ] = *( (uint8_t *)(&i) + 3 );
 	bytes5[ 4 ] = 0; a[ 4 ] = 0;
-	
+
 	// 1byte(7bit)
 	if     ( i < 0x00000080 )
 	{
@@ -427,7 +415,7 @@ bool pxDescriptor::v_w_asfile( int val, int *p_add )
 	uint8_t  b[ 5 ] = {};
 	uint32_t us     = (uint32_t )val;
 	int32_t  bytes  = 0;
-	
+
 	a[ 0 ] = *( (uint8_t *)(&us) + 0 );
 	a[ 1 ] = *( (uint8_t *)(&us) + 1 );
 	a[ 2 ] = *( (uint8_t *)(&us) + 2 );

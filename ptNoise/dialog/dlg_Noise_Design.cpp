@@ -42,18 +42,10 @@ void dlg_NoiseDesign_init( const pxFile2* file_profile )
 	_ref_file_profile = file_profile;
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Copy(    HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 // タイトルバー表記
@@ -91,17 +83,17 @@ HBITMAP test_png_bmp_LoadPNG( HWND hwnd, const TCHAR *path_src )
 	BITMAPINFO      bi;
 	BYTE            *pbBits = NULL;
 	png_bytepp      row_pointers = NULL;
- 
+
 	if( !(fp   = _tfopen( path_src, _T("rb") ) ) ) goto End;
 	if( !(png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL) ) ) goto End;
 	if( !(info = png_create_info_struct(png) ) ) goto End;
 
-	if( setjmp( png_jmpbuf( png ) ) ) goto End; 
 	if( setjmp( png_jmpbuf( png ) ) ) goto End;
- 
+	if( setjmp( png_jmpbuf( png ) ) ) goto End;
+
 	png_init_io  ( png, fp   );
 	png_read_info( png, info );
- 
+
 	png_get_IHDR          ( png, info, &w, &h, &depth, &color_type, NULL, NULL, NULL );
 	png_set_strip_16      ( png );
 	png_set_gray_to_rgb   ( png );
@@ -109,30 +101,30 @@ HBITMAP test_png_bmp_LoadPNG( HWND hwnd, const TCHAR *path_src )
 	png_set_bgr           ( png );
 	png_set_packing       ( png );
 	if( png_get_gAMA(png, info, &gamma) ) png_set_gamma( png, 2.2, gamma   );
-	else                                  png_set_gamma( png, 2.2, 0.45455 ); 
+	else                                  png_set_gamma( png, 2.2, 0.45455 );
 	png_read_update_info  ( png, info);
 	png_get_IHDR          ( png, info, &w, &h, &depth, &color_type, NULL, NULL, NULL );
- 
+
 	rowbytes     = png_get_rowbytes( png, info );
 	row_pointers = (png_bytepp)malloc( h * sizeof(png_bytep));
 	for( unsigned int y = 0; y < h; y++ ) row_pointers[ y ] = (png_bytep)png_malloc( png, rowbytes );
- 
+
 	png_read_image( png, row_pointers );
 	png_read_end  ( png, NULL );
 	if( fp ) fclose( fp ); fp = NULL;
- 
+
 	memset( &bi.bmiHeader, 0, sizeof(BITMAPINFOHEADER) );
 	bi.bmiHeader.biSize     = sizeof(BITMAPINFOHEADER);
 	bi.bmiHeader.biWidth    = w;
 	bi.bmiHeader.biHeight   = h;
 	bi.bmiHeader.biPlanes   = 1;
 	bi.bmiHeader.biBitCount = depth * png_get_channels(png, info);
- 
+
 	{
 		HDC hdc = GetDC( hwnd );
 		if( !( hbm = CreateDIBSection( hdc, &bi, DIB_RGB_COLORS, (VOID **)&pbBits, NULL, 0) ) ) goto End;
 	}
- 
+
 	widthbytes = WIDTHBYTES( w * bi.bmiHeader.biBitCount );
 
 	for(unsigned int y = 0; y < h; y++)
@@ -158,10 +150,10 @@ static void _InitDialog( HWND hDlg )
 
 	TCHAR *type_table[ pxWAVETYPE_num ] =
 	{
-		_T("None"), _T("Sine"), _T("Saw"), _T("Rect"), _T("Random"), _T("Saw2"), _T("Rect2"), 
+		_T("None"), _T("Sine"), _T("Saw"), _T("Rect"), _T("Random"), _T("Saw2"), _T("Rect2"),
 		_T("Triangle"), _T("random2"),
-		_T("Rect-3"), _T("Rect-4"), _T("Rect-8"), _T("Rect-16"), 
-		_T("Saw-3"), _T("Saw-4"), _T("Saw-6"), _T("Saw-8"), 
+		_T("Rect-3"), _T("Rect-4"), _T("Rect-8"), _T("Rect-16"),
+		_T("Saw-3"), _T("Saw-4"), _T("Saw-6"), _T("Saw-8"),
 	};
 
 	for( int i = 0; i < pxWAVETYPE_num; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_TYPE_MAIN  , CB_ADDSTRING, 0, (LPARAM)type_table[ i ] );
@@ -342,7 +334,7 @@ static bool _IDM_INITIALIZE( HWND hDlg )
 	}
 	_u = 0;
 	SendDlgItemMessage( hDlg, IDC_TAB, TCM_SETCURFOCUS, _u, 0 );
-	
+
 	NoiseTable_SetDefault( _p_noise );
 
 	_SetTitle( NULL );
@@ -368,9 +360,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -442,7 +434,7 @@ static bool _IDM_SAVE   ( HWND hDlg, bool b_as )
 	PcmTable_Woice_Stop( true );
 	_GetInputParameter( hDlg );
 
-	if( !g_path_dlg_ptn->entrust_save_path( hDlg, b_as, path_dst, _T("no name") ) ) return true; 
+	if( !g_path_dlg_ptn->entrust_save_path( hDlg, b_as, path_dst, _T("no name") ) ) return true;
 
 	_p_noise->Fix();
 
@@ -551,11 +543,7 @@ term:
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Design( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
@@ -633,13 +621,7 @@ dlg_NoiseDesign_Design( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

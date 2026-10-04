@@ -24,7 +24,7 @@ extern pxwAlteration* g_alte;
 
 #include "../Generic/KeyControl.h"
 #include "../Generic/OpenVolumeControl.h"
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 #include "../Generic/Japanese.h"
 
 #include "../Generic/pxMidiIn.h"
@@ -74,53 +74,25 @@ void MainProc_set_file_profile( const pxFile2* file_profile )
 	_ref_file_profile = file_profile;
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo(          HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_About(          HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Property(       HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_CopyMeas(       HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Scope(          HWND hDlg, UINT msg, WPARAM w, LPARAM l );
-									   
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+
+INT_PTR CALLBACK
 dlg_Config_Procedure(      HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 // メニュー（プロジェクト）
@@ -196,8 +168,8 @@ bool SystemTask()
 	//メッセージループを生成
 	while( PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE) || !_bInterfaceActive )
 	{
-		if( !GetMessage( &msg, NULL, 0, 0 ) ) return false; 
-		TranslateMessage( &msg ); 
+		if( !GetMessage( &msg, NULL, 0, 0 ) ) return false;
+		TranslateMessage( &msg );
 		DispatchMessage(  &msg );
 	}
 	return true;
@@ -390,7 +362,7 @@ static void _Function_IDM_BUILD( HWND hwnd, bool bBuildAs )
 
 	if( _ref_file_profile->open_r( &desc, _bld_cfg_name, NULL, NULL ) )
 	{
-		_cfg_bld.read( desc ); 
+		_cfg_bld.read( desc );
 	}
 	SAFE_DELETE( desc );
 
@@ -575,13 +547,13 @@ void _WM_CLOSE( HWND hwnd )
 	if_Copier_SavePosition   ();
 	if_Projector_SavePosition();
 	if_Effector_SavePosition ();
-	Menu_HistoryW_Save       ();
+	Menu_History_Save       ();
 
 	DestroyWindow( hwnd );
 	PostQuitMessage( 0 );
 }
 
-#include <Dbt.h> // DBT_DEVNODES_CHANGED
+#include <dbt.h> // DBT_DEVNODES_CHANGED
 
 LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 {
@@ -600,7 +572,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 	case WM_PAINT:
 		{
 			HDC         hdc;
-			PAINTSTRUCT ps ;	
+			PAINTSTRUCT ps ;
 			hdc = BeginPaint ( hWnd, &ps  );
 			Interface_Process( hWnd, true );
 			EndPaint         ( hWnd, &ps  );
@@ -639,7 +611,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		// property
 		case IDM_PROPERTY     : DialogBox( g_hInst, _T("DLG_PROPERTY"), hWnd, dlg_Property ); break;
 		case IDM_ABOUT        : DialogBox( g_hInst, _T("DLG_ABOUT"   ), hWnd, dlg_About    ); break;
-						 
+
 		case IDM_BUILDAS      : _Function_IDM_BUILD(    hWnd, true  ); break;
 		case IDM_CONFIG       : _Function_IDM_CONFIG(   hWnd        ); break;
 		case IDM_COPYMEAS     : _Function_IDM_COPYMEAS( hWnd        ); break;
@@ -680,8 +652,8 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_HISTORY_17   :
 		case IDM_HISTORY_18   :
 		case IDM_HISTORY_19   :
-			
-			
+
+
 			pxtoneProject_IDM_HISTORY( hWnd, LOWORD( w ) ); break;
 
 		default:
@@ -717,7 +689,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case SIZE_MINIMIZED: _MinimizedWindow(); break;
 		case SIZE_MAXIMIZED:
 		case SIZE_RESTORED :
-			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hWnd, 0, LOWORD(l), HIWORD(l) );  
+			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hWnd, 0, LOWORD(l), HIWORD(l) );
 			pxwWindowRect_save( hWnd, g_main_rect_name );
 			break;
 		}
@@ -791,7 +763,3 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 
     return 0;
 }
-
-
-
-

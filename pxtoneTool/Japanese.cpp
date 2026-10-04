@@ -9,7 +9,7 @@ typedef struct
 }
 DLGITEMIDTEXT;
 
-DLGITEMIDTEXT _DlgItem_table[] =
+static DLGITEMIDTEXT _DlgItem_table[] =
 {
 	{IDC_TEXT_HEARSELECT       , _T("== Select File ==") , _T("≪音源の選択≫") },
 	{IDC_CHECK_LOOP            , _T("Loop"             ) , _T("ループ"        ) },

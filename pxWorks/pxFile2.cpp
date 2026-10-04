@@ -19,7 +19,7 @@ pxFile2::pxFile2()
 	_base_dir_path     = NULL;
 	_opt_dir           = NULL;
 
-	_opt_file_dir_path = NULL; 
+	_opt_file_dir_path = NULL;
 	_opt_file_ext      = NULL;
 	_ref_lclz          = NULL;
 }
@@ -76,7 +76,7 @@ bool pxFile2::init_option( const TCHAR* opt_files_dir_name, const TCHAR* def_dir
 #else
 	sprintf    ( path, _T("%s\\%s"), _base_dir_path, opt_files_dir_name );
 #endif
-	
+
 	if( !pxStrT_copy_allocate( &_opt_file_dir_path, path ) ) goto term;
 
 	if( ext ){ if( !pxStrT_copy_allocate( &_opt_file_ext, ext          ) ) goto term; }
@@ -195,7 +195,7 @@ bool pxFile2::get_size( int32_t* p_size, const TCHAR* dir_name, const TCHAR* dat
 	FILE*  fp        = NULL ;
 
 	if( !make_real_path( &real_path, dir_name, data_name, ext ) ) return false;
-	
+
 	if( !( fp = _tfopen( real_path, _T("rb") ) ) ) goto term;
 	if( !pxFile2_get_size( fp, p_size )          ) goto term;
 
@@ -319,16 +319,13 @@ bool pxFile2_get_size( FILE* fp, int32_t* p_size )
 {
     if( !fp || !p_size ) return false;
 
-	long t = ftell( fp );   
+	long t = ftell( fp );
 	fpos_t sz;
 
 	fseek  ( fp, 0, SEEK_END );
     fgetpos( fp, &sz );
-#ifdef pxSCE
-	*p_size = (int32_t)sz._Off;
-#else
-	*p_size = (int32_t)sz;
-#endif
+
+    *p_size = pxFPOS_OFFSET(sz);
     fseek  ( fp, t, SEEK_SET );
 	return true;
 }

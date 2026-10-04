@@ -260,6 +260,8 @@ bool if_gen_splash( HWND hwnd, pxwDx09Draw *dxdraw, int32_t surf, float mag )
 	if( dxdraw->tex_load( _T("img"), _T("logo.png"), surf, mag ) < 0 ) return false;
 
 	GetClientRect( hwnd, &rc_client );
+	rc_client.right  = (LONG)( rc_client.right  / dxdraw->get_screen_mag() );
+	rc_client.bottom = (LONG)( rc_client.bottom / dxdraw->get_screen_mag() );
 
 	dxdraw->SetViewport( 0, 0, (float)rc_client.right, (float)rc_client.bottom, 0, 0 );
 

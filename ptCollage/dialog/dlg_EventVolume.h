@@ -7,10 +7,5 @@
 	enum_EventKind_Volume  ,
 };
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_EventVolume( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
-

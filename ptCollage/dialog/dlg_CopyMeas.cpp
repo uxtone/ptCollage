@@ -70,7 +70,7 @@ term:
 
 	pxMem_free( (void**)&p_unit_names );
 	pxMem_free( (void**)&p_wide       );
-	
+
 	return true;
 }
 
@@ -162,11 +162,7 @@ static void _GetInputParameter( HWND hDlg )
 
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_CopyMeas( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 
@@ -229,13 +225,7 @@ dlg_CopyMeas( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

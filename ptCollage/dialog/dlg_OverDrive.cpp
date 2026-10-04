@@ -51,11 +51,7 @@ static bool _CheckParameter( HWND hDlg, const EFFECTSTRUCT_OVERDRIVE* p_over )
 
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static EFFECTSTRUCT_OVERDRIVE* _p_over;
@@ -94,7 +90,7 @@ dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog( hDlg );
 		_p_over = (EFFECTSTRUCT_OVERDRIVE*)l;
 		_SetParameter( hDlg, _p_over );
-	
+
 		break;
 
 	//ボタンクリック
@@ -126,13 +122,7 @@ dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

@@ -5,11 +5,7 @@
 #include "dlg_Message.h"
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Message( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg ){
@@ -33,7 +29,7 @@ dlg_Message( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 		default:return false;
-	
+
 	}
 	return true;
 }

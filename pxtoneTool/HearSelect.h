@@ -1,7 +1,7 @@
 ﻿#ifndef HearSelect_H
 #define HearSelect_H
 
-#include <StdDef.h>
+#include <stddef.h>
 
 #define HEARSELECTVISIBLE_PCM      0x01
 #define HEARSELECTVISIBLE_PTV      0x02

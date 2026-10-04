@@ -23,7 +23,7 @@ bool ptConfig_MIDI::write( pxDescriptor *desc ) const
 	bool b_ret = false;
 
 	if( !desc->w_asfile( _code      , sizeof(char),  _code_size ) ) goto End;
-	if( !desc->w_asfile( name       , 1, BUFSIZE_MIDIDEVICENAME ) ) goto End;
+	if( !desc->w_asfile( name       , sizeof(TCHAR), BUFSIZE_MIDIDEVICENAME ) ) goto End;
 	if( !desc->w_asfile( &b_velo    , sizeof(b_velo    ), 1 ) ) goto End;
 	if( !desc->w_asfile( &key_tuning, sizeof(key_tuning), 1 ) ) goto End;
 
@@ -45,7 +45,7 @@ bool ptConfig_MIDI::read( pxDescriptor *desc )
 		b_old = true;
 	}
 
-	if( !desc->r( name, 1, BUFSIZE_MIDIDEVICENAME ) ) goto End;
+	if( !desc->r( name, sizeof(TCHAR), BUFSIZE_MIDIDEVICENAME ) ) goto End;
 	if( !desc->r( &b_velo, sizeof(b_velo), 1      ) ) goto End;
 	if( b_old ) key_tuning = 0;
 	else if( !desc->r( &key_tuning, sizeof(key_tuning), 1 ) ) goto End;

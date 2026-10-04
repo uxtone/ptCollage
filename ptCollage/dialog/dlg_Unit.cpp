@@ -33,7 +33,7 @@ static void _SetParameter( HWND hDlg, int32_t unit_index )
 static bool _GetParameter( HWND hDlg, int32_t unit_index )
 {
 	TCHAR name_t[ pxtnMAX_TUNEUNITNAME + 1 ];
-	 
+
 
 	GetDlgItemText( hDlg, IDC_NAME, name_t, pxtnMAX_TUNEUNITNAME+1 );
 
@@ -46,11 +46,7 @@ static bool _GetParameter( HWND hDlg, int32_t unit_index )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Unit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static int32_t _unit_index;
@@ -69,7 +65,7 @@ dlg_Unit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 		if( !g_pxtn->Unit_Get( _unit_index ) ){ EndDialog( hDlg, false ); break; }
 		_SetParameter( hDlg, _unit_index );
-	
+
 		break;
 
 	//ボタンクリック
@@ -91,13 +87,7 @@ dlg_Unit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

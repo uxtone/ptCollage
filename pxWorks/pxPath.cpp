@@ -79,7 +79,7 @@ static TCHAR *_find_last_c( const TCHAR *path, TCHAR c )
 	case pxPathMode_UTF16LE:
 	{
 		const wchar_t* p   = (const wchar_t*)path;
-		int32_t        len = wcslen( p );
+		int32_t        len = (int32_t)_tcslen( path );
 		for( int i = 0; i < len; i++, p++ )
 		{
 			if( *p == c ) p_last_period = (TCHAR*)p;

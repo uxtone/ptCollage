@@ -46,7 +46,7 @@ static pxSurface* _surf_palette = NULL;
 #include "../Generic/MessageBox.h"
 #include "../Generic/if_Generic.h"
 #include "../Generic/Japanese.h"
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 
 #include "../Generic/pxMidiIn.h"
 pxMidiIn*      g_midi_in = NULL;
@@ -120,7 +120,7 @@ HWND       g_hWnd_Main  = NULL;
 HMENU      g_hMenu_Main = NULL;
 
 TCHAR      g_dir_module[ MAX_PATH ] = {0};
-	       
+
 TCHAR      g_app_name[ 32 ] = {0};
 TCHAR*     gClassName_Main  = _T("Main"     );
 TCHAR*     g_main_rect_name = _T("main.rect");
@@ -182,42 +182,18 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
+#include <pxwEntryPoint.h>
+#include <pxwRuntime.h>
 
-
-int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCmd )
-{
-	InitCommonControls( );
-
-	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return 0;
-
-	// for xaudio2_7.dll_unloaded bug.
-	pxwXAudio2Keep_loadlib* xa2_keep = new pxwXAudio2Keep_loadlib();
-#ifdef _DEBUG
-	if( !xa2_keep->invoke( true  ) )
-#else
-	if( !xa2_keep->invoke( false ) )
-#endif
-	{ MessageBox( NULL, _T("keep XAudio2 Error"), _app_name_en, MB_OK|MB_ICONERROR ); return -1; }
-
-
-#ifdef DEBUGGER_RELEASE
-	{
-		SYSTEMTIME st   ;
-		int32_t        today;
-
-		GetLocalTime( &st );
-		today = st.wYear * 10000 + st.wMonth * 100 + st.wDay;
-		if( today < 20070609 ){ MessageBox( NULL, "-1", "error", MB_OK|MB_ICONEXCLAMATION ); return 1; }
-		if( today > 20070630 ){ MessageBox( NULL, " 1", "error", MB_OK|MB_ICONEXCLAMATION ); return 1; }
-		MessageBox( NULL, "Debugger Release.", "pxtone Collage", MB_OK|MB_ICONINFORMATION );
-	}
-#endif
+pxwENTRY_POINT( hInst, hPrevInst, lpCmd, nCmd ) {
+    pxwRuntime runtime;
+	{ int rc; if( !runtime.init( _app_name_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
 	static TCHAR*      mutex_name   = _T("ptcollage"    );
@@ -247,7 +223,6 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 
 	g_local = new pxLocalize();
 	if( !g_local->init( _T("localize") ) ) goto term;
-	g_local->set( pxLOCALREGION_ja );
 
     _app_file_data->set_localize( g_local );
 
@@ -259,9 +234,12 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 	{
 		TCHAR path[ MAX_PATH ] = {0}; _stprintf_s( path, MAX_PATH, _T("%s\\%s"), g_dir_module, _T("japanese.ico") );
 		FILE* fp = _tfopen( path, _T("rb") );
-		if( fp ){ fclose( fp ); JapaneseTable_init( true  ); }
-		else    {               JapaneseTable_init( false ); }
+		if( fp ){ fclose( fp ); JapaneseTable_init( true  ); printf("japanese enabled\n\n\n");}
+		else    {               JapaneseTable_init( false ); printf("japanese disabled\n\n\n");}
     }
+
+	// the menu texts follow the same switch as the rest of the interface.
+	g_local->set( Japanese_Is() ? pxLOCALREGION_ja : pxLOCALREGION_en );
 
 	if( Japanese_Is() ) _tcscpy( g_app_name, _app_name_jp );
 	else                _tcscpy( g_app_name, _app_name_en );
@@ -282,11 +260,11 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 
 	int width_window;
 	int height_window;
-	width_window  = GetSystemMetrics(SM_CXFRAME)*2 + _DEFAULT_WINDOW_W;
+	width_window  = GetSystemMetrics(SM_CXFRAME)*2 + _DEFAULT_WINDOW_W * pxwDx09Draw_system_mag();
 
 	height_window = GetSystemMetrics(SM_CYFRAME)*2 +
 					GetSystemMetrics(SM_CYCAPTION) +
-					GetSystemMetrics(SM_CYMENU)    + _DEFAULT_WINDOW_H;
+					GetSystemMetrics(SM_CYMENU)    + _DEFAULT_WINDOW_H * pxwDx09Draw_system_mag();
 
 	g_hWnd_Main    = CreateWindow(
 					gClassName_Main,//ウインドウクラスの名前
@@ -311,8 +289,8 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 			IDM_HISTORY_19,
         };
 
-		Menu_HistoryW_init( GetSubMenu( GetSubMenu( g_hMenu_Main, 0 ), 1 ), _MAX_HISTORY_NUM, table, IDM_HISTORY_D, _app_file_profile );
-		Menu_HistoryW_Load();
+		Menu_History_init( GetSubMenu( GetSubMenu( g_hMenu_Main, 0 ), 1 ), _MAX_HISTORY_NUM, table, IDM_HISTORY_D, _app_file_profile );
+		Menu_History_Load();
     }
 
 	{
@@ -341,8 +319,8 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 	}
 
 	{// オフセットを設定
-		g_MinimizeWidth  = HEADER_W + GetSystemMetrics(SM_CXFRAME)*2;
-		g_MinimizeHeight = MINVIEW_HEIGHT + VOLUME_HEIGHT +
+		g_MinimizeWidth  = HEADER_W * pxwDx09Draw_system_mag() + GetSystemMetrics(SM_CXFRAME)*2;
+		g_MinimizeHeight = (MINVIEW_HEIGHT + VOLUME_HEIGHT) * pxwDx09Draw_system_mag() +
 							GetSystemMetrics(SM_CYFRAME)*2 +
 							GetSystemMetrics(SM_CYCAPTION) +
 							GetSystemMetrics(SM_CYMENU) ;
@@ -369,6 +347,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 					if( !_surf_palette->png_read( desc, 0, 0, NULL ) ){ mbox_c_ERR( NULL, "color:default" ); SAFE_DELETE( desc ); return false; }
 					g_dxdraw->default_palette_set( _surf_palette->get_palette() );
 				}
+				else{ mbox_c_ERR( NULL, "color:open (data_common missing?)" ); return false; }
 				SAFE_DELETE( desc );
 			}
 
@@ -459,7 +438,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 
 			g_path_dlg_tune = new pxwPathDialog();
 			if( Japanese_Is() ) title_save = _title_tune_save_j;
-			else                title_save = _title_tune_save_e;	
+			else                title_save = _title_tune_save_e;
 			if( !g_path_dlg_tune->init( _app_file_profile,
 				_T("pttune {*.pttune}\0*.pttune*\0All files {*.*}\0*.*\0\0"),
 				_T("pttune"), _T("ptc-tune.path"),
@@ -467,7 +446,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpCmd, int nCm
 
 			g_path_dlg_build = new pxwPathDialog();
 			if( Japanese_Is() ) title_save = _title_build_j;
-			else                title_save = _title_build_e;	
+			else                title_save = _title_build_e;
 			if( !g_path_dlg_build->init( _app_file_profile,
 				_T("wav {*.wav}\0*.wav*\0") _T("All files {*.*}\0*.*\0\0"),
 				_T("wav"), _T("ptc-build.path"), title_save, title_load, NULL ) ) goto term;
@@ -560,45 +539,23 @@ term:
 	SAFE_DELETE( g_path_dlg_build );
 	SAFE_DELETE( g_path_dlg_proj  );
 	SAFE_DELETE( g_path_dlg_tune  );
-	SAFE_DELETE( g_strm_woi       );						         
+	SAFE_DELETE( g_strm_woi       );
 	SAFE_DELETE( g_freq           );
 	SAFE_DELETE( g_alte           );
 	SAFE_DELETE( g_pxtn           );
 	SAFE_DELETE( g_ptn_bldr       );
-	SAFE_DELETE( g_midi_in        ); 
+	SAFE_DELETE( g_midi_in        );
 
 	UndoEvent_Release    (); dlog_c( "released undo event"     );
 
 	SAFE_DELETE( g_dxdraw );
 
-	Menu_HistoryW_Release(); dlog_c( "released menu history"   );
+	Menu_History_Release(); dlog_c( "released menu history"   );
 	JapaneseTable_Release(); dlog_c( "released japanese table" );
 
 	dlog_c( "*OK*" );
 
 	pxDebugLog_release   ();
 
-	SAFE_DELETE( xa2_keep );
-
 	return 1;
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR _lpCmdLine, int nCmdShow) {
-    WCHAR *lpCmdLine = GetCommandLineW();
-    if (__argc == 1) { // avoids GetCommandLineW bug that does not always quote the program name if no arguments
-        do { ++lpCmdLine; } while (*lpCmdLine);
-    } else {
-        BOOL quoted = lpCmdLine[0] == L'"';
-        ++lpCmdLine; // skips the " or the first letter (all paths are at least 1 letter)
-        while (*lpCmdLine) {
-            if (quoted && lpCmdLine[0] == L'"') { quoted = FALSE; } // found end quote
-            else if (!quoted && lpCmdLine[0] == L' ') {
-                // found an unquoted space, now skip all spaces
-                do { ++lpCmdLine; } while (lpCmdLine[0] == L' ');
-                break;
-            }
-            ++lpCmdLine;
-        }
-    }
-    return wWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 }

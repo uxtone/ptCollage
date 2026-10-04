@@ -33,18 +33,10 @@ int32_t  GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 bool IsShiftJIS( unsigned char c );
 bool InquireOperation();
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Unit(  HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
 // ユニット削除
@@ -61,7 +53,7 @@ bool Unit_Remove( int32_t u )
 
 	bool        b_ret = false;
 	TCHAR       str[ _BUFNUM_DELETE_UNIT ] = {0};
-	TCHAR*      p_name_t = NULL;
+	const TCHAR* p_name_t = NULL;
 	wchar_t*    p_wide   = NULL;
 	const char* p_c      = p_unit->get_name_buf( NULL );
 
@@ -78,7 +70,7 @@ bool Unit_Remove( int32_t u )
     if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ){ b_ret = true; goto term; }
 
 	g_pxtn->Unit_Remove( u );
-	g_pxtn->evels->Record_UnitNo_Miss( (unsigned char)u ); 
+	g_pxtn->evels->Record_UnitNo_Miss( (unsigned char)u );
 	if_UnitTray_RedrawAllName( NULL );
 	UnitFocus_Set( 0, true );
 
@@ -139,7 +131,7 @@ bool Unit_Dialog_Add()
 	if( g_pxtn->Woice_Num() ) g_pxtn->evels->Record_Add_i( 0, (unsigned char)u, EVENTKIND_VOICENO, addunit.voice_no );
 
 	g_pxtn->Unit_SetOpratedAll( false );
-	UnitFocus_Set( u, true ); 
+	UnitFocus_Set( u, true );
 
 	if_UnitTray_RedrawAllName( NULL );
 	if_UnitTray_JustScroll   ();

@@ -43,6 +43,9 @@ typedef struct
 }
 pxwDx09TEXTURE;
 
+// integer screen magnification: system DPI / 96, rounded up. usable before init().
+int32_t pxwDx09Draw_system_mag();
+
 class pxwDx09Draw
 {
 private:

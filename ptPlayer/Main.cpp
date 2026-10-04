@@ -8,7 +8,7 @@ pxwDx09Draw *g_dxdraw = NULL;
 #include <pxwFilePath.h>
 #include <pxwWindowRect.h>
 #include <pxwPathDialog.h>
-#include <pxwXAudio2Keep.h>
+//#include <pxwXAudio2Keep.h>
 
 #include <pxFile2.h>
 static pxFile2* _app_file_common  = NULL;
@@ -27,7 +27,7 @@ static TCHAR* _posted_path = NULL;
 #include "../Generic/cls_ExistingWindow.h"
 #include "../Generic/KeyControl.h"
 #include "../Generic/OpenVolumeControl.h"
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 #include "../Generic/Japanese.h"
 
 #include <pxtonewinXA2.h>
@@ -91,25 +91,13 @@ static bool _bInterfaceActive = false;
 
 bool GameMain( HWND hWnd );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_About           ( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
@@ -162,7 +150,7 @@ void MainWindow_SetTitle( const TCHAR *path )
 
 #ifdef NDEBUG
 	_stprintf_s( str, MAX_PATH, _T("[%s] %s "     ), p_name, g_app_name_t );
-#else									 
+#else
 	_stprintf_s( str, MAX_PATH, _T("[%s] %s Debug"), p_name, g_app_name_t );
 #endif
 	SetWindowText( g_hWnd_Main, str );
@@ -194,7 +182,7 @@ static bool _GetDroppedPath_Window( HWND hWnd, WPARAM wParam, TCHAR *path_drop )
 static bool _GetDroppedPath_Start( TCHAR *lpszArgs, TCHAR *path_drop )
 {
 	int32_t a;
-	
+
 	memset( path_drop, 0, MAX_PATH * sizeof(TCHAR) );
 	if( !_tcslen( lpszArgs ) ) return false;
 
@@ -242,8 +230,8 @@ static bool _Function_IDM_LOAD( HWND hWnd )
 static bool _Function_IDM_HISTORY( HWND hwnd, UINT idm )
 {
 	TCHAR path[ MAX_PATH ];
-	if( !Menu_HistoryW_GetPath( idm , path ) ) return false;
-	if( !Tune_LoadAndPlay     ( hwnd, path ) ){ Menu_HistoryW_Delete( idm ); return false; }
+	if( !Menu_History_GetPath( idm , path ) ) return false;
+	if( !Tune_LoadAndPlay     ( hwnd, path ) ){ Menu_History_Delete( idm ); return false; }
 	return true;
 }
 
@@ -313,7 +301,7 @@ static void _Function_IDM_BUILD( HWND hwnd )
 		return;
 	}
 	SAFE_DELETE( desc );
-	
+
 	_build.sec_extrafade = _bld.sec_extrafade;
 	_build.sec_playtime  = _bld.sec_playtime ;
 	_build.volume        = _bld.volume       ;
@@ -382,15 +370,15 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		{
 			HMENU hMenu;
 			hMenu = GetMenu( hwnd );
-			DeleteMenu( hMenu, IDM_TEST_FADEOUT    , MF_BYCOMMAND );		
-			DeleteMenu( hMenu, IDM_TEST_TUNERELEASE, MF_BYCOMMAND );		
+			DeleteMenu( hMenu, IDM_TEST_FADEOUT    , MF_BYCOMMAND );
+			DeleteMenu( hMenu, IDM_TEST_TUNERELEASE, MF_BYCOMMAND );
 			DrawMenuBar( hwnd );
 		}
 #endif
 
 		if( !Find_ptCollage() )
 		{
-			DeleteMenu ( GetMenu( hwnd ), IDM_PTCOLLAGE, MF_BYCOMMAND );		
+			DeleteMenu ( GetMenu( hwnd ), IDM_PTCOLLAGE, MF_BYCOMMAND );
 			DrawMenuBar( hwnd );
 		}
 
@@ -403,7 +391,7 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 
 	case WM_CLOSE:
 
-		Menu_HistoryW_Save();
+		Menu_History_Save();
 		PostQuitMessage( 0 );
 		break;
 
@@ -413,7 +401,7 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 	case WM_PAINT:
 		{
 			HDC         hdc;
-			PAINTSTRUCT ps ;	
+			PAINTSTRUCT ps ;
 			hdc = BeginPaint ( hwnd, &ps  );
 			Interface_Process( hwnd, true );
 			EndPaint         ( hwnd, &ps  );
@@ -462,7 +450,7 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 				memset( path, 0, sizeof(path) );
 				if( !g_path_dlg_tune->get_last_path( path, MAX_PATH ) ) break;
 				if_Player_StopPlay();
-				Call_ptCollage( hwnd, path ); 
+				Call_ptCollage( hwnd, path );
 			}
 			break;
 		case IDM_TEST_FADEOUT    :
@@ -522,6 +510,8 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 				place.length = sizeof(WINDOWPLACEMENT);
 				if( !GetWindowPlacement( hwnd, &place ) ) return false;
 
+				if( g_dxdraw ) g_dxdraw->WindowMode_mag( hwnd, 0, LOWORD(l), HIWORD(l) );
+
 				RECT rc;
 				GetClientRect(  hwnd, &rc );
 				InvalidateRect( hwnd, &rc, false );
@@ -561,8 +551,8 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
 			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = _VIEW_WIDTH   ; // min w
-			pmm->ptMinTrackSize.y = _VIEW_HEIGHT  ; // min h
+			pmm->ptMinTrackSize.x = _VIEW_WIDTH  * pxwDx09Draw_system_mag(); // min w
+			pmm->ptMinTrackSize.y = _VIEW_HEIGHT * pxwDx09Draw_system_mag(); // min h
 			pmm->ptMaxTrackSize.x = rc_work.right ; // max w
 			pmm->ptMaxTrackSize.y = rc_work.bottom; // max h
 		}
@@ -581,8 +571,8 @@ bool _SystemTask()
 
 	while( PeekMessage(   &msg, NULL, 0, 0, PM_NOREMOVE) || !_bInterfaceActive )
 	{
-		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false; 
-		TranslateMessage( &msg ); 
+		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false;
+		TranslateMessage( &msg );
 		DispatchMessage(  &msg );
 	}
 	return true;
@@ -614,9 +604,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -641,19 +631,13 @@ static bool _io_pos( void* user, int32_t* p_pos )
 /////////////////////////
 
 
-int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int nWinMode )
-{
-	InitCommonControls();
-	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return 0;
+#include <pxwEntryPoint.h>
+#include <pxwRuntime.h>
 
-	// for xaudio2_7.dll_unloaded bug.
-	pxwXAudio2Keep_loadlib* xa2_keep = new pxwXAudio2Keep_loadlib();
-#ifdef _DEBUG
-	if( !xa2_keep->invoke( true  ) )
-#else
-	if( !xa2_keep->invoke( false ) )
-#endif
-	{ MessageBox( NULL, _T("keep XAudio2 Error"), _app_name_t_en, MB_OK|MB_ICONERROR ); return -1; }
+pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
+{
+    pxwRuntime runtime;
+	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
 	static TCHAR* mutex_name   = _T("ptplayer"    );
@@ -722,7 +706,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int 
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
 	{
-		RECT rc = {0, 0, _VIEW_WIDTH, _VIEW_HEIGHT};
+		RECT rc = {0, 0, _VIEW_WIDTH * pxwDx09Draw_system_mag(), _VIEW_HEIGHT * pxwDx09Draw_system_mag()};
 		int32_t  w, h;
 
 		DWORD cs = WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX;
@@ -758,8 +742,8 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int 
 			IDM_HISTORY_9,
 		};
 
-		Menu_HistoryW_init( GetSubMenu( GetSubMenu( g_hMenu_Main, 0 ), 1 ), 10, table, IDM_HISTORY_D, _app_file_profile );
-		Menu_HistoryW_Load();
+		Menu_History_init( GetSubMenu( GetSubMenu( g_hMenu_Main, 0 ), 1 ), 10, table, IDM_HISTORY_D, _app_file_profile );
+		Menu_History_Load();
 	}
 
 	pxwWindowRect_load( g_hWnd_Main, _rect_name, false, true );
@@ -829,14 +813,14 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int 
 
 		while( GetTickCount() < count + (1000 * 0.5f) ){}
 	}
-	
+
 	{
 		RECT rc;
 		GetClientRect ( g_hWnd_Main, &rc );
 		InvalidateRect( g_hWnd_Main, &rc, false );
 		UpdateWindow  ( g_hWnd_Main );
 	}
-	
+
 //	Tune_Initialize();
 
 //	MessageBox( g_hWnd_Main, "これは動作確認バージョンです。\r\n"
@@ -844,7 +828,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int 
 //		"This is test version.\r\nPlease tell me that if this can't play your data normally.",
 //		"pxPlayer", MB_OK|MB_ICONINFORMATION );
 
-	
+
 	MSG msg;
 	//メッセージループを生成
 	while( GetMessage( &msg, NULL, 0, 0 ) )
@@ -854,7 +838,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int 
 	}
 
 term:
-	
+
 	if( g_strm_xa2 )
 	{
 		g_strm_xa2->stream_finalize( 0.1f, 30, 3.0f );
@@ -871,34 +855,9 @@ term:
 	SAFE_DELETE( g_path_dlg_tune );
 
 	dlog_c( "ptPlayer Exit" );
-	Menu_HistoryW_Release();
+	Menu_History_Release();
 
 	pxDebugLog_release();
 
-	SAFE_DELETE( xa2_keep );
-
 	return 1;
 }
-
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR _lpCmdLine, int nCmdShow) {
-    WCHAR *lpCmdLine = GetCommandLineW();
-    if (__argc == 1) { // avoids GetCommandLineW bug that does not always quote the program name if no arguments
-        do { ++lpCmdLine; } while (*lpCmdLine);
-    } else {
-        BOOL quoted = lpCmdLine[0] == L'"';
-        ++lpCmdLine; // skips the " or the first letter (all paths are at least 1 letter)
-        while (*lpCmdLine) {
-            if (quoted && lpCmdLine[0] == L'"') { quoted = FALSE; } // found end quote
-            else if (!quoted && lpCmdLine[0] == L' ') {
-                // found an unquoted space, now skip all spaces
-                do { ++lpCmdLine; } while (lpCmdLine[0] == L' ');
-                break;
-            }
-            ++lpCmdLine;
-        }
-    }
-    return wWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-}
-
-

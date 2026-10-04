@@ -18,7 +18,7 @@ extern pxwPathDialog*    g_path_dlg_wav;
 #include <pxwWindowRect.h>
 
 
-#include "../Generic/KeyControl.h"       
+#include "../Generic/KeyControl.h"
 #include "../Generic/OpenVolumeControl.h"
 #include "../Generic/Japanese.h"
 #include "../ptConfig/ptConfig_Stream.h"
@@ -61,7 +61,7 @@ void MainProc_set_file_profile( const pxFile2* file_profile )
 static bool _loop_save()
 {
 	pxDescriptor* desc = NULL;
-	if( !_ref_file_profile->open_w( &desc,  _filename_loop, NULL, NULL ) ) return false; 
+	if( !_ref_file_profile->open_w( &desc,  _filename_loop, NULL, NULL ) ) return false;
 	if( !desc->w_asfile( &_b_loop, sizeof(_b_loop), 1 ) ){ SAFE_DELETE( desc ); return false; }
 	SAFE_DELETE( desc );
 	return true;
@@ -86,39 +86,19 @@ extern int32_t g_MinimizeWidth ;
 extern int32_t g_MinimizeHeight;
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_About(       HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo(       HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Config_Procedure(   HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_PCM_Volume      (   HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 
@@ -159,8 +139,8 @@ static bool _SystemTask()
 
 	while( PeekMessage(   &msg, NULL, 0, 0, PM_NOREMOVE) || !_bInterfaceActive )
 	{
-		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false; 
-		TranslateMessage( &msg ); 
+		if( !GetMessage(  &msg, NULL, 0, 0 ) ) return false;
+		TranslateMessage( &msg );
 		DispatchMessage(  &msg );
 	}
 	return true;
@@ -196,7 +176,7 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 		MessageBox( hwnd, _T("stream stop timeout."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
-		
+
 	PcmTable_Woice_Update();
 
 	if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
@@ -222,7 +202,7 @@ static bool _Function_IDM_CONVERTVOLUME( HWND hWnd )
 }
 
 static bool _Load_PCM( HWND hWnd, const TCHAR* path )
-{ 
+{
 	if( !PcmTable_Wave_Load( path ) )
 	{
 		TCHAR str[ 100 ] = {0};
@@ -336,7 +316,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		{
 			HDC         hdc;
 			PAINTSTRUCT ps;
-	
+
 			hdc = BeginPaint(  hWnd, &ps  );
 			Interface_Process( hWnd, true );
 			EndPaint(          hWnd, &ps  );
@@ -346,7 +326,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 
 	case WM_ACTIVATE:
 		switch( LOWORD( w ) )
-		{ 
+		{
 		case WA_ACTIVE:
 		case WA_CLICKACTIVE:
 
@@ -400,7 +380,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case SIZE_MINIMIZED: _MinimizedWindow(); break;
 		case SIZE_MAXIMIZED:
 		case SIZE_RESTORED :
-			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hWnd, 0, LOWORD(l), HIWORD(l) );  
+			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hWnd, 0, LOWORD(l), HIWORD(l) );
 			pxwWindowRect_save( hWnd, g_main_rect_name );
 			break;
 		}

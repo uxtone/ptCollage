@@ -112,7 +112,7 @@ bool dlg_History_Push( const pxtnPulse_Noise *p_noise )
 	rec.name = (TCHAR*)malloc( len * sizeof(TCHAR) );
 	memcpy( rec.name, file_name,  len * sizeof(TCHAR) );
 	PathRemoveExtension( rec.name );
-		
+
 	_v_rec.insert( _v_rec.begin(), rec );
 
 	{
@@ -126,7 +126,7 @@ bool dlg_History_Push( const pxtnPulse_Noise *p_noise )
 		item.iSubItem = _COLUMN_FILENAME; item.pszText = rec.name; ListView_SetItem   ( _hList, &item );
 		item.iSubItem = _COLUMN_DATE    ; item.pszText = rec.date; ListView_SetItem   ( _hList, &item );
 	}
-	
+
 	return true;
 }
 
@@ -163,11 +163,7 @@ static void _LVN_ITEMCHANGED( HWND hDlg )
 	PcmTable_BuildAndPlay( _v_rec.at( v ).p_noise, &quality );
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_History( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )

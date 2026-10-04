@@ -1,6 +1,6 @@
 ﻿
 #include "cls_ExistingWindow.h"
-#include <errhandlingapi.h>
+// #include <errhandlingapi.h>
 
 cls_EXISTINGWINDOW::cls_EXISTINGWINDOW()
 {
@@ -23,7 +23,7 @@ static void _ForgrandExistingWindow( const TCHAR *mapping_name, UINT msg )
 	HANDLE  hMapping    = NULL;
 	HWND    *p_hwnd_map = NULL;
 
-	hMapping = CreateFileMapping( (HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
+	hMapping = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
 	if( !hMapping ) return;
 
 	if( GetLastError() != ERROR_ALREADY_EXISTS )

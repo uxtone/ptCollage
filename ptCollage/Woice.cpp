@@ -55,18 +55,10 @@ extern TCHAR        g_dir_module[];
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 bool    InquireOperation();
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Woice( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
 
@@ -93,8 +85,10 @@ static bool _MakeWoiceName( pxtnWoice *p_w, const TCHAR* path )
 #ifdef UNICODE
 	if( !pxwUTF8_wide_to_sjis( name_t, &sjis_name, &sjis_size ) ) return false;
 #else
-	if( !( sjis_name = pxStr_copy_allocate( name_t ) ) ) return false;
-	sjis_size = pxShiftJIS_check_size( sjis_name );
+    if( !pxStr_copy_allocate( &sjis_name, name_t ) ) return false;
+//    if( !( sjis_name = pxStr_copy_allocate( name_t ) ) ) return false;
+if( !pxShiftJIS_check_size( sjis_name, &sjis_size, false ) ) return false;
+	//sjis_size = pxShiftJIS_check_size( sjis_name );
 #endif
 
 	int32_t  bytes = 0;
@@ -163,7 +157,7 @@ bool Woice_Add( HWND hWnd, const TCHAR* path )
 	bool           b_ret    = false;
 	pxtnERR        pxtn_err = pxtnERR_VOID;
 	FILE*          fp       = _tfopen( path, _T("rb") );
-	
+
 	if( !fp )
 	{
 		Japanese_MessageBox( hWnd, _T("can't open"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false;
@@ -242,7 +236,7 @@ int32_t Woice_Dialog_Add()
 
 	// ユニットを追加
 	if( hear.b_add_unit )
-	{ 
+	{
 		if( g_pxtn->Unit_AddNew() )
 		{
 			int32_t     u            = g_pxtn->Unit_Num() - 1;
@@ -381,7 +375,7 @@ bool Woice_Dialog_Export( int32_t w )
 	// ファイル選択 =============================================
 
 	{
-		TCHAR*         p_name_t = NULL  ;	
+		TCHAR*         p_name_t = NULL  ;
 		pxwPathDialog* path_dlg = NULL  ;
 
 		switch( p_w->get_type() )
@@ -460,7 +454,7 @@ bool Woice_Dialog_Remove( int32_t w )
 	}
 
 	int32_t     num      = g_pxtn->evels->get_Count( EVENTKIND_VOICENO, (int32_t)w );
-	TCHAR*      p_name_t = NULL ;
+	const TCHAR*      p_name_t = NULL ;
 	wchar_t*    p_wide   = NULL ;
 	int32_t     buf_size =     0;
 	const char* p_c      = p_w->get_name_buf( &buf_size );
@@ -490,4 +484,3 @@ term:
 	pxMem_free( (void**)&p_wide );
 	return b_ret;
 }
-

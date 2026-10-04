@@ -27,15 +27,19 @@ pxwXAudio2::~pxwXAudio2()
 
 bool pxwXAudio2::init   ( int32_t unit_num )
 {
+#ifndef pxwXAUDIO2_ENABLE
+    // XAudio2Create is an undefined reference on this toolchain, can't deal
     return true;
+#endif
 
 	bool   b_ret      = false;
 	UINT32 device_num =     0;
 
 	if( _b_init ) return false;
 
-    // undefined reference, can't deal
-    //if( FAILED( XAudio2Create(&_xa2, 0, XAUDIO2_DEFAULT_PROCESSOR ) ) ) goto term;
+#ifdef pxwXAUDIO2_ENABLE
+    if( FAILED( XAudio2Create(&_xa2, 0, XAUDIO2_DEFAULT_PROCESSOR ) ) ) goto term;
+#endif
 
     // update for new XAudio2 device enumeration behavior
     // if( FAILED( _xa2->GetDeviceCount( &device_num ) ) ) goto term;
@@ -74,10 +78,14 @@ bool pxwXAudio2::init   ( int32_t unit_num )
     if (SUCCEEDED(property_store->GetValue(PKEY_Device_FriendlyName, &property)))
     {
         memset(_device_detail.DisplayName, 0x00, sizeof(_device_detail.DisplayName));
-        memcpy(_device_detail.DisplayName, property.pwszVal, wcslen(property.pwszVal));
-        PropVariantClear(&property);
+        memcpy(_device_detail.DisplayName, property.pwszVal, lstrlenW(property.pwszVal) * sizeof(WCHAR));        PropVariantClear(&property);
     }
-    if(FAILED(device->GetId((LPWSTR *)&_device_detail.DeviceID))) goto term;
+    {
+        LPWSTR device_id = nullptr;
+        if(FAILED(device->GetId(&device_id))) goto term;
+        lstrcpynW(_device_detail.DeviceID, device_id, sizeof(_device_detail.DeviceID) / sizeof(WCHAR));
+        CoTaskMemFree(device_id);
+    }
     // if (SUCCEEDED(property_store->GetValue(PKEY_Device_InstanceId, &property)))
     // {
     //     memset(_device_detail.DeviceID, 0x00, sizeof(_device_detail.DisplayName));
@@ -88,12 +96,12 @@ bool pxwXAudio2::init   ( int32_t unit_num )
 
     static IAudioClient *client;
     client = nullptr;
-    if (FAILED(device->Activate(IID_IAudioClient, CLSCTX_ALL, nullptr, reinterpret_cast<void **>(&client)))) goto term;
+    if (FAILED(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void **>(&client)))) goto term;
 
     static WAVEFORMATEX *format;
     if (FAILED(client->GetMixFormat(&format))) goto term;
     if(format->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
-        memcpy(&_device_detail.OutputFormat, format, format->cbSize);
+        memcpy(&_device_detail.OutputFormat, format, sizeof(_device_detail.OutputFormat));
     }
     // end surgery
 

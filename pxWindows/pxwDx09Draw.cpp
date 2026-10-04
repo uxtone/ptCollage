@@ -198,6 +198,15 @@ bool pxwDx09Draw::WindowMode_mag( HWND hwnd, float mag, float client_rect_w, flo
 	return _device_reset( mag ? true : false );
 }
 
+int32_t pxwDx09Draw_system_mag()
+{
+	int32_t dpi = 96;
+	HDC     hdc = GetDC( NULL );
+	if( hdc ){ dpi = GetDeviceCaps( hdc, LOGPIXELSX ); ReleaseDC( NULL, hdc ); }
+	int32_t mag = ( dpi + 95 ) / 96; // round up to the next integer; never fractional.
+	return mag < 1 ? 1 : mag;
+}
+
 float pxwDx09Draw::get_screen_mag() const
 {
 	return _screen_mag;
@@ -216,6 +225,8 @@ bool pxwDx09Draw::init( HWND hWnd )
 	memset( _texs, 0,                        sizeof(pxwDx09TEXTURE) * _MAX_TEXTURE );
 
 	if( !(_d3d = Direct3DCreate9( D3D_SDK_VERSION ) ) ) return false;
+
+	_screen_mag = (float)pxwDx09Draw_system_mag();
 
 	ZeroMemory( &_d3dprm_window, sizeof(_d3dprm_window) );
 
@@ -435,7 +446,8 @@ bool pxwDx09Draw::tex_Clear( int32_t t )
 
 	for( int y = 0; y < h; y++ )
 	{
-		for( int x = 0; x < w; x++ ){ *p = 0; p++; }
+		DWORD* p_row = (DWORD*)( (uint8_t*)p + rc.Pitch * y ); // the pitch is not always the width.
+		for( int x = 0; x < w; x++ ) p_row[ x ] = 0;
 	}
 	pt->p_tex->UnlockRect( 0 );
 	return true;
@@ -455,20 +467,22 @@ uint32_t  pxwDx09Draw::tex_create ( int32_t w, int32_t h, uint32_t argb, int t )
 	pt = &_texs[ t ]; if( pt->p_tex ) pt->p_tex->Release(); pt->p_tex = NULL;
 
 	bool b_ret     = false;
+	int  dst_w     = (int)( w * _screen_mag );
+	int  dst_h     = (int)( h * _screen_mag );
 
-	if( FAILED(D3DXCreateTexture( _device, w, h, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pt->p_tex ) ) ) goto End;
+	if( FAILED(D3DXCreateTexture( _device, dst_w, dst_h, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pt->p_tex ) ) ) goto End;
 
 	D3DLOCKED_RECT rc; pt->p_tex->LockRect( 0, &rc, NULL, 0 );
 
 	{
 		DWORD    dst_pitch = rc.Pitch / sizeof(DWORD);
-		int      src_pitch = w;
-		LPDWORD  p_dst     = (LPDWORD)rc.pBits + dst_pitch * (h-1);
+		int      src_pitch = dst_w;
+		LPDWORD  p_dst     = (LPDWORD)rc.pBits + dst_pitch * (dst_h-1);
 
-		for ( int src_y = 0; src_y < h ; src_y++ )
+		for ( int src_y = 0; src_y < dst_h ; src_y++ )
 		{
 			int  dst_x   =     0;
-			for ( int src_x = 0; src_x < w; src_x++ )
+			for ( int src_x = 0; src_x < dst_w; src_x++ )
 			{
 				p_dst[ dst_x ] = argb;
 				dst_x++;
@@ -664,7 +678,7 @@ bool pxwDx09Draw::tex_glyph_text( int32_t t, const char *txt, const fRECT *p_rc_
 
 		if( rc_dst.l >= rc_dst.r ) return false;
 		if( !tex_glyph_moji( t, code, &rc_dst, &res_size ) ) return false;
-		rc_dst.l += res_size.w + gap_pix * _screen_mag;
+		rc_dst.l += res_size.w / _screen_mag + gap_pix; // res_size is in magnified pixels, rc_dst is not
 
 		if( pxStr_sjis_is_2byte( txt[ a ] ) ) a += 2;
 		else                                  a += 1;
@@ -783,6 +797,7 @@ uint32_t  pxwDx09Draw::tex_load( const TCHAR *dir, const TCHAR *name, int32_t tx
 
 term:
 	if( !b_ret ) tex_release( tx_idx );
+	SAFE_DELETE( desc );
 
 	return b_ret ? tx_idx : -1;
 }
@@ -795,6 +810,8 @@ bool pxwDx09Draw::tex_blt   ( int32_t t, const uint32_t *p_src, int32_t src_w, i
 
 	pxwDx09TEXTURE *pt = &_texs[ t ];
 	float strch = (pt->stretch?pt->stretch : 1);
+	const int32_t src_pitch = src_w;
+	int32_t       mag1      = (pt->flags & _TEXTUREFLAG_IGNORE_SCREEN_MAG) ? 1 : (int32_t)_screen_mag; if( mag1 < 1 ) mag1 = 1;
 
 	if( src_w > (int32_t)( pt->origin_img_w * strch ) ) src_w = (int32_t)( pt->origin_img_w * strch );
 	if( src_h > (int32_t)( pt->origin_img_h * strch ) ) src_h = (int32_t)( pt->origin_img_h * strch );
@@ -806,19 +823,23 @@ bool pxwDx09Draw::tex_blt   ( int32_t t, const uint32_t *p_src, int32_t src_w, i
 	uint8_t *p_dst_line = (uint8_t*)rc.pBits;
 	int32_t src, a, r, g, b;
 
+	// the texture is held in magnified pixels: repeat each source pixel mag1 x mag1 times.
 	for( int y = 0; y < src_h; y++ )
 	{
-		uint32_t *p_dst = (uint32_t*)p_dst_line;
-		for( int x = 0; x < src_w; x++, p_src++, p_dst++ )
+		for( int mag_y = 0; mag_y < mag1; mag_y++ )
 		{
-			src = *p_src;
-			a   = (src>>24) & 0xff;
-			b   = (src>>16) & 0xff;
-			g   = (src>> 8) & 0xff;
-			r   = (src>> 0) & 0xff;
-			*p_dst = (a<<24)|(r<<16)|(g<<8)|(b<<0);
+			uint32_t *p_dst = (uint32_t*)p_dst_line;
+			for( int x = 0; x < src_w; x++ )
+			{
+				src = p_src[ x + y * src_pitch ];
+				a   = (src>>24) & 0xff;
+				b   = (src>>16) & 0xff;
+				g   = (src>> 8) & 0xff;
+				r   = (src>> 0) & 0xff;
+				for( int mag_x = 0; mag_x < mag1; mag_x++, p_dst++ ) *p_dst = (a<<24)|(r<<16)|(g<<8)|(b<<0);
+			}
+			p_dst_line += rc.Pitch;
 		}
-		p_dst_line += rc.Pitch;
 	}
 	pt->p_tex->UnlockRect( 0 );
 	return true;

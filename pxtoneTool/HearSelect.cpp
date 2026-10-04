@@ -2,7 +2,7 @@
 #include <pxwWindowRect.h>
 #include <pxwFilePath.h>
 
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 
 #define PXTONETOOL_EXPORTS
 #include "./pxtoneTool.h"
@@ -236,7 +236,7 @@ static bool _RefreshList( HWND hDlg )
 	if( PathIsDirectory( directory_path ) )
 	{
 		_stprintf_s( path, MAX_PATH, _T("%s\\*.*"), directory_path );
-		
+
 		hFind = FindFirstFile( path, &ffd );
 		while( hFind != INVALID_HANDLE_VALUE )
 		{
@@ -453,7 +453,7 @@ static void _update_layout( HWND hdlg )
 		rc.top    = rc.bottom      -  _CTRL_TEXT_H;
 		SetWindowPos( hw, NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, 0 );
 	}
-	
+
 	SendMessage( hdlg, WM_SETREDRAW, 1, 0 );
 	InvalidateRect( hdlg, NULL, TRUE );
 }
@@ -470,7 +470,7 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	memset( &column, 0, sizeof(LV_COLUMN) );
 
 	_hList = GetDlgItem( hDlg, IDC_LIST );
-	
+
 	// リスト項目--------
 	column.mask     = LVCF_WIDTH | LVCF_FMT | LVCF_TEXT | LVCF_SUBITEM;
 	column.fmt      = LVCFMT_LEFT;
@@ -510,7 +510,7 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	if( !PathIsDirectory( dir_crnt ) )
 	{
 		if( PathIsDirectory( p_hear->dir_default ) ) _tcscpy( dir_crnt, p_hear->dir_default );
-		else 
+		else
 		{
 			_LastFolder_Load( dir_crnt );
 			if( !PathIsDirectory( dir_crnt ) ) pxwFilePath_GetDesktop( dir_crnt );
@@ -590,7 +590,7 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 			image_index != _FILETYPE_PTN  &&
 			image_index != _FILETYPE_OGGV ) return;
 
-		Menu_HistoryW_Add( path );
+		Menu_History_Add( path );
 		_stprintf_s( p_hear->path_selected, MAX_PATH, _T("%s%s%s"), path,
 			pxwFilePath_IsDrive( path ) ? _T("") : _T("\\"), name );
 	}
@@ -609,7 +609,7 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 	_StatusFlag_Save( status_flags          );
 	_LastFolder_Save( p_hear->path_selected );
 
-	Menu_HistoryW_Save();
+	Menu_History_Save();
 
 	KillTimer( hDlg, _timer_id );
 
@@ -636,8 +636,8 @@ static void _Proc_NM_DBLCLK( HWND hDlg )
 	case _FILETYPE_DRIVE_REMOVE:
 	case _FILETYPE_DRIVE_X     :
 		_tcscpy( path, name );
-		break;					    
-								    
+		break;
+
 	// close directory.
 	case _FILETYPE_CLOSE:
 		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
@@ -708,9 +708,9 @@ static void _Proc_LVN_ITEMCHANGED( HWND hDlg )
 	int  key     = GetDlgItemInt( hDlg, IDC_KEY, NULL, true ) * 0x100;
 	switch( image_index )
 	{
-	case _FILETYPE_PCM : 
-	case _FILETYPE_PTV : 
-	case _FILETYPE_PTN : 
+	case _FILETYPE_PCM :
+	case _FILETYPE_PTV :
+	case _FILETYPE_PTN :
 	case _FILETYPE_OGGV:
 		SetCursor( LoadCursor( NULL, IDC_WAIT ) );
 
@@ -732,7 +732,7 @@ static bool _IDM_HISTORY( HWND hDlg, UINT idm )
 {
 	TCHAR path[ MAX_PATH ];
 
-	if( !Menu_HistoryW_GetPath( idm, path ) ) return false;
+	if( !Menu_History_GetPath( idm, path ) ) return false;
 	if( !PathIsDirectory( path ) )
 	{
 		const TCHAR* p_msg   = _T("Not found.");
@@ -745,7 +745,7 @@ static bool _IDM_HISTORY( HWND hDlg, UINT idm )
 		}
 
 		MessageBox( hDlg, p_msg, p_title, MB_OK );
-		Menu_HistoryW_Delete( idm );
+		Menu_History_Delete( idm );
 		return false;
 	}
 
@@ -797,8 +797,8 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog( hDlg, l );
 		_set_min_window_size( hDlg );
 
-		Menu_HistoryW_init( GetSubMenu( GetMenu( hDlg ), 1 ), 10, _history_table, IDM_HISTORY_D, _ref_file_profile );
-		Menu_HistoryW_Load();
+		Menu_History_init( GetSubMenu( GetMenu( hDlg ), 1 ), 10, _history_table, IDM_HISTORY_D, _ref_file_profile );
+		Menu_History_Load();
 
 		break;
 

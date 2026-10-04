@@ -6,11 +6,7 @@
 #include "../resource.h"
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )

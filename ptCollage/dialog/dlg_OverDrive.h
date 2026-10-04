@@ -9,9 +9,5 @@ typedef struct
 }
 EFFECTSTRUCT_OVERDRIVE;
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );

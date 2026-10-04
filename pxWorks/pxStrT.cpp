@@ -32,7 +32,8 @@ bool    pxStrT_copy         ( TCHAR* dst, const TCHAR* src )
 #else
 	int len = strlen ( src );
 #endif
-	memcpy( dst, src, len * sizeof(TCHAR) + 1 );
+	// was "len * sizeof(TCHAR) + 1", which is only half of a terminator. it is a whole TCHAR.
+	memcpy( dst, src, (len + 1) * sizeof(TCHAR) );
 	return true;
 }
 
@@ -60,7 +61,7 @@ bool pxStrT_compare( const TCHAR *str1, const TCHAR *str2, int32_t num, int32_t*
 
 #ifdef UNICODE
 	int len1 = _tcslen( str1 );
-	int len2 = _tcslen( str1 );
+	int len2 = _tcslen( str2 ); // was str1: num was never clamped to the second string.
 #else
 	int len1 = strlen ( str1 );
 	int len2 = strlen ( str2 );

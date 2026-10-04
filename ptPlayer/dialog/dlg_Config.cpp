@@ -65,7 +65,7 @@ static void _InitDialog( HWND hDlg )
 {
 	ptConfig_cmb_quality_init( hDlg, IDC_COMBO_CHANNEL, IDC_COMBO_SPS, Japanese_Is() );
 	{
-		SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_ADDSTRING, 0, (LPARAM)"-" );
+		SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_ADDSTRING, 0, (LPARAM)_dummy_font_name );
 		HDC hDC = GetDC( hDlg );
 		EnumFontFamilies(      hDC, NULL, (FONTENUMPROC)_EnumFont, (LPARAM)hDlg );
 		ReleaseDC(       hDlg, hDC );
@@ -102,7 +102,7 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 
 	{
 		GetDlgItemText( hDlg, IDC_COMBO_FONT, p_c->font->name, BUFSIZE_FONTNAME );
-		if( !_tcsicmp( p_c->font->name, _dummy_font_name ) ) memset( p_c->font->name, 0, BUFSIZE_FONTNAME );
+		if( !_tcsicmp( p_c->font->name, _dummy_font_name ) ) memset( p_c->font->name, 0, sizeof(p_c->font->name) );
 	}
 
 	return true;
@@ -119,11 +119,7 @@ static bool _CheckParameter( HWND hDlg, ptConfig *p_c )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static ptConfig* _p_cfg;
@@ -140,7 +136,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog(   hDlg );
 		_SetParameter( hDlg, _p_cfg );
 		_bInit = true;
-	
+
 		break;
 
 	case WM_CLOSE:
@@ -175,9 +171,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-

@@ -89,7 +89,7 @@ void *pxwFile_open_by_path( const TCHAR *path, const TCHAR *mode, int *p_size )
 		fpos_t sz;
 		fseek  ( fp, 0, SEEK_END );
 		fgetpos( fp, &sz );
-		if( p_size ) *p_size = (int)sz;
+		if( p_size ) *p_size = (int)pxFPOS_OFFSET(sz);
 		fseek  ( fp, 0, SEEK_SET );
 	}
 	return fp;
@@ -135,7 +135,7 @@ bool pxwFile_make_real_path_master_base( TCHAR** p_real_path, const TCHAR *dir_n
 		return true;
 	}
 
-	if( !_path_dir_master_base ) return false;	
+	if( !_path_dir_master_base ) return false;
 
 	if( dir_name )
 	{

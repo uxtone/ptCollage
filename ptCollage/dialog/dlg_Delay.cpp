@@ -43,7 +43,7 @@ static void _SetParameter( HWND hDlg, const EFFECTSTRUCT_DELAY* p_delay )
 	}
 
 	SetDlgItemInt( hDlg, IDC_GROUP, p_delay->group, true );
-	
+
 	_stprintf_s( str, 10, _T("%0.1f"), p_delay->freq ); SetDlgItemText( hDlg, IDC_DELAYFREQ, str );
 	_stprintf_s( str, 10, _T("%0.0f"), p_delay->rate ); SetDlgItemText( hDlg, IDC_DELAYRATE, str );
 
@@ -84,11 +84,7 @@ static bool _CheckParameter( HWND hDlg, const EFFECTSTRUCT_DELAY* p_delay )
 
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Delay_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static EFFECTSTRUCT_DELAY* _p_delay;
@@ -126,7 +122,7 @@ dlg_Delay_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog( hDlg );
 		_p_delay = (EFFECTSTRUCT_DELAY*)l;
 		_SetParameter( hDlg, _p_delay );
-	
+
 		break;
 
 	//ボタンクリック
@@ -137,7 +133,7 @@ dlg_Delay_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDOK:
 
 			if( _GetParameter(   hDlg, _p_delay ) &&
-				_CheckParameter( hDlg, _p_delay ) ) 
+				_CheckParameter( hDlg, _p_delay ) )
 			{
 				_p_delay->b_delete = false;
 				EndDialog( hDlg, true );
@@ -158,13 +154,7 @@ dlg_Delay_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

@@ -65,6 +65,7 @@ add_pxtone_library(
     pxtone::wrapper
 
     ${VORBISFILE_LIBRARY}
+    ${PNG_LIBRARIES} # pxSurface_png.cpp
 )
 
 # Export

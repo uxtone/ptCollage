@@ -30,7 +30,7 @@ static bool _InitDialog( HWND hDlg, bool bMultiUnit )
 	SetDlgItemInt( hDlg, IDC_FROMCLOCK2, clock2 / CLOCK_ROUGH, true );
 
 	SetDlgItemInt( hDlg, IDC_BEATCLOCK, g_pxtn->master->get_beat_clock() / CLOCK_ROUGH, true );
-	
+
 	return true;
 }
 
@@ -53,11 +53,7 @@ static void _GetInputParameter( HWND hDlg )
 
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Scope( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 
@@ -119,13 +115,7 @@ dlg_Scope( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

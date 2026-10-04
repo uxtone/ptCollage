@@ -45,11 +45,7 @@ void pxLocalize::_update_dir_region()
 {
 	if( !_b_init ) return;
 	TCHAR dir[ pxBUFSIZE_PATH ] = {};
-#ifdef UNICODE
 	_stprintf_s( dir, _T("%s/%s.lproj"), _dir_localize, _region_tbl[ _region ]._dir_sub );
-#else
-	sprintf    ( dir     "%s/%s.lproj" , _dir_localize, _region_tbl[ _region ]._dir_sub );
-#endif
 	pxStrT_free         ( &_dir_region      );
 	pxStrT_copy_allocate( &_dir_region, dir );
 }
@@ -141,7 +137,7 @@ bool pxLocalize::set( pxLOCALREGION region )
 bool pxLocalize::set_and_write( pxLOCALREGION region, pxDescriptor* desc )
 {
 	if( !_b_init || !desc ) return false;
-	if( !set( region )    ) return false; 
+	if( !set( region )    ) return false;
 
 	bool  b_ret = false;
 	const _REGION_LANGUAGE* p_rgn = &_region_tbl[ _region ];
@@ -162,5 +158,3 @@ const TCHAR* pxLocalize::get_region_dir() const
 	if( !_b_init ) return NULL;
 	return _dir_region;
 }
-
-

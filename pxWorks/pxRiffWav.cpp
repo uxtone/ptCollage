@@ -9,8 +9,8 @@ typedef struct
 	unsigned short formatID;      // PCM:0x0001
 	unsigned short ch;            // mono:1 / stereo:2
 	unsigned long  sps;           // sampling per second
-	unsigned long  byte_per_sec;  
-	unsigned short block_size;    
+	unsigned long  byte_per_sec;
+	unsigned short block_size;
 	unsigned short bps;           // bit per sample
 
 }
@@ -54,7 +54,7 @@ bool pxRiffWav::read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p_s
 	if( !desc->r( &chunk_size, 4, 1 ) ) goto End;
 	if( !desc->r( chunk_name , 1, 4 ) ) goto End;
 	if( memcmp( chunk_name , _header_code_WAVE, 4 ) ) goto End;
-	
+
 	// 'fmt '
 	if( !desc->r( chunk_name , 1, 4 ) ) goto End;
 	if( !desc->r( &chunk_size, 4, 1 ) ) goto End;
@@ -141,7 +141,7 @@ bool pxRiffWav_save ( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_
 	if( fwrite( _header_code_RIFF, 1, 4, (FILE*)fp ) != 4 ) goto End;
 	if( fwrite( &chunk_size      , 4, 1, (FILE*)fp ) != 1 ) goto End;
 	if( fwrite( _header_code_WAVE, 1, 4, (FILE*)fp ) != 4 ) goto End;
-	
+
 	// 'fmt '
 	if( fwrite( _header_code_fmt , 1, 4, (FILE*)fp ) != 4 ) goto End;
 	chunk_size = sizeof(fmt);
@@ -156,7 +156,7 @@ bool pxRiffWav_save ( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_
 
 	if( fgetpos( fp, &pos        )                        ) goto End;
 	if( fseek  ( fp, 4, SEEK_SET )                        ) goto End;
-	chunk_size = (int32_t)( pos - 8 );
+	chunk_size = pxFPOS_OFFSET(pos) - 8;   // chunk_size = (int32_t)pos - 8
 	if( fwrite( &chunk_size      , 4, 1, (FILE*)fp ) != 1 ) goto End;
 
 	b_ret = true;
@@ -168,11 +168,11 @@ End:
 pxRiffWav_output:: pxRiffWav_output()
 {
 	_b_header      = false;
-	_smp_w         =     0;	
+	_smp_w         =     0;
 	_ch_num        =     0;
 	_sps           =     0;
 	_bps           =     0;
-	_smp_num       =     0;	
+	_smp_num       =     0;
 	_byte_per_smp  =     0;
 	_ofs_data_size =     0;
 }
@@ -223,7 +223,7 @@ bool pxRiffWav_output::write_header( pxDescriptor* desc, int32_t  ch_num, int32_
 
 	chunk_size = sizeof(fmt);
 
-	if( !desc->w_asfile( &chunk_size      , 4, 1 ) ) goto term; // 16	
+	if( !desc->w_asfile( &chunk_size      , 4, 1 ) ) goto term; // 16
 	if( !desc->w_asfile( &fmt, sizeof(fmt),    1 ) ) goto term; // 16+sizeof(fmt)
 	if( !desc->w_asfile( _header_code_data, 1, 4 ) ) goto term; // 20+sizeof(fmt)
 
@@ -232,7 +232,7 @@ bool pxRiffWav_output::write_header( pxDescriptor* desc, int32_t  ch_num, int32_
 	chunk_size = _byte_per_smp * smp_num;
 
 	if( !desc->w_asfile( &chunk_size,       4, 1 ) ) goto term; // 24+sizeof(fmt)
-	
+
 	_b_header = true;
 term:
 
@@ -263,4 +263,3 @@ bool pxRiffWav_output::terminate( pxDescriptor* desc )
 	_b_header = false;
 	return true;
 }
-

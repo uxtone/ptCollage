@@ -1,23 +1,23 @@
 // ＵＴＦ８
--*close               ; Close
+*-close               ; Close
 
--*file                ; File
--*init project        ; Initialize Project
--*load project        ; Load Project
--*history             ; History
--*save project(ctrl+s); Save Project	Ctrl + S
--*save project as     ; Save Project As
--*output pttune       ; Output pttune
--*output wav          ; Output wav
+*-file                ; File
+*-init project        ; Initialize Project
+*-load project        ; Load Project
+*-history             ; History
+*-save project(ctrl+s); Save Project	Ctrl + S
+*-save project as     ; Save Project As
+*-output pttune       ; Output pttune
+*-output wav          ; Output wav
 
--*edit                ; Edit
--*undo(Ctrl+Z)        ; Undo
--*redo(Ctrl+Y)        ; Redo
--*copy meas           ; Copy Meas
+*-edit                ; Edit
+*-undo(Ctrl+Z)        ; Undo
+*-redo(Ctrl+Y)        ; Redo
+*-copy meas           ; Copy Meas
 
--*setting             ; Config
--*preparation         ; Preparation
+*-setting             ; Config
+*-preparation         ; Preparation
 
--*etc                 ; Etc
--*status              ; Status
--*about               ; About
+*-etc                 ; Etc
+*-status              ; Status
+*-about               ; About

@@ -131,8 +131,8 @@ static void _GetMousePointer( HWND hWnd, float *x, float *y )
 	POINT pt;
 	GetCursorPos  ( &pt );
 	ScreenToClient( hWnd, &pt );	
-	*x = (float)pt.x;
-	*y = (float)pt.y;
+	*x = (float)pt.x / g_dxdraw->get_screen_mag();
+	*y = (float)pt.y / g_dxdraw->get_screen_mag();
 }
 
 static int32_t _CountFramePerSecond()

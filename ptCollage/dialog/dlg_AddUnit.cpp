@@ -48,7 +48,7 @@ static bool _init_dlg_addunit( HWND hDlg, const ADDUNITSTRUCT* p_addunit )
 		pxTText tt; if( !tt.set_sjis_to_t( p_addunit->name ) ) goto term;
 		SetDlgItemText(     hDlg, IDC_NAME, tt.tchr() );
 	}
-	
+
 	num = g_pxtn->Woice_Num();
 	if( !num )
 	{
@@ -93,11 +93,7 @@ static bool _Get( HWND hDlg, ADDUNITSTRUCT* p_addunit )
 	return true;
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 	dlg_AddUnit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static ADDUNITSTRUCT* p_addunit;

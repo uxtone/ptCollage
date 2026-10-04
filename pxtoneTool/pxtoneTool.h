@@ -1,4 +1,6 @@
-﻿#ifdef PXTONETOOL_EXPORTS
+﻿#ifdef PXTONETOOL_STATIC
+#define DLLAPI                       // static library.
+#elif defined PXTONETOOL_EXPORTS
 #define DLLAPI __declspec(dllexport) // DLL for making.
 #else
 #define DLLAPI __declspec(dllimport) // DLL for using.

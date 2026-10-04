@@ -49,7 +49,33 @@ macro(add_pxtone_executable PROJECT SOURCES)
     if(USE_UNICODE)
         list(APPEND SOURCES "${UTF8_MANIFEST_RC}")
     endif()
-    add_executable(${PROJECT} WIN32 ${SOURCES})
+    if(WINELIB)
+        # winebuild rejects two .res files whose icon ids overlap, and the statically linked
+        # pxtoneTool brings its own resources, so compile everything as one script.
+        # The executable goes first: wrc lets pxtoneTool's resource.h redefine clashing ids after it.
+        set(WINELIB_RC_INPUTS ${SOURCES})
+        list(FILTER WINELIB_RC_INPUTS INCLUDE REGEX "\\.rc$")
+        set(WINELIB_SOURCES ${SOURCES})
+        list(FILTER WINELIB_SOURCES EXCLUDE REGEX "\\.rc$")
+        list(TRANSFORM WINELIB_RC_INPUTS PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+        if("${ARGN}" MATCHES "pxtone::tool")
+            list(APPEND WINELIB_RC_INPUTS "${CMAKE_SOURCE_DIR}/pxtoneTool/Script.rc")
+        endif()
+        set(WINELIB_RC "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}-merged.rc")
+        set(WINELIB_RC_TEXT "")
+        foreach(RC_INPUT ${WINELIB_RC_INPUTS})
+            file(RELATIVE_PATH RC_INPUT_REL "${CMAKE_SOURCE_DIR}" "${RC_INPUT}")
+            string(APPEND WINELIB_RC_TEXT "#include \"${RC_INPUT_REL}\"\n")
+        endforeach()
+        file(WRITE "${WINELIB_RC}" "${WINELIB_RC_TEXT}")
+        set_source_files_properties("${WINELIB_RC}" PROPERTIES OBJECT_DEPENDS "${WINELIB_RC_INPUTS}")
+        add_executable(${PROJECT} WIN32 ${WINELIB_SOURCES} "${WINELIB_RC}")
+    else()
+        add_executable(${PROJECT} WIN32 ${SOURCES})
+    endif()
+    if(WINELIB)
+        target_include_directories(${PROJECT} PRIVATE "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
+    endif()
     add_pxtone_subproject(${PROJECT} ${ARGN})
 endmacro()
 
@@ -66,7 +92,16 @@ endmacro()
 
 # Create a target with all requirements for an internally-managed external dependency
 macro(add_bundled_library PROJECT SCOPE SOURCES INCLUDE_DIRS)
-    add_library(${PROJECT} ${SCOPE} ${SOURCES})
+    if(WINELIB)
+        # These are plain C libraries: build them as native static code. As shared objects they
+        # would become Winelib DLLs that ld.so loads behind Wine's back, and with the Windows
+        # macros defined they take their MSVC code paths against glibc.
+        add_library(${PROJECT} STATIC ${SOURCES})
+        target_compile_options(${PROJECT} PRIVATE -U_WIN32 -UWIN32 -U__WIN32__ -U__WIN32 -U_WIN64 -UWIN64 -U__WIN64__ -U__WIN64 -fPIC
+            -include "${CMAKE_SOURCE_DIR}/compat/winelib/pxWinelibSetjmp.h")
+    else()
+        add_library(${PROJECT} ${SCOPE} ${SOURCES})
+    endif()
     target_include_directories(${PROJECT} PUBLIC "${INCLUDE_DIRS}")
     target_link_libraries(${PROJECT} PRIVATE ${ARGN})
     if (MSVC)

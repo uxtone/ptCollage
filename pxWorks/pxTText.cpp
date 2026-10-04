@@ -6,7 +6,7 @@
 #include <pxwUTF8.h>
 #endif
 
-
+#include "pxStr.h"
 #include "./pxTText.h"
 
 pxTText::pxTText()

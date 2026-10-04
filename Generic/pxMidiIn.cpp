@@ -59,7 +59,7 @@ MIM_DATA: wMsg=000003C3, p1=004F3C90, p2=0000B441
 MIM_DATA: wMsg=000003C3, p1=00003C90, p2=0000B951
 MIM_DATA: wMsg=000003C3, p1=00493C90, p2=0000C455*/
 
-static bool CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD inst, DWORD prm1, DWORD prm2 )
+static void CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD_PTR inst, DWORD_PTR prm1, DWORD_PTR prm2 )
 {
 	MIDIHDR *hdr;
 //	char str[ 256 ];
@@ -102,7 +102,6 @@ static bool CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD inst, DWORD prm1, DWO
 			break;
 		}
 	}
-	return false;
 }
 
 bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func )
@@ -129,7 +128,7 @@ bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func
 	if( res != MMSYSERR_NOERROR )
 	{
 		TCHAR errmsg[MAXERRORLENGTH];
-		midiInGetErrorText(res, errmsg, sizeof(errmsg));
+		midiInGetErrorText(res, errmsg, MAXERRORLENGTH);
 		_h = NULL;
 		return false;
 	}

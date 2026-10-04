@@ -6,7 +6,7 @@ set(PROJECT_SOURCES
     if_gen_Scroll.cpp
     Japanese.cpp
     KeyControl.cpp
-    Menu_HistoryW.cpp
+    Menu_History.cpp
     MessageBox.cpp
     OpenVolumeControl.cpp
     pxMidiIn.cpp
@@ -19,7 +19,7 @@ set(PROEJCT_HEADERS
     if_gen_Scroll.h
     Japanese.h
     KeyControl.h
-    Menu_HistoryW.h
+    Menu_History.h
     MessageBox.h
     OpenVolumeControl.h
     pxMidiIn.h

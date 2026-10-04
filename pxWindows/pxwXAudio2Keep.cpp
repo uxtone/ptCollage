@@ -33,7 +33,7 @@ return true;
 //////////////////////////////////////////////////////////////////////////
 //
 // Use the XAudio2 CLSID to find the XAudio2 DLL path in the registry.
-// 
+//
 //////////////////////////////////////////////////////////////////////////
 
 typedef std::basic_string<TCHAR, char_traits<TCHAR>, allocator<TCHAR> > tstring;
@@ -48,7 +48,13 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 		LPOLESTR szClsid = NULL;
 		StringFromCLSID( clsidXaudio2Dll, &szClsid );
 		subKey += _T("\\CLSID\\");
-		subKey += szClsid;
+		#ifdef UNICODE
+				subKey += szClsid;
+		#else
+				char clsid_a[64];
+				WideCharToMultiByte( CP_ACP, 0, szClsid, -1, clsid_a, sizeof(clsid_a), NULL, NULL );
+				subKey += clsid_a;
+		#endif
 		subKey += _T("\\InProcServer32");
 		CoTaskMemFree(szClsid);
 	}
@@ -68,7 +74,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
         // Found the registry key. Now read its value: it should be the full
         // path the the XAudio2 COM DLL.
 
-		TCHAR buf[_MAX_PATH ] = { 0 };
+        TCHAR buf[ MAX_PATH ] = { 0 };
         DWORD bufSize = sizeof(buf);
 
         if( RegQueryValueEx(hKey, NULL, NULL, NULL, (LPBYTE)buf, &bufSize) != ERROR_SUCCESS )
@@ -93,7 +99,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 // Forcibly increment the internal reference count in the XAudio2 DLL by
 // explicitly loading it. This is a crude but effective way to prevent
 // it being unloading by the COM run time.
-// 
+//
 //////////////////////////////////////////////////////////////////////////
 bool pxwXAudio2Keep_loadlib::_explicit_load()
 {

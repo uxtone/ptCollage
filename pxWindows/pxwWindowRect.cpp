@@ -61,7 +61,7 @@ bool pxwWindowRect_load( HWND hWnd, const TCHAR* name, BOOL bSize, bool b_defaul
 	bool b_ret   = false;
 	RECT rect    = {   };
 	RECT rcDesk  = {   };
-	long showCmd = SW_NORMAL;
+	LONG showCmd = SW_NORMAL;
 
 	RECT rc_now  = {   };
 	int  w;
@@ -70,7 +70,7 @@ bool pxwWindowRect_load( HWND hWnd, const TCHAR* name, BOOL bSize, bool b_defaul
 	pxDescriptor* desc = NULL;
 	if( !_ref_file_profile->open_r( &desc, _dir_name, name, NULL ) ) goto term;
 	if( !desc->r( &rect   , sizeof(RECT), 1 ) ) goto term;
-	if( !desc->r( &showCmd, sizeof(long), 1 ) ) goto term;
+	if( !desc->r( &showCmd, sizeof(LONG), 1 ) ) goto term;
 	desc->clear();
 
 	if( bSize )
@@ -145,7 +145,7 @@ bool pxwWindowRect_save( HWND hWnd, const TCHAR* name )
     h = place.rcNormalPosition.bottom - place.rcNormalPosition.top;
 
 	if( !desc->w_asfile( &place.rcNormalPosition, sizeof(RECT), 1 ) ) return false;
-	if( !desc->w_asfile( &place.showCmd,          sizeof(long), 1 ) ) return false;
+	if( !desc->w_asfile( &place.showCmd,          sizeof(LONG), 1 ) ) return false;
 
 	b_ret = true;
 term:

@@ -144,11 +144,7 @@ static bool _AlarmParameter( HWND hDlg, const ptConfig_Build  *p_c )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static ptConfig_Build* _p_cfg = NULL ;
@@ -166,7 +162,7 @@ dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_InitDialog(   hDlg );
 		_SetParameter( hDlg, _p_cfg );
 		_bInit = true;
-	
+
 		break;
 
 	case WM_CLOSE:
@@ -199,9 +195,7 @@ dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-

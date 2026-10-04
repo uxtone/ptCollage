@@ -9,7 +9,7 @@
 
 #include <pxFile2.h>
 
-#include "./Menu_HistoryW.h"
+#include "./Menu_History.h"
 
 static UINT    _idm_dummy   =    0;
 static int32_t _max_history =    0;
@@ -33,7 +33,7 @@ static const TCHAR* _file_name = _T("path.history");
 static const TCHAR* _dir_name  = _T("path_history");
 
 
-bool Menu_HistoryW_init( HMENU hMenu, int32_t max_history, const UINT* idms, uint32_t idm_dummy, const pxFile2* file_profile )
+bool Menu_History_init( HMENU hMenu, int32_t max_history, const UINT* idms, uint32_t idm_dummy, const pxFile2* file_profile )
 {
 	dlog_c( "pxhis: set menu" );
 
@@ -53,7 +53,7 @@ bool Menu_HistoryW_init( HMENU hMenu, int32_t max_history, const UINT* idms, uin
 	return true;
 }
 
-void Menu_HistoryW_Release()
+void Menu_History_Release()
 {
 	dlog_c( "pxhis: release" );
 	_hMenu = NULL;
@@ -68,12 +68,12 @@ static void _ClearHistory()
 
 	for( int32_t i = 0; i < _max_history; i++ )
 	{
-		if( !i ) ModifyMenuW( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, L"=" );
+		if( !i ) ModifyMenu ( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, _T("=") );
 		else     DeleteMenu ( _hMenu, 1, MF_BYPOSITION );
 	}
 }
 
-bool Menu_HistoryW_Load()
+bool Menu_History_Load()
 {
 	dlog_c( "pxhis: load" );
 
@@ -83,7 +83,7 @@ bool Menu_HistoryW_Load()
 	pxCSV2      csv;
 	int32_t     row =    0;
 	const char* p_v = NULL;
-	pxTText     tt; 
+	pxTText     tt;
 
 	pxDescriptor* desc = NULL;
 
@@ -92,7 +92,6 @@ bool Menu_HistoryW_Load()
 	if( !_ref_file_profile->open_r( &desc, _dir_name, _file_name, NULL ) ) goto term;
 	if( !csv.read( desc, _b_UTF8 )   ) goto term;
 	SAFE_DELETE( desc );
-
 	if( !csv.get_value( &p_v, 0, 0 ) ) goto term;
 	if( strcmp( p_v, _code ) ) goto term;
 
@@ -102,21 +101,19 @@ bool Menu_HistoryW_Load()
 		if( !csv.get_value( &p_v, row, 0 ) ) break;
 		if( !p_v[0] ) break;
 		if( !tt.set_UTF8_to_t( p_v ) ) goto term;
-		if( !i ) ModifyMenuW( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _p_idms[ i ], tt.tchr() );
-		else     AppendMenuW( _hMenu,                  MFT_STRING, _p_idms[ i ], tt.tchr() );
+		if( !i ) ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _p_idms[ i ], tt.tchr() );
+		else     AppendMenu( _hMenu,                  MFT_STRING, _p_idms[ i ], tt.tchr() );
 	}
 
 	b_ret = true;
 term:
-
 	SAFE_DELETE( desc );
-
 	if( !b_ret ) _ClearHistory();
 
 	return b_ret;
 }
 
-bool Menu_HistoryW_Save()
+bool Menu_History_Save()
 {
 	bool    b_ret = false;
 	char*   p_dst = NULL;
@@ -128,14 +125,19 @@ bool Menu_HistoryW_Save()
 
 	if( !_ref_file_profile->open_w( &desc, _dir_name, _file_name, NULL ) ) goto term;
 
-	if( !desc->w_arg_asfile( "%s\r\n", _code ) ) goto term; 
+	if( !desc->w_arg_asfile( "%s\r\n", _code ) ) goto term;
 
 	for( int32_t i = 0; i < _max_history; i++ )
 	{
-		wchar_t path[ MAX_PATH ] = {0};
-		if( !GetMenuStringW( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) ) break;
+		TCHAR path[ MAX_PATH ] = {0};
+		if( !GetMenuString( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) ) break;
 		pxMem_free( (void**)&p_dst );
-		if( !pxwUTF8_wide_to_utf8( path, &p_dst, NULL ) ) goto term;
+		#ifdef UNICODE
+		    if( !pxwUTF8_wide_to_utf8( path, &p_dst, NULL ) ) goto term;
+		#else
+			if( !pxwUTF8_sjis_to_utf8( path, &p_dst, NULL ) ) goto term;
+		#endif
+
 		if( !desc->w_arg_asfile( "%s\r\n", p_dst ) ) goto term;
 	}
 
@@ -148,26 +150,26 @@ term:
 }
 
 // ヒストリーを追加
-void Menu_HistoryW_Add( const wchar_t* path_new )
+void Menu_History_Add( const TCHAR* path_new )
 {
-	wchar_t path[ MAX_PATH ];
+	TCHAR path[ MAX_PATH ];
 	int32_t i;
 
 	dlog_c( "pxhis: add" );
 
 
 	if( !_hMenu ) return;
-	if( !wcslen( path_new ) ) return;
+	if( !lstrlen( path_new ) ) return;
 
 	// 一番上に挿入
-	InsertMenuW( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _idm_dummy, path_new );
+	InsertMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _idm_dummy, path_new );
 
 	for( i = _max_history + 1; i > 0 ; i-- )
 	{
-		if( GetMenuStringW( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) )
+		if( GetMenuString( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) )
 		{
 			// 同じパスもしくは "=" なら削除
-			if( !_wcsicmp( path, path_new ) || !_wcsicmp( path, L"=" ) )
+			if( !lstrcmpi( path, path_new ) || !lstrcmpi( path, _T("=") ) )
 			{
 				DeleteMenu( _hMenu, i, MF_BYPOSITION );
 			}
@@ -194,14 +196,14 @@ void Menu_HistoryW_Add( const wchar_t* path_new )
 }
 
 // ヒストリーを削除
-void Menu_HistoryW_Delete( UINT idm )
+void Menu_History_Delete( UINT idm )
 {
 	int32_t i = 0;
 
 	dlog_c( "pxhis: delete" );
 
 	if( !_hMenu ) return;
-	
+
 	for( i = 0; i < _max_history; i++ )
 	{
 		if( _p_idms[ i ] == idm ) break;
@@ -210,7 +212,7 @@ void Menu_HistoryW_Delete( UINT idm )
 
 	if( GetMenuItemID( _hMenu, 1 ) == -1 )
 	{
-		ModifyMenuW( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, L"=" );
+		ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, _T("=") );
 		return;
 	}
 	DeleteMenu( _hMenu, i, MF_BYPOSITION );
@@ -230,11 +232,11 @@ void Menu_HistoryW_Delete( UINT idm )
 	}
 }
 
-bool Menu_HistoryW_GetPath( UINT idm, wchar_t* path )
+bool Menu_History_GetPath( UINT idm, TCHAR* path )
 {
 	dlog_c( "pxhis: get path" );
 
 	if( !_hMenu ) return false;
 
-	return GetMenuStringW( _hMenu, idm, path, MAX_PATH, MF_BYCOMMAND ) ? true : false;	
+	return GetMenuString( _hMenu, idm, path, MAX_PATH, MF_BYCOMMAND ) ? true : false;
 }

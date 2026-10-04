@@ -9,11 +9,7 @@ extern pxtnService *g_pxtn;
 #include "../resource.h"
 
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Property( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 {
 
@@ -55,7 +51,7 @@ dlg_Property( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		}
 
 		default:return false;
-	
+
 	}
 	return true;
 }

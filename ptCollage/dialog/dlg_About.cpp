@@ -12,11 +12,7 @@ TCHAR*  gStrVersion = _T("version.%d.%d.%d.%d - %04d/%02d/%02d");
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 void    GetCompileDate   ( int32_t *year, int32_t *month, int32_t *day     );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 	dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
@@ -58,7 +54,7 @@ BOOL CALLBACK
 		}
 
 		default:return false;
-	
+
 	}
 	return true;
 }

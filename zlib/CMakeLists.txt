@@ -26,3 +26,11 @@ add_bundled_library(${PROJECT_NAME} SHARED "${LIBRARY_SOURCES}" "${CMAKE_CURRENT
 # ---------------
 
 add_library(pxtone::zlib ALIAS ${PROJECT_NAME})
+
+if(WINELIB)
+    # gz* file I/O assumes the MSVC runtime on _WIN32; libpng doesn't use it
+    get_target_property(_zsrc pxtone-zlib SOURCES)
+    list(FILTER _zsrc EXCLUDE REGEX "gz[a-z]+\\.c$")
+    set_target_properties(pxtone-zlib PROPERTIES SOURCES "${_zsrc}")
+    target_compile_definitions(pxtone-zlib PRIVATE Z_SOLO)
+endif()

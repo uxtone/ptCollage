@@ -177,9 +177,9 @@ add_pxtone_executable(${PROJECT_NAME} "${PROJECT_SOURCES};${PROJECT_HEADERS}"
     pxtone::generic
     pxtone::windows
     pxtone::works
+    pxtone::works2
     pxtone::xa2
     pxtone::config
     pxtone::tool
     ${PNG_LIBRARIES}
 )
-

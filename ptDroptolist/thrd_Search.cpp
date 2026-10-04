@@ -12,7 +12,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            dummy;
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
-	UINT             vSize; 
+	UINT             vSize;
 	TCHAR            path[ MAX_PATH ];
 
 	int32_t v[ 4 ] = {0};
@@ -24,10 +24,10 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 
 	GetModuleFileName( NULL, path, MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy ); 
+	size = GetFileVersionInfoSize( path, &dummy );
 	if( !size ) goto End;
 
-	p = malloc( size ); 
+	p = malloc( size );
 	if( !p                                                    ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )               ) goto End;
 	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
@@ -71,7 +71,7 @@ static bool _FindProjectFiles( const TCHAR* dir_start, TCHAR *dir_ext, vector <_
 	if( _tcslen( dir_ext ) ) _stprintf_s( path, MAX_PATH, _T("%s%s\\*"), dir_start, dir_ext );
 	else                     _stprintf_s( path, MAX_PATH, _T("%s\\*"  ), dir_start          );
 
-	hFind = FindFirstFile( path, &wfd ); 
+	hFind = FindFirstFile( path, &wfd );
 	while( hFind != INVALID_HANDLE_VALUE )
 	{
 		// 中止
@@ -120,7 +120,7 @@ bool pxtnService::PttuneToPtcop()
 	int32_t beat_clock = master->get_beat_clock();
 	if( beat_clock != EVENTDEFAULT_BEATCLOCK )
 	{
-		int32_t rate = EVENTDEFAULT_BEATCLOCK / beat_clock;	
+		int32_t rate = EVENTDEFAULT_BEATCLOCK / beat_clock;
 		master->set_beat_clock( EVENTDEFAULT_BEATCLOCK );
 		evels ->BeatClockOperation( rate );
 	}
@@ -170,7 +170,7 @@ DWORD CALLBACK thrd_Search( LPVOID l )
 	static vector <_PROJECTSTRUCT> vProject;
 	int32_t  ok_num    = 0;
 	int32_t  found_num = 0;
-	
+
 	TCHAR dir_src[ MAX_PATH ] = {0};
 	TCHAR dir_dst[ MAX_PATH ] = {0};
 	TCHAR dir_ext[ MAX_PATH ] = {0};
@@ -211,7 +211,7 @@ DWORD CALLBACK thrd_Search( LPVOID l )
 		}
 	}
 
-	
+
 End:
 
 	if( fp_csv ) fclose( fp_csv ); fp_csv = NULL;
@@ -244,9 +244,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 

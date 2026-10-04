@@ -55,11 +55,7 @@ term:
 	return b_ret;
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Comment( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
@@ -90,7 +86,7 @@ dlg_Comment( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 		default:return false;
-	
+
 	}
 	return true;
 }

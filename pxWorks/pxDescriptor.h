@@ -21,7 +21,7 @@ private:
 
 	void operator = (const pxDescriptor& src){}
 	pxDescriptor    (const pxDescriptor& src){}
-	
+
 	void*   _p_desc;
 	bool    _b_file;
 	bool    _b_read;
@@ -33,7 +33,7 @@ private:
 	bool _init_heep_str();
 
 public:
-	
+
 	 pxDescriptor();
 	~pxDescriptor();
 
@@ -48,7 +48,7 @@ public:
 	bool  get_pos      ( int32_t* p_pos ) const;
 
 	bool  r_code_check ( const void* src, int32_t size );
-					  
+
 	bool  w_asfile     ( const void* p, int size, int num );
 	bool  r            (       void* p, int size, int num );
 	bool  w_text_asfile( const char* text );

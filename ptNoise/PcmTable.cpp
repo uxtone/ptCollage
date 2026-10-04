@@ -36,9 +36,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -62,7 +62,7 @@ void PcmTable_Release()
 {
 	_b_init = false;
 	SAFE_DELETE( _woice  );
-	SAFE_DELETE( _scoped ); 
+	SAFE_DELETE( _scoped );
 }
 
 // ロード
@@ -190,7 +190,7 @@ bool PcmTable_BuildAndPlay( pxtnPulse_Noise *p_noise, const SAMPLINGQUALITY *p_q
 	if( !( p_pcm = g_noise_bldr->BuildNoise( p_noise, p_quality->ch, p_quality->sps, p_quality->bps ) ) ) return false;
 
 	if( !PcmTable_Woice_GetPcmPointer()->copy_from( p_pcm ) ) return false;
-	
+
 	PcmTable_Woice_Update();
 
 	PostMessage( g_hWnd_Main, WM_PAINT, 0, 0 );

@@ -53,11 +53,7 @@ void if_Panel_Comment_Put()
 #include <pxwAlteration.h>
 extern pxwAlteration* g_alte;
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Comment( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 extern HINSTANCE g_hInst    ;
 extern HWND      g_hWnd_Main;
@@ -76,4 +72,3 @@ bool if_Panel_Comment_HitButton( float cur_x, float cur_y )
 	}
 	return false;
 }
-

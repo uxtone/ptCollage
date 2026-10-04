@@ -116,7 +116,7 @@ bool pxwFilePath_GetShortcutDirectory( const TCHAR* path_lnk, TCHAR* path_dst )
 	if( psl->QueryInterface( IID_IPersistFile,                                            (void**)&ppf ) ) goto End; // ask IPersistFile.
 
 #ifdef UNICODE
-	wcscpy( path_unicode, (const wchar_t*)path_lnk );
+	_tcscpy( path_unicode, path_lnk );
 #else
 	MultiByteToWideChar( CP_ACP, 0, path_lnk, -1, (LPWSTR)path_unicode, MAX_PATH ); 
 #endif

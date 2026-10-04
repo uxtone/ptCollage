@@ -26,6 +26,17 @@ typedef char TCHAR;
 #define pxMOUSEBIT_L 0x01
 #define pxMOUSEBIT_R 0x02
 
+#include <stdio.h>
+
+#ifdef pxSCE
+#define pxFPOS_OFFSET(p) static_cast<int32_t>((p)._Off)
+#elif defined(__GLIBC__)
+#define pxFPOS_OFFSET(p) static_cast<int32_t>((p).__pos)
+#else
+#define pxFPOS_OFFSET(p) static_cast<int32_t>(p)
+#endif
+
+
 enum pxALIGN
 {
 	pxALIGN_Left  ,

@@ -12,11 +12,7 @@ void dlg_Noise_Design_CopyUnit( int32_t from, int32_t to );
 
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Copy( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
@@ -61,13 +57,7 @@ dlg_NoiseDesign_Copy( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

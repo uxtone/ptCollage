@@ -5,7 +5,7 @@ extern pxtnService* g_pxtn;
 #include <pxwPathDialog.h>
 extern pxwPathDialog* g_path_dlg_tune;
 
-#include "../Generic/Menu_HistoryW.h"
+#include "../Generic/Menu_History.h"
 #include "../Generic/Japanese.h"
 
 #include "interface/if_Player.h"
@@ -44,7 +44,7 @@ bool Tune_LoadAndPlay( HWND hwnd, const TCHAR *path )
 
 	if_Player_StartPlay();
 	MainWindow_SetTitle( path );
-	Menu_HistoryW_Add(   path );
+	Menu_History_Add(   path );
 
 	g_path_dlg_tune->set_loaded_path( path );
 	g_path_dlg_tune->save_lasts();

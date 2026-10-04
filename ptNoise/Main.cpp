@@ -10,19 +10,19 @@ static pxFile2* _app_file_data    = NULL;
 static pxFile2* _app_file_profile = NULL;
 #include <pxPath.h>
 
-#include <pxtnPulse_NoiseBuilder.h>	   
+#include <pxtnPulse_NoiseBuilder.h>
 pxtnPulse_NoiseBuilder* g_noise_bldr   = NULL;
-									   
-#include <pxtnService.h>			   
+
+#include <pxtnService.h>
 pxtnService*            g_pxtn         = NULL;
-									   
-#include <pxtonewinXA2.h>			   
+
+#include <pxtonewinXA2.h>
 pxtonewinXA2*           g_strm_xa2     = NULL;
-									   
-#include <pxtonewinWoice.h>			   
+
+#include <pxtonewinWoice.h>
 pxtonewinWoice*         g_strm_woi     = NULL;
-									   
-#include <pxwDx09Draw.h>			   
+
+#include <pxwDx09Draw.h>
 pxwDx09Draw*            g_dxdraw       = NULL;
 
 #include <pxwPathDialog.h>
@@ -46,9 +46,9 @@ static const TCHAR* _app_name_t_en = _T("pxtone Noise"  );
 #include <pxwFilePath.h>
 #include <pxwXAudio2Keep.h>
 
-#include "../Generic/MessageBox.h"        
+#include "../Generic/MessageBox.h"
 #include "../Generic/cls_ExistingWindow.h"
-#include "../Generic/KeyControl.h"        
+#include "../Generic/KeyControl.h"
 #include "../Generic/Japanese.h"
 #include "../Generic/if_Generic.h"
 
@@ -73,34 +73,26 @@ HMENU        g_hMenu_Main   = NULL;
 
 TCHAR         g_dir_module[ MAX_PATH ];
 TCHAR         g_app_name[ 32 ] = {0};
-		   
+
 TCHAR*        g_main_rect_name          = _T("main.rect"           );
 TCHAR*        g_default_material_folder = _T("my_material"         );
 const TCHAR*  g_strm_config_name        = _T("strm.cfg"            );
 
 static TCHAR  *_class_name       = _T("Main");
 static int32_t   _mag            =          1;
-		   
+
 int32_t          g_MinimizeWidth;
 int32_t          g_MinimizeHeight;
 
 
 LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_NoiseDesign_Design(  HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 void dlg_NoiseDesign_init( const pxFile2* file_profile );
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_History( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 
@@ -174,9 +166,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 }
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -188,20 +180,13 @@ static bool _io_pos( void* user, int32_t* p_pos )
 
 LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
-int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR args, int nWinMode )
+#include <pxwEntryPoint.h>
+#include <pxwRuntime.h>
+
+pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 {
-	InitCommonControls();
-	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return 0;
-
-	// for xaudio2_7.dll_unloaded bug.
-	pxwXAudio2Keep_loadlib* xa2_keep = new pxwXAudio2Keep_loadlib();
-#ifdef _DEBUG
-	if( !xa2_keep->invoke( true  ) )
-#else
-	if( !xa2_keep->invoke( false ) )
-#endif
-	{ MessageBox( NULL, _T("keep XAudio2 Error"), _app_name_t_en, MB_OK|MB_ICONERROR ); return -1; }
-
+    pxwRuntime runtime;
+	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
 	static TCHAR *mutex_name   = _T("pxtonenoise"    );
@@ -250,7 +235,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR args, int nWin
 	{
 		DWORD style_flags = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_THICKFRAME|WS_MINIMIZEBOX|WS_CLIPCHILDREN;
 
-		RECT rc = { 0, 0, VIEWDEFAULT_W, VIEWDEFAULT_H };
+		RECT rc = { 0, 0, VIEWDEFAULT_W * pxwDx09Draw_system_mag(), VIEWDEFAULT_H * pxwDx09Draw_system_mag() };
 
 		AdjustWindowRectEx( &rc, style_flags, true, 0 );
 
@@ -350,7 +335,7 @@ int WINAPI wWinMain( HINSTANCE hInst, HINSTANCE hPrevInst, LPWSTR args, int nWin
 
 		{
 			bool b_err = false;
-			if( !g_dxdraw->tex_load( _T("img"), _T("parts.png"), SURF_PARTS ) ) b_err = true; 
+			if( !g_dxdraw->tex_load( _T("img"), _T("parts.png"), SURF_PARTS ) ) b_err = true;
 			if( b_err ){ mbox_c_ERR( NULL, "load img." ); goto term; }
 			if_gen_init( g_dxdraw, SURF_PARTS );
 		}
@@ -403,27 +388,5 @@ term:
 
 	pxDebugLog_release   ();
 
-	SAFE_DELETE( xa2_keep );
-
 	return 1;
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR _lpCmdLine, int nCmdShow) {
-    WCHAR *lpCmdLine = GetCommandLineW();
-    if (__argc == 1) { // avoids GetCommandLineW bug that does not always quote the program name if no arguments
-        do { ++lpCmdLine; } while (*lpCmdLine);
-    } else {
-        BOOL quoted = lpCmdLine[0] == L'"';
-        ++lpCmdLine; // skips the " or the first letter (all paths are at least 1 letter)
-        while (*lpCmdLine) {
-            if (quoted && lpCmdLine[0] == L'"') { quoted = FALSE; } // found end quote
-            else if (!quoted && lpCmdLine[0] == L' ') {
-                // found an unquoted space, now skip all spaces
-                do { ++lpCmdLine; } while (lpCmdLine[0] == L' ');
-                break;
-            }
-            ++lpCmdLine;
-        }
-    }
-    return wWinMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 }

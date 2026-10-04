@@ -25,9 +25,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -110,7 +110,7 @@ void pxtonewinXA2::_Voice_ToNextSample()
 			{
 				p_vi = &p_tone->voinsts [ v ];
 				p_vt = &p_tone->voitones[ v ];
-			
+
 				if( p_vt->life_count >= 0 )
 				{
 					p_vt->smp_pos += p_tone->freq_rate * p_vt->offset_freq * _vc_sample_skip;
@@ -204,7 +204,7 @@ void pxtonewinXA2::_Voice_MakeSample( void* p_buf )
 		}// t
 
 	}
-		
+
 	// time pan
 	for( int32_t ch = 0; ch < _dst_ch_num; ch++ )
 	{
@@ -303,7 +303,7 @@ bool pxtonewinXA2::_voice_set_new( const pxtnxaVOICE_ORDER* po )
 		p_vi             = &p_tone->voinsts         [ v ];
 		p_vi_src         = odr.p_woice->get_instance( v );
 		p_tv_src         = odr.p_woice->get_voice   ( v );
-					   
+
 		p_vt->life_count = 1;
 		p_vt->smp_pos    = 0;
 		p_vt->smp_count  = 0;
@@ -358,7 +358,7 @@ void pxtonewinXA2::_voice_sampling( LPVOID p1, int32_t size1 )
 				_log( _T("vc odr new %d proc\n"), po->play_id );
 				_voice_set_new( po );
 				break;
-	
+
 			case pxtnxaVOICE_ORDER_freq    :
 
 				_log( _T("vc odr freq %d proc\n"), po->play_id );
@@ -604,6 +604,3 @@ bool pxtonewinXA2::Voice_order_MasterVolume( float vol )
 	_vc_mtx->unlock();
 	return b_ret;
 }
-
-
-

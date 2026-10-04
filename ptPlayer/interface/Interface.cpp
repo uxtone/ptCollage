@@ -24,8 +24,8 @@ static void _GetMousePointer( HWND hWnd, float *px, float *py )
 	POINT pt;
 	GetCursorPos  (       &pt );
 	ScreenToClient( hWnd, &pt );	
-	*px = (float)pt.x;
-	*py = (float)pt.y;
+	*px = (float)pt.x / g_dxdraw->get_screen_mag();
+	*py = (float)pt.y / g_dxdraw->get_screen_mag();
 }
 
 static int32_t _CountFramePerSecond()
@@ -68,8 +68,8 @@ void Interface_Process( HWND hWnd, bool bDraw )
 		RECT rc; GetClientRect( hWnd, &rc );
 		rc_view.l = (float)rc.left;
 		rc_view.t = (float)rc.top;
-		rc_view.r = (float)rc.right;
-		rc_view.b = (float)rc.bottom;
+		rc_view.r = (float)rc.right / g_dxdraw->get_screen_mag();
+		rc_view.b = (float)rc.bottom / g_dxdraw->get_screen_mag();
 	}
 	g_dxdraw->SetViewport( rc_view.l, rc_view.t, rc_view.r, rc_view.b, 0, 0 );
  

@@ -194,12 +194,7 @@ static bool _Stop()
 	return true;
 }
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
-dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
+INT_PTR CALLBACK dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static BUILDPROGRESSSTRUCT _build;
 
@@ -257,7 +252,7 @@ dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 		default:return false;
-	
+
 	}
 	return true;
 }

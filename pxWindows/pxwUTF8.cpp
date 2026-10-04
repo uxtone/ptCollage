@@ -1,6 +1,15 @@
 
 #include <pxMem.h>
 
+// "sjis" here is the pxtone file encoding. UNICODE builds only pass real Shift-JIS
+// through these, so don't depend on the system code page. ANSI builds also pass their
+// own TCHAR text through, which is in the system code page.
+#ifdef UNICODE
+#define _CP_SJIS 932
+#else
+#define _CP_SJIS CP_ACP
+#endif
+
 bool pxwUTF8_sjis_to_utf8( const char* p_src, char** pp_dst, int32_t* p_dst_size )
 {
 	bool     b_ret     = false;
@@ -14,9 +23,9 @@ bool pxwUTF8_sjis_to_utf8( const char* p_src, char** pp_dst, int32_t* p_dst_size
 	*pp_dst = NULL;
 
 	// to UTF-16
-	if( !(num_wide = ::MultiByteToWideChar( CP_ACP, 0, p_src, -1, NULL, 0 ) )                ) goto term; 
+	if( !(num_wide = ::MultiByteToWideChar( _CP_SJIS, 0, p_src, -1, NULL, 0 ) )                ) goto term; 
 	if( !pxMem_zero_alloc( (void**)&p_wide, num_wide * sizeof(wchar_t) )                     ) goto term;
-	if( !MultiByteToWideChar( CP_ACP, 0, p_src, -1, p_wide, num_wide )                       ) goto term;
+	if( !MultiByteToWideChar( _CP_SJIS, 0, p_src, -1, p_wide, num_wide )                       ) goto term;
 
 	// to UTF-8
  	if( !(size_utf8 = ::WideCharToMultiByte( CP_UTF8, 0, p_wide, -1, NULL, 0, NULL, NULL ) ) ) goto term;
@@ -45,9 +54,9 @@ bool pxwUTF8_sjis_to_wide( const char*    p_src, wchar_t** pp_dst, int32_t* p_ds
 	*pp_dst = NULL;
 
 	// to UTF-16
-	if( !(num_wide = ::MultiByteToWideChar( CP_ACP, 0, p_src, -1, NULL, 0 ) ) ) goto term; 
+	if( !(num_wide = ::MultiByteToWideChar( _CP_SJIS, 0, p_src, -1, NULL, 0 ) ) ) goto term; 
 	if( !pxMem_zero_alloc( (void**)&p_wide, num_wide * sizeof(wchar_t) )      ) goto term;
-	if( !MultiByteToWideChar( CP_ACP, 0, p_src, -1, p_wide, num_wide )        ) goto term;
+	if( !MultiByteToWideChar( _CP_SJIS, 0, p_src, -1, p_wide, num_wide )        ) goto term;
 
 	if( p_dst_num ) *p_dst_num = num_wide - 1; // remove last ' '
 	*pp_dst = p_wide;
@@ -123,9 +132,9 @@ bool pxwUTF8_utf8_to_sjis( const char* p_src, char** pp_dst, int32_t* p_dst_size
 	if( !MultiByteToWideChar( CP_UTF8, 0, p_src, -1, p_wide, num_wide )                      ) goto term;
  
 	// UTF16 to Shift-JIS
-	if( !( size_sjis = ::WideCharToMultiByte( CP_ACP, 0, p_wide, -1, NULL, 0, NULL, NULL ) ) ) goto term;
+	if( !( size_sjis = ::WideCharToMultiByte( _CP_SJIS, 0, p_wide, -1, NULL, 0, NULL, NULL ) ) ) goto term;
 	if( !pxMem_zero_alloc( (void**)&p_sjis, size_sjis )                                      ) goto term;
-	if( !WideCharToMultiByte( CP_ACP, 0, p_wide, -1, p_sjis, size_sjis, NULL, NULL )         ) goto term;
+	if( !WideCharToMultiByte( _CP_SJIS, 0, p_wide, -1, p_sjis, size_sjis, NULL, NULL )         ) goto term;
   
 	if( p_dst_size ) *p_dst_size = size_sjis - 1; // remove last ' '
 	*pp_dst = p_sjis;
@@ -174,9 +183,9 @@ bool pxwUTF8_wide_to_sjis( const wchar_t* p_src, char** pp_dst, int32_t* p_dst_s
 	*pp_dst = NULL;
  
 	// UTF16 to Shift-JIS
-	if( !( size_sjis = ::WideCharToMultiByte( CP_ACP, 0, p_src, -1, NULL, 0, NULL, NULL ) ) ) goto term;
+	if( !( size_sjis = ::WideCharToMultiByte( _CP_SJIS, 0, p_src, -1, NULL, 0, NULL, NULL ) ) ) goto term;
 	if( !pxMem_zero_alloc( (void**)&p_sjis, size_sjis )                                     ) goto term;
-	if( !WideCharToMultiByte( CP_ACP, 0, p_src, -1, p_sjis, size_sjis, NULL, NULL )         ) goto term;
+	if( !WideCharToMultiByte( _CP_SJIS, 0, p_src, -1, p_sjis, size_sjis, NULL, NULL )         ) goto term;
   
 	if( p_dst_size ) *p_dst_size = size_sjis - 1; // remove last ' '
 	*pp_dst = p_sjis;

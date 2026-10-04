@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pxStr.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxError.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxMem.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxPlayPCM.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxRiffWav.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxOggVorbis.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxPlaySampler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx\StdAfx.cpp">
+      <Filter>src\StdAfx</Filter>
+    </ClCompile>
+    <ClCompile Include="pxStrT.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxDebugLog.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxDateTime.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxDirectory.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxMutex.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxPath.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxShiftJIS.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxUTF8.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxDescriptor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxCSV2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxLocalize.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxWords.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxPalette.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxSurface.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxSurface_png.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxMouse.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxFile2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="pxTText.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pxStr.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxError.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxMem.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxPlayPCM.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxRiffWav.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxOggVorbis.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxPlaySampler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx\StdAfx.h">
+      <Filter>src\StdAfx</Filter>
+    </ClInclude>
+    <ClInclude Include="pxStrT.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxDebugLog.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxDateTime.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxDirectory.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxMutex.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxPath.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxShiftJIS.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxUTF8.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxDescriptor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxCSV2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxLocalize.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxWords.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxPalette.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxSurface.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxMouse.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxFile2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="pxTText.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{ab3786b1-ebd9-42fb-a9cd-a59b9d9776d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\StdAfx">
+      <UniqueIdentifier>{4ae75b87-7275-4d41-ac2f-4c391690d7cf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

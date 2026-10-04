@@ -34,7 +34,7 @@ bool pxwGlyph1::another_font ( const TCHAR* font_name, int32_t font_h, bool b_bo
 {
 	if( !_b_init ) return false;
 
-	if( _tcslen( font_name ) >= sizeof( _prm.font_name ) ) return false;
+	if( _tcslen( font_name ) >= sizeof( _prm.font_name ) / sizeof(TCHAR) ) return false;
 
 	HFONT font = CreateFont(
 		font_h,  0, 0, 0,        // h, w, t-kakudo, bx-kakudo.

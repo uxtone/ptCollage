@@ -19,13 +19,16 @@ cmake_dependent_option(ENABLE_PXWINDOWS "Include pxWindows in source tree" true 
 
 option(USE_UNICODE "Force Unicode" true)
 option(FORCE_64_BIT "Force 64-bit" false)
-# Low quality option
+
+# Compatibility option for MSYS2
 # option(FORCE_LLVM_RC "Try to force use of LLVM-RC for compiling resources. Requires llvm-rc and LLVM lld in the PATH and manual specification of CMAKE_RC_IMPLICIT_INCLUDE_DIRECTORIES (/[sysroot]/include on MinGW)" false)
 
 option(BUNDLED_VORBIS "Use the included libvorbis" false)
 option(BUNDLED_PNG "Use the included libpng (and zlib)" false)
 
-# option() defaults this to "off" which is problematic; this is ignored on multi-config generators, the output paths will be respected because they can't be observed
+# using set() instead of option() because it defaults this to "off"
+# this is ignored on multi-config generators; the output paths will be respected because they can't be observed
+# TODO: consider using CPack instead and defining build presets
 set(BUNDLE_BUILD_DIR "" CACHE STRING "Copy build into a pxtone-compatible structure at this path, relative to CMAKE_SOURCE_DIR (-S). If not provided, all binaries will stay in the build directory & any folders within as dictated by the generator, and will have to be moved manually.")
 
 # Base configuration
@@ -43,27 +46,35 @@ set(BUNDLE_BUILD_DIR "" CACHE STRING "Copy build into a pxtone-compatible struct
 
 project(pxtone LANGUAGES CXX)
 
-if(${WIN32})
+if(WIN32 OR WINELIB)
+    if(WINELIB)
+      # CMake only compiles resources by default on actual Windows targets
+      enable_language(RC)
+      add_compile_definitions(OV_EXCLUDE_STATIC_CALLBACKS _WCTYPE_T_DEFINED)
+      include_directories(BEFORE "${CMAKE_SOURCE_DIR}/compat/winelib")
+      add_link_options("-mwindows")
+    else()
+      add_compile_options("-Wl,-subsystem,windows")
+    endif()
     add_compile_definitions(WIN_32_LEAN_AND_MEAN pxPLATFORM_windows)
-    add_compile_options("-Wl,-subsystem,windows")
     if(USE_UNICODE)
         # win32 library defs
         add_compile_definitions(UNICODE _UNICODE)
-        if(${MINGW})
+        if(MINGW OR WINELIB)
             # compiler defs
             add_compile_options("-municode")
+            add_link_options("-municode") # wine needs for wwinmain
         endif()
 
-        # runtime defs via. manifest
-        # we need to create a .rc which wraps the .manifest in order for all compilers to understand
-        # executables will automatically source this via. macro
+        # an .rc to wrap the .manifest is required to work with all compilers
+        # the executables will automatically source this via. macro
         set(MANIFEST_RC "${CMAKE_BINARY_DIR}/manifest.rc")
         file(WRITE "${MANIFEST_RC}" "1 24 \"${CMAKE_SOURCE_DIR}/pxCommon/utf8.manifest\"\n")
     endif()
 endif()
 
-if(FORCE_64_BIT OR ("${CMAKE_HOST_SYSTEM_PROCESSOR}" MATCHES "64"))
-    add_compile_definitions(px64BIT)
+if(FORCE_64_BIT OR CMAKE_SIZEOF_VOID_P EQUAL 8)
+  add_compile_definitions(px64BIT)
 endif()
 
 # shared functionality library providing pxStdAfx.h and macros
@@ -71,6 +82,10 @@ add_subdirectory(pxCommon)
 
 # External dependencies
 # ---------------
+
+function(BUNDLED_LIB_ERR)
+  message(FATAL_ERROR "Can't find ${arg1};, install it or enable ${arg2}")
+endfunction()
 
 if(BUNDLED_VORBIS)
     add_subdirectory(vorbis)
@@ -80,7 +95,7 @@ else()
     if(Vorbis_FOUND)
         set(VORBISFILE_LIBRARY Vorbis::vorbisfile)
     else()
-        message(FATAL_ERROR "Could not find system libvorbis. Please specify BUNDLED_VORBIS")
+        BUNDLED_LIB_ERR("libvorbis" "BUNDLED_VORBIS")
     endif()
 endif()
 
@@ -91,9 +106,9 @@ if(BUNDLED_PNG AND ENABLE_PXWINDOWS)
 else()
     find_package(PNG)
     if(PNG_FOUND)
-        set(PNG_LIBRARIES PNG)
+        set(PNG_LIBRARIES PNG::PNG)
     else()
-        message(FATAL_ERROR "Could not find system libpng. Please specify BUNDLED_PNG")
+    BUNDLED_LIB_ERR("libpng" "BUNDLED_PNG")
     endif()
 endif()
 
@@ -110,7 +125,8 @@ if (ENABLE_PXWINDOWS)
     add_subdirectory(pxtoneTool)
     add_subdirectory(pxtonewin)
     add_subdirectory(pxWindows)
-    add_subdirectory(pxWorks)
+    add_subdirectory(pxWorks) # pxtone::works
+    add_subdirectory(uxWorks) # pxtone::works2
     add_subdirectory(pxWrapper)
 endif()
 

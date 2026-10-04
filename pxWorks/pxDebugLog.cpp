@@ -123,14 +123,15 @@ void dlog_t( const char* text1, const TCHAR* text_t )
 			}
 			str_c = str_utf8;
 #else
-			str_c = text_t  ;			
+			str_c = text_t  ;
 #endif
 
 
 			desc->w_arg_asfile( "%02d%02d%02d,%s%s\n", dt.h, dt.m, dt.s, text1, str_c );
 #ifdef pxPLATFORM_windows
 			OutputDebugStringA( text1  );
-			OutputDebugStringW( text_t );
+			//OutputDebugStringW( text_t );
+			OutputDebugString( text_t );
 #endif
 			SAFE_DELETE( desc );
 		}
@@ -196,7 +197,7 @@ _DELETEANDCOUNT;
 bool _delete_func( void *user, const TCHAR *path )
 {
 	_DELETEANDCOUNT *p = (_DELETEANDCOUNT*)user;
-	
+
 	if( _GetPassedDays( pxPath_find_filename( path ) ) >= p->limit_day )
 	{
 		if( pxFile2_delete( path ) ) p->count++;

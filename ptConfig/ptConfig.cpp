@@ -39,11 +39,11 @@ bool ptConfig::save() const
 	SAFE_DELETE( desc ); 
 
 	if( !_ref_app_file_profile->open_w( &desc, _dir_name, _name_font        , NULL ) ) goto term;
-	if( !!font->write( desc ) ) return false;
+	if( !font->write( desc ) ) goto term;
 	SAFE_DELETE( desc ); 
 								           
 	if( !_ref_app_file_profile->open_w( &desc, _dir_name, _name_midi        , NULL ) ) goto term;
-	if( !midi->write( desc ) ) return false;
+	if( !midi->write( desc ) ) goto term;
 	SAFE_DELETE( desc );
 
 	b_ret = true;

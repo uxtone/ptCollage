@@ -52,11 +52,7 @@ static bool _CheckParameter( HWND hDlg, const ptConfig *p_c )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static ptConfig* _p_cfg = NULL;
@@ -72,7 +68,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		Japanese_DialogItem_Change( hDlg );
 		_InitDialog(   hDlg );
 		_SetParameter( hDlg, _p_cfg );
-	
+
 		break;
 
 	//ボタンクリック
@@ -98,9 +94,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-

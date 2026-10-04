@@ -11,6 +11,7 @@ set(PROJECT_SOURCES
     pxwGlyph1.cpp
     pxwMutex.cpp
     pxwPathDialog.cpp
+    pxwRuntime.cpp
     pxwTextOverride.cpp
     pxwThread.cpp
     pxwUTF8.cpp
@@ -27,11 +28,13 @@ set(PROJECT_HEADERS
     pxwDirectory.h
     pxwDlg_SelFile.h
     pxwDx09Draw.h
+    pxwEntryPoint.h
     pxwFile.h
     pxwFilePath.h
     pxwGlyph1.h
     pxwMutex.h
     pxwPathDialog.h
+    pxwRuntime.h
     pxwTextOverride.h
     pxwThread.h
     pxwUTF8.h
@@ -42,22 +45,43 @@ set(PROJECT_HEADERS
     pxwXAudio2Keep.h
 )
 
+set(WINDOWS_LIBS
+  version
+  comctl32
+  dxguid
+  shlwapi
+  winmm
+  imm32
+  d3dx9
+  d3d9
+)
+if(WINELIB)
+  list(APPEND WINDOWS_LIBS
+    ole32
+    uuid
+    xaudio2_8
+  )
+else()
+  list(APPEND WINDOWS_LIBS
+    # Windows' XAudio2 relies on this GUID library that Winelib doesn't ship
+    # Winelib doesn't need it as FAudio (the XAudio2 driver) does not require it
+    ksguid
+  )
+endif()
+
 add_pxtone_library(
     ${PROJECT_NAME}
     STATIC
     "${PROJECT_SOURCES};${PROJECT_HEADERS}"
     pxtone::works
 
-    version.lib
-    comctl32.lib
-    ksguid.lib
-    dxguid.lib
-    shlwapi.lib
-    winmm.lib
-    imm32.lib
-    d3dx9.lib
-    d3d9.lib
+    ${WINDOWS_LIBS}
 )
+
+if(WINELIB)
+  # XAudio2Create resolves against Wine's xaudio2_8 import library
+  target_compile_definitions(${PROJECT_NAME} PRIVATE pxwXAUDIO2_ENABLE)
+endif()
 
 # Export
 # ---------------

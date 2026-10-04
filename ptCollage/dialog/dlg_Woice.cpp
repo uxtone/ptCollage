@@ -129,7 +129,7 @@ static bool _GetParameter( HWND hDlg, int32_t woice_index )
 		if( IsDlgButtonChecked( hDlg, IDC_CHECK_BEATFIT  ) ) p_vc->voice_flags  |=  PTV_VOICEFLAG_BEATFIT ;
 		else                                                 p_vc->voice_flags  &= ~PTV_VOICEFLAG_BEATFIT ;
 	}
-	
+
 	TCHAR str[ 10 ] = {0};
 	GetDlgItemText( hDlg, IDC_TUNING,  str, 10 ); p_vc->tuning = (float)_ttof( str );
 	if( p_vc->tuning <   0 ) p_vc->tuning *=  -1;
@@ -161,11 +161,7 @@ static void _ShiftBasicKey( HWND hDlg, int32_t shift )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_Woice( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static int32_t _index;
@@ -185,7 +181,7 @@ dlg_Woice( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		if( !g_pxtn->Woice_Get( _index ) ){ EndDialog( hDlg, false ); break; }
 		_Initialize( hDlg, _index );
 		_SetParameter( hDlg, _index );
-	
+
 		break;
 
 	//ボタンクリック
@@ -208,13 +204,7 @@ dlg_Woice( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-
-
-
-
-

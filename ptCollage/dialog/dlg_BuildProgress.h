@@ -29,9 +29,5 @@ typedef struct
 }
 BUILDPROGRESSSTRUCT;
 
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_BuildProgress(  HWND hDlg, UINT msg, WPARAM w, LPARAM l );

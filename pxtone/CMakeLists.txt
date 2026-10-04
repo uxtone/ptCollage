@@ -47,8 +47,13 @@ set(PROJECT_HEADERS
     pxtoneNoise.h
 )
 
-# TODO: add config for static pxtone library
-add_pxtone_library(${PROJECT_NAME} SHARED "${PROJECT_SOURCES};${PROJECT_HEADERS}" ${VORBISFILE_LIBRARY})
+# Winelib can't use a shared pxtone: ld.so would load it behind Wine's back
+if(SHARED_PXTONE AND NOT WINELIB)
+    set(PROJECT_SCOPE SHARED)
+else()
+    set(PROJECT_SCOPE STATIC)
+endif()
+add_pxtone_library(${PROJECT_NAME} ${PROJECT_SCOPE} "${PROJECT_SOURCES};${PROJECT_HEADERS}" ${VORBISFILE_LIBRARY})
 
 if(VORBISFILE_LIBRARY)
     target_compile_definitions(${PROJECT_NAME} PRIVATE pxINCLUDE_OGGVORBIS)

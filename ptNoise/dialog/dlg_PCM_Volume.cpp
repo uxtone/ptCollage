@@ -29,11 +29,7 @@ static bool _GetInputParameter( HWND hDlg, float *p_v )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_PCM_Volume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static float* _p_v = NULL;
@@ -48,7 +44,7 @@ dlg_PCM_Volume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		pxwWindowRect_center(       hDlg );
 		Japanese_DialogItem_Change( hDlg );
 		_SetParameter( hDlg, _p_v );
-	
+
 		break;
 
 	//ボタンクリック
@@ -69,9 +65,7 @@ dlg_PCM_Volume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-
-

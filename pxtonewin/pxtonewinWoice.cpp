@@ -30,9 +30,9 @@ static  bool _io_seek( void* user,       int   mode , int32_t size              
 
 static bool _io_pos( void* user, int32_t* p_pos )
 {
-	fpos_t sz = 0;
+	fpos_t sz{};
 	if( fgetpos( (FILE*)user, &sz ) ) return false;
-	*p_pos  = (int32_t)sz;
+	*p_pos  = pxFPOS_OFFSET(sz);
 	return true;
 }
 
@@ -40,7 +40,7 @@ static bool _io_pos( void* user, int32_t* p_pos )
 void pxtonewinWoice::_release()
 {
 	_b_init = false;
- 
+
 	SAFE_DELETE( _woice    );
 	SAFE_DELETE( _freq     );
 	SAFE_DELETE( _ptn_bldr );
@@ -185,7 +185,7 @@ bool pxtonewinWoice::_load_and_play_PTN( const TCHAR* path, bool b_loop, int key
 	pxtnVOICEUNIT* p_vc;
 
 	if( !_woice->Voice_Allocate( 1 ) ) goto term;
-	
+
 	p_vc = _woice->get_voice_variable( 0 );
 	p_vc->type = pxtnVOICE_Noise;
 

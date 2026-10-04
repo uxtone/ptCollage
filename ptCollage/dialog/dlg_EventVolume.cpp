@@ -74,11 +74,11 @@ term:
 /*
 enum enum_EventKind
 {
-	enum_EventKind_Key     
+	enum_EventKind_Key
 	enum_EventKind_Velocity
-	enum_EventKind_TimePan 
-	enum_EventKind_VolPan  
-	enum_EventKind_Volume  
+	enum_EventKind_TimePan
+	enum_EventKind_VolPan
+	enum_EventKind_Volume
 }
 */
 
@@ -110,7 +110,7 @@ static bool _InitDialog( HWND hDlg, enum_EventKind mode )
 	SetDlgItemInt( hDlg, IDC_TRANSPOSE,  0,      true );
 
 	SetDlgItemInt( hDlg, IDC_BEATCLOCK, g_pxtn->master->get_beat_clock() / CLOCK_ROUGH, true );
-	
+
 	return true;
 }
 
@@ -144,11 +144,7 @@ static void _Apply( HWND hDlg, enum_EventKind mode )
 }
 
 //コールバック
-#ifdef px64BIT
-INT_PTR
-#else
-BOOL CALLBACK
-#endif
+INT_PTR CALLBACK
 dlg_EventVolume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static enum_EventKind _mode;
@@ -209,8 +205,7 @@ dlg_EventVolume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	default:return false;
-	
+
 	}
 	return true;
 }
-

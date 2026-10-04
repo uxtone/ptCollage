@@ -101,5 +101,13 @@ MigrationBackup/
 *.Identifier
 *.DS_Store
 
-# Vestigial - also probably not allowed to redistribute
 Release*Required*Win/
+
+# Nix
+.envrc
+.direnv/
+result/
+
+# CMake
+release/
+build/
