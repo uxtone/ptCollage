@@ -48,12 +48,12 @@ Options for building on Windows:
 
 ### Building on Linux
 Options for building on Linux:
-- [Nix](#building-with-nix): since Nix can most easily provide the `winelib`-compatible toolchain currently required, it is the recommended choice for building on Linux. `flake.nix` is provided for [building with NixOS or another Nix-equipped distribution](#building-with-nix).
-- CMake: `CMakeLists.txt` can be used without Nix if the environment has a usable `winelib` toolchain, and you know how to convey that to CMake.[^2] This will be equally preferable to Nix once Wine is no longer a dependency.
+- [Nix](#building-with-nix): since Nix can most easily provide the Winelib-compatible toolchain currently required, it is the recommended choice for building on Linux. `flake.nix` is provided for [building with NixOS or another Nix-equipped distribution](#building-with-nix).
+- CMake: `CMakeLists.txt` can be used without Nix if the environment has a usable Winelib toolchain, and you know how to convey that to CMake.[^2] This will be equally preferable to Nix once Wine is no longer a dependency.
 
 ### Building on macOS
 - [Nix](#building-with-nix): `flake.nix` is provided for [building with nix-darwin](#building-with-nix).[^3]
-- CMake: `CMakeLists.txt` can be used without nix-darwin if the environment has a usable `winelib` toolchain, and you know how to convey that to CMake.[^3]
+- CMake: `CMakeLists.txt` can be used without nix-darwin if the environment has a usable Winelib toolchain, and you know how to convey that to CMake.[^3]
 
 ---
 
@@ -72,9 +72,9 @@ The Visual Studio project files have been kept intact, the resource files have b
   - Open `pxtoneProjectT.sln` and rely on the original project structure
 
 #### Building with Nix 
-The provided flake installs Wine, exposes it to the development environment, provides a toolchain file that CMake uses to hook itself up to `winelib`, then exposes its location to the development environment. 
+The provided flake installs Wine, exposes it to the development environment, provides a toolchain file that CMake uses to hook itself up to Winelib, then exposes its location to the development environment. 
 
-`libpng` must not be bundled when `winelib` is in use.
+`libpng` must not be bundled when Winelib is in use.
 
 This command builds all tools. 
 `cmake -B build -S . --toolchain "$WINELIB64_TOOLCHAIN" -DBUNDLED_PNG=off -DBUNDLE_BUILD_DIR=release -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`

@@ -106,7 +106,7 @@ Release*Required*Win/
 # Nix
 .envrc
 .direnv/
-result/
+result
 
 # CMake
 release/
