@@ -1,0 +1,6 @@
+[submodule "extern/miniaudio"]
+	path = extern/miniaudio
+	url = https://github.com/mackron/miniaudio
+[submodule "extern/sds"]
+	path = extern/sds
+	url = https://github.com/antirez/sds
