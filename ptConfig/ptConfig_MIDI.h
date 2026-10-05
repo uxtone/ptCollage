@@ -1,4 +1,5 @@
-﻿#define BUFSIZE_MIDIDEVICENAME 100
+﻿#include <pxStdDef.h>
+#define BUFSIZE_MIDIDEVICENAME 100
 
 #include <pxDescriptor.h>
 
@@ -11,7 +12,7 @@ private:
 public:
 
 ptConfig_MIDI();
-TCHAR   name[ BUFSIZE_MIDIDEVICENAME ];
+uxSS<BUFSIZE_MIDIDEVICENAME>    name;
 bool    b_velo    ;
 float   key_tuning;
 

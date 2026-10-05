@@ -11,8 +11,8 @@ bool Menu_History_init( HMENU hMenu, int32_t max_history, const UINT* idms, uint
 void Menu_History_Release   ();
 bool Menu_History_Load      ();
 bool Menu_History_Save      ();
-void Menu_History_Add       ( const TCHAR* path_new );
+void Menu_History_Add       ( const uxDS& path_new );
 void Menu_History_Delete    ( uint32_t idm );
-bool Menu_History_GetPath   ( uint32_t idm, TCHAR* path_dst );
+bool Menu_History_GetPath   ( uint32_t idm, uxDS& path_dst );
 
 #endif

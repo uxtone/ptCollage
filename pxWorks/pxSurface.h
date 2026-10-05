@@ -36,7 +36,7 @@ int32_t    _depth      ;
 
 pxPalette* _palette    ;
 
-TCHAR*      _png_path   ;
+uxDS       _png_path   ;
 
 
 public:
@@ -69,8 +69,8 @@ bool blt_rgba(
 
 const pxPalette* get_palette () const;
 bool             get_size    ( int32_t* p_w, int32_t* p_h   ) const;
-bool             get_png_path( const TCHAR** p_ref_pnt_path ) const;
-bool             set_png_path( const TCHAR*    ref_pnt_path );
+const uxDS&      get_png_path() const { return _png_path; } // a view of the member
+bool             set_png_path( const uxDS& ref_pnt_path );
 
 bool png_read  ( pxDescriptor* desc, int32_t ofs_x, int32_t ofs_y, const pxPalette* p_pal_opt );
 bool png_write ( pxDescriptor* desc ) const;

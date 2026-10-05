@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxError.h"
+#include <uxStr.h>
 #include "./pxMem.h"
 
 #include "./pxPlayPCM.h"
@@ -163,7 +164,7 @@ void* pxPlayPCM::get_data_pointer() const
 
 
 
-bool pxPlayPCM::pcm_load_atonce( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type )
+bool pxPlayPCM::pcm_load_atonce( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type )
 {
 	bool b_ret = false;
 	_fmt_type = pxPLAYPCMFMT_unknown;
@@ -316,7 +317,7 @@ void pxPlayPCM::pcm_release()
 }
 
 
-bool pxPlayPCM::pcm_open( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type )
+bool pxPlayPCM::pcm_open( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type )
 {
 	if( !_b_init ) return false;
 
@@ -324,7 +325,7 @@ bool pxPlayPCM::pcm_open( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type )
 
 	pcm_release();
 
-	if( !(_fp = _tfopen( path, _T("rb") ) ) ) goto term;
+	if( !(_fp = ux_fopen( path, "rb" ) ) ) goto term;
 	if( !_desc->set_file_r( _fp )           ) goto term;
 
 	static int32_t bps;
@@ -405,7 +406,7 @@ bool pxPlayPCM::sq_position_get( int32_t *p_chk, int32_t *p_top, int32_t *p_rpt,
 }
 
 
-bool pxPlayPCM::pcm_save( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type ) const
+bool pxPlayPCM::pcm_save( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type ) const
 {
 	if( !_b_init ) return false;
 

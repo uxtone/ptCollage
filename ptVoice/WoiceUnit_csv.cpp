@@ -1,5 +1,6 @@
 ﻿
 #include <pxCSV2.h>
+#include <uxStr.h>
 
 #include "./ptVoice.h"
 
@@ -38,7 +39,7 @@ static const char* _csv_overtone  = "overtone" ;
 static const char* _csv_envelope  = "envelope" ;
 static const char* _csv_release   = "release"  ;
 
-bool WoiceUnit::csv_attach( const TCHAR* path_csv )
+bool WoiceUnit::csv_attach( const uxDS& path_csv )
 {
 	if( !_b_init ) return false;
 
@@ -55,7 +56,7 @@ bool WoiceUnit::csv_attach( const TCHAR* path_csv )
 	pxDescriptor   desc;
 	pxCSV2         csv ;
 
-	if( !( fp = _tfopen( path_csv, _T("rb") ) ) ) goto term;
+	if( !( fp = ux_fopen( path_csv, "rb" ) ) ) goto term;
 	if( !desc.set_file_r( fp )     ) goto term;
 	if( !csv.read( &desc, true )   ) goto term;
 	if( !csv.get_row_count( &row ) ) goto term;
@@ -225,7 +226,7 @@ bool _csv_output( FILE* fp, int32_t channel, const pxtnVOICEUNIT* pv )
 	return true;
 }
 
-bool WoiceUnit::csv_output( const TCHAR* path_csv ) const
+bool WoiceUnit::csv_output( const uxDS& path_csv ) const
 {
 	bool    b_ret = false;
 	FILE*   fp    = NULL ;
@@ -233,7 +234,7 @@ bool WoiceUnit::csv_output( const TCHAR* path_csv ) const
 
 	const pxtnVOICEUNIT* pv = NULL;
 
-	if( !( fp = _tfopen( path_csv, _T("wt") ) ) ) goto term;
+	if( !( fp = ux_fopen( path_csv, "wt" ) ) ) goto term;
 
 	// head.
 	fprintf( fp, "%s\n", _csv_head );
@@ -261,4 +262,3 @@ term:
 
 	return b_ret;
 }
-

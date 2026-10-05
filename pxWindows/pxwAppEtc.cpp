@@ -1,4 +1,5 @@
-﻿// '15/12/14 pxwAppEtc.cpp
+﻿#include <uxStr.h>
+// '15/12/14 pxwAppEtc.cpp
 
 #pragma comment(lib,"version")
 
@@ -9,9 +10,9 @@ bool pxwAppEtc_DisplaySize( int *pw, int *ph )
 	return true;
 }
 
-void pxwAppEtc_OpenFile( HWND hwnd, const TCHAR* path_src )
+void pxwAppEtc_OpenFile( HWND hwnd, const uxDS& path_src )
 {
-	ShellExecute( hwnd, _T("open"), path_src, NULL, NULL, SW_SHOWNORMAL );
+	ShellExecute( hwnd, uxT( "open" ), uxT( path_src ), NULL, NULL, SW_SHOWNORMAL );
 }
 
 int pxwAppEtc_version( int *p1, int *p2, int *p3, int *p4 )
@@ -21,7 +22,7 @@ int pxwAppEtc_version( int *p1, int *p2, int *p3, int *p4 )
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
 	UINT             vSize;
-	TCHAR            path[ MAX_PATH ] = {0};
+	uxSS<MAX_PATH>            path = {0};
 
 	int  v[ 4 ];
 
@@ -31,15 +32,15 @@ int pxwAppEtc_version( int *p1, int *p2, int *p3, int *p4 )
 	if( p3 ) *p3 = 0;
 	if( p4 ) *p4 = 0;
 
-	GetModuleFileName( NULL, path, MAX_PATH );
+	GetModuleFileName( NULL, uxTOut( path ), MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy );
+	size = GetFileVersionInfoSize( uxT( path ), &dummy );
 	if( !size ) goto End;
 
 	p = malloc( size );
 	if( !p                                                ) goto End;
-	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
-	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
+	if( !GetFileVersionInfo( uxT( path ), 0, size, p )           ) goto End;
+	if( !VerQueryValue( p, uxT( "\\" ), (LPVOID*)&info, &vSize ) ) goto End;
 
 	v[ 0 ] = HIWORD(info->dwFileVersionMS);
 	v[ 1 ] = LOWORD(info->dwFileVersionMS);
@@ -105,7 +106,7 @@ int pxwAppEtc_Local()
 /*	int len = GetLocaleInfo( id, LOCALE_SENGLANGUAGE, NULL, 0 );
 	if( len > 0 && len < 16 )
 	{
-		TCHAR buf[ 16 ];
+		uxSS<16> buf;
 		ZeroMemory( buf, 16 );
 		GetLocaleInfo( id, LOCALE_SENGLANGUAGE, buf, len + 1 );
 		if     ( !strcmp( buf, "Japanese" ) ) ret = 1; // Japanese
@@ -232,26 +233,15 @@ case 1080: //Faeroese
 #include <pxError.h>
 #include "./pxwUTF8.h"
 
-void pxwAppEtc_ErrorMessageBox( HWND hwnd, const TCHAR* g_app_name )
+void pxwAppEtc_ErrorMessageBox( HWND hwnd, const uxDS& g_app_name )
 {
 	if( !pxError_is_error() )
 	{
-		MessageBox( NULL, _T("unknown error."), g_app_name, MB_ICONERROR );
+		MessageBox( NULL, uxT( "unknown error." ), uxT( g_app_name ), MB_ICONERROR );
 	}
 	else
 	{
-		TCHAR* err_txt = NULL;
-#ifdef UNICODE
-		if( !pxwUTF8_utf8_to_wide( pxError_get_message(), &err_txt, NULL ) )
-#else
-		if( !pxwUTF8_utf8_to_sjis( pxError_get_message(), &err_txt, NULL ) )
-#endif
-		{
-			MessageBox( NULL, _T("ERR convert message."), g_app_name, MB_ICONERROR );
-		}
-		else
-		{
-			MessageBox( NULL, err_txt                   , g_app_name, MB_ICONERROR );
-		}
+		// the message is UTF-8 already: no conversion step to fail any more.
+		MessageBox( NULL, uxT( pxError_get_message() ), uxT( g_app_name ), MB_ICONERROR );
 	}
 }

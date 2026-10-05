@@ -15,3 +15,5 @@
 #include <tchar.h>
 
 #endif
+
+#include <pxStdDef.h>

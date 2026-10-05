@@ -1,5 +1,6 @@
 ﻿
 #include <pxwAlteration.h>
+#include <uxStr.h>
 extern pxwAlteration* g_alte  ;
 
 #include "../ptVoice.h"
@@ -32,7 +33,7 @@ static bool _io_pos( void* user, int32_t* p_pos )
 	return true;
 }
 
-bool VoiceFile_Save( const TCHAR *path )
+bool VoiceFile_Save( const uxDS& path )
 {
 	pxtnWoice  slim( _io_read, _io_write, _io_seek, _io_pos );
 	bool       b_ret = false;
@@ -117,7 +118,7 @@ bool VoiceFile_Save( const TCHAR *path )
 	}
 
 	{
-		FILE* fp = _tfopen( path, _T("wb") ); if( !fp ) goto End;
+		FILE* fp = ux_fopen( path, "wb" ); if( !fp ) goto End;
 		if( !slim.PTV_Write( fp, NULL ) ){ fclose( fp ); goto End; }
 		fclose( fp );
 	}
@@ -146,7 +147,7 @@ static bool _convert_sps( pxtnVOICEUNIT* p_vc )
 	return true;
 }
 
-bool VoiceFile_Load( const TCHAR *path )
+bool VoiceFile_Load( const uxDS& path )
 {
 	bool           b_ret = false;
 	FILE*          fp    = NULL;
@@ -159,7 +160,7 @@ bool VoiceFile_Load( const TCHAR *path )
 
 	g_curkey->clear();
 
-	if( !( fp = _tfopen( path, _T("rb") ) ) ) goto End;
+	if( !( fp = ux_fopen( path, "rb" ) ) ) goto End;
 
 	g_vunit->data_reset();
 

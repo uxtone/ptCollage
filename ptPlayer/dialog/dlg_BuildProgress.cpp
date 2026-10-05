@@ -1,5 +1,7 @@
 ﻿
 #include <pxStdDef.h>
+#include <uxStr.h>
+#include <pxPath.h>
 
 #include <pxtnService.h>
 extern pxtnService* g_pxtn;
@@ -13,7 +15,7 @@ extern pxtnService* g_pxtn;
 #include "dlg_BuildProgress.h"
 
 
-extern TCHAR g_app_name_t[];
+extern uxSS<64> g_app_name_t;
 extern HWND  g_hWnd_Main   ;
 
 bool if_Player_Callback_Sampled( void* user, const pxtnService* pxtn );
@@ -53,25 +55,27 @@ static BOOL CALLBACK _LastProc( LPVOID p_param )
 	{
 	// success.
 	case enum_BuildTuneExit_Success:
-		TCHAR *p_name;
-		TCHAR str[ MAX_PATH ];
-		p_name = PathFindFileName( p_build->output_path );
-		if( Japanese_Is() ) _stprintf_s( str, MAX_PATH, _T("ビルド完了 -> %s (%0.3f秒)"      ), p_name, (float)p_build->result_count / 1000 );
-		else                _stprintf_s( str, MAX_PATH, _T("Build Completed -> %s (%0.3fsec)"), p_name, (float)p_build->result_count / 1000 );
+	{
+		uxDS p_name;
+		uxSS<MAX_PATH> str;
+		p_name = pxPath_name( p_build->output_path );
+		if( Japanese_Is() ) ux_sprintf_s( str, MAX_PATH, "ビルド完了 -> %s (%0.3f秒)", *p_name, (float)p_build->result_count / 1000 );
+		else                ux_sprintf_s( str, MAX_PATH, "Build Completed -> %s (%0.3fsec)", *p_name, (float)p_build->result_count / 1000 );
 		Japanese_MessageBox( _hDlg, str, g_app_name_t, MB_OK|MB_ICONINFORMATION );
 		PostMessage( _hDlg, WM_COMMAND, IDOK, 0 );
-		break;
+	}
+	break;
 
 	// error..
 	case enum_BuildTuneExit_Error:
-		Japanese_MessageBox( _hDlg, _T("build"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
-		DeleteFile( p_build->output_path );
+		Japanese_MessageBox( _hDlg, "build", "error", MB_OK|MB_ICONEXCLAMATION );
+		DeleteFile( uxT( p_build->output_path ) );
 		PostMessage( _hDlg, WM_COMMAND, IDOK, 0 );
 		break;
 
 	// cancel.
 	case enum_BuildTuneExit_Stop:
-		DeleteFile( p_build->output_path );
+		DeleteFile( uxT( p_build->output_path ) );
 		PostMessage( _hDlg, WM_COMMAND, IDOK, 0 );
 		break;
 	}
@@ -142,7 +146,7 @@ static DWORD WINAPI _BuildThread( LPVOID lpParam )
 
 	// open output pcm..
 
-	if( !( fp = _tfopen( p_build->output_path, _T("wb") ) ) ) goto term;
+	if( !( fp = ux_fopen( p_build->output_path, "wb" ) ) ) goto term;
 	if( !  desc.set_file_w( fp )                            ) goto term;
 
 	if( !wo.write_header( &desc, ch_num, sps, pxtnBITPERSAMPLE, sample_total ) ) goto term;
@@ -222,32 +226,32 @@ dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_hDlg  = hDlg;
 		_build = *(BUILDPROGRESSSTRUCT *)l;
 
-		if( Japanese_Is() ) SetWindowText( hDlg, _T("ビルド中…") );
-		else                SetWindowText( hDlg, _T("Building..") );
+		if( Japanese_Is() ) SetWindowText( hDlg, uxT( "ビルド中…" ) );
+		else                SetWindowText( hDlg, uxT( "Building.." ) );
 
 		if( !_build_Start( &_build ) )
 		{
-			Japanese_MessageBox( hDlg, _T("build"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( hDlg, "build", "error", MB_OK|MB_ICONEXCLAMATION );
 			EndDialog( hDlg, false );
 			break;
 		}
 
 		{
-			TCHAR str[100];
+			uxSS<100> str;
 			int ch_num, sps;
 
 			g_pxtn->get_destination_quality( &ch_num, &sps );
 
 			if( Japanese_Is() )
 			{
-				if( ch_num == 1 ) _stprintf_s( str, 100, _T("モノラル / %dbit / %dHz"), pxtnBITPERSAMPLE, sps );
-				else              _stprintf_s( str, 100, _T("ステレオ / %dbit / %dHz"), pxtnBITPERSAMPLE, sps );
-				SetDlgItemText( hDlg, IDCANCEL, _T("中止") );
+				if( ch_num == 1 ) ux_sprintf_s( str, 100, "モノラル / %dbit / %dHz", pxtnBITPERSAMPLE, sps );
+				else              ux_sprintf_s( str, 100, "ステレオ / %dbit / %dHz", pxtnBITPERSAMPLE, sps );
+				SetDlgItemText( hDlg, IDCANCEL, uxT( "中止" ) );
 			}else{
-				if( ch_num == 1 ) _stprintf_s( str, 100, _T("mono / %dbit / %dHz"    ), pxtnBITPERSAMPLE, sps );
-				else              _stprintf_s( str, 100, _T("stereo / %dbit / %dHz"  ), pxtnBITPERSAMPLE, sps );
+				if( ch_num == 1 ) ux_sprintf_s( str, 100, "mono / %dbit / %dHz", pxtnBITPERSAMPLE, sps );
+				else              ux_sprintf_s( str, 100, "stereo / %dbit / %dHz", pxtnBITPERSAMPLE, sps );
 			}
-			SetDlgItemText( hDlg, IDC_STATUS, str );
+			SetDlgItemText( hDlg, IDC_STATUS, uxT( str ) );
 		}
 
 		pxwWindowRect_center( hDlg );

@@ -1,5 +1,6 @@
 ﻿
 #include <pxStr.h>
+#include <uxStr.h>
 #include <pxMem.h>
 
 #include "./pxwGlyph1.h"
@@ -30,11 +31,11 @@ void pxwGlyph1::_release()
 	_b_init = false;
 }
 
-bool pxwGlyph1::another_font ( const TCHAR* font_name, int32_t font_h, bool b_bold )
+bool pxwGlyph1::another_font ( const uxDS& font_name, int32_t font_h, bool b_bold )
 {
 	if( !_b_init ) return false;
 
-	if( _tcslen( font_name ) >= sizeof( _prm.font_name ) / sizeof(TCHAR) ) return false;
+	if( font_name.size() >= sizeof( _prm.font_name ) / sizeof(char) ) return false;
 
 	HFONT font = CreateFont(
 		font_h,  0, 0, 0,        // h, w, t-kakudo, bx-kakudo.
@@ -45,11 +46,11 @@ bool pxwGlyph1::another_font ( const TCHAR* font_name, int32_t font_h, bool b_bo
 		CLIP_DEFAULT_PRECIS ,    // clip
 		PROOF_QUALITY       ,    //
 		FF_DONTCARE         ,
-		font_name );
+		uxT( font_name ) );
 	if( !font ) return false;
 
 	DeleteObject( _h_font ); _h_font = font;
-	_tcscpy( _prm.font_name, font_name );
+	strcpy( _prm.font_name, *font_name ); // static buffer: libc
 	_prm.font_h      = font_h;
 	_prm.b_font_bold = b_bold;
 
@@ -72,7 +73,7 @@ bool pxwGlyph1::init( const pxGLYPH_PARAM1 *p_prm, float gen_mag )
 		PROOF_QUALITY       ,    //
 //FIXED_PITCH | FF_MODERN,
 		FF_DONTCARE         ,
-		p_prm->font_name    );
+		uxT( p_prm->font_name ) );
 
 	if( !_h_font ) goto term;
 

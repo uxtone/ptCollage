@@ -74,7 +74,7 @@ static void _UnitTray_RedrawName( int32_t u )
 	g_dxdraw->tex_glyph_text ( surface, p_name, &rc, 1 );
 }
 
-void if_UnitTray_RedrawAllName( const TCHAR* new_font_name )
+void if_UnitTray_RedrawAllName( const uxDS& new_font_name )
 {
 	for( int32_t s = SURF_UNITNAME; s < SURF_UNITNAME+10; s++ )
 	{

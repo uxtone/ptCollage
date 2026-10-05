@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
 extern pxtnService *g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -22,17 +23,17 @@ static void _SetParameter( HWND hDlg, const EFFECTSTRUCT_OVERDRIVE* p_over )
 {
 	SetDlgItemInt( hDlg, IDC_GROUP, p_over->group, true );
 
-	TCHAR str[10];
-	_stprintf_s( str, 10, _T("%0.1f"), p_over->cut ); SetDlgItemText( hDlg, IDC_CUT, str );
-	_stprintf_s( str, 10, _T("%0.1f"), p_over->amp ); SetDlgItemText( hDlg, IDC_AMP, str );
+	uxSS<10> str;
+	ux_sprintf_s( str, 10, "%0.1f", p_over->cut ); SetDlgItemText( hDlg, IDC_CUT, uxT( str ) );
+	ux_sprintf_s( str, 10, "%0.1f", p_over->amp ); SetDlgItemText( hDlg, IDC_AMP, uxT( str ) );
 }
 
 static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_OVERDRIVE* p_over )
 {
-	TCHAR str[10];
+	uxSS<10> str;
 
-	GetDlgItemText( hDlg, IDC_CUT, str, 10 ); p_over->cut = (float)_ttof( str );
-	GetDlgItemText( hDlg, IDC_AMP, str, 10 ); p_over->amp = (float)_ttof( str );
+	GetDlgItemText( hDlg, IDC_CUT, uxTOut( str ), 10 ); p_over->cut = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_AMP, uxTOut( str ), 10 ); p_over->amp = (float)_ttof( uxT( str ) );
 
 	p_over->group = GetDlgItemInt( hDlg, IDC_GROUP, NULL, true );
 
@@ -42,9 +43,9 @@ static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_OVERDRIVE* p_over )
 
 static bool _CheckParameter( HWND hDlg, const EFFECTSTRUCT_OVERDRIVE* p_over )
 {
-	if( p_over->cut > TUNEOVERDRIVE_CUT_MAX || p_over->cut <  TUNEOVERDRIVE_CUT_MIN ){ Japanese_MessageBox( hDlg, _T("Cut"  ), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
-	if( p_over->amp > TUNEOVERDRIVE_AMP_MAX || p_over->amp <  TUNEOVERDRIVE_AMP_MIN ){ Japanese_MessageBox( hDlg, _T("Amp"  ), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
-	if( p_over->group >= g_pxtn->Group_Num()                                        ){ Japanese_MessageBox( hDlg, _T("Group"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_over->cut > TUNEOVERDRIVE_CUT_MAX || p_over->cut <  TUNEOVERDRIVE_CUT_MIN ){ Japanese_MessageBox( hDlg, "Cut", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_over->amp > TUNEOVERDRIVE_AMP_MAX || p_over->amp <  TUNEOVERDRIVE_AMP_MIN ){ Japanese_MessageBox( hDlg, "Amp", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_over->group >= g_pxtn->Group_Num()                                        ){ Japanese_MessageBox( hDlg, "Group", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
 
 	return true;
 }

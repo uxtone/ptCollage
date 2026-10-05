@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
 extern pxtnService* g_pxtn;
 
 #include <pxwPathDialog.h>
@@ -11,15 +12,15 @@ extern pxwPathDialog* g_path_dlg_tune;
 #include "interface/if_Player.h"
 #include "interface/Interface.h"
 
-extern TCHAR g_app_name[];
+extern uxSS<32> g_app_name;
 
 bool         _b_valid_tune = false;
 
-void MainWindow_SetTitle( const TCHAR *path );
+void MainWindow_SetTitle( const uxDS& path );
 bool InquireOperation();
 
 
-bool Tune_LoadAndPlay( HWND hwnd, const TCHAR *path )
+bool Tune_LoadAndPlay( HWND hwnd, const uxDS& path )
 {
 	if( !InquireOperation() ) return false;
 
@@ -34,7 +35,7 @@ bool Tune_LoadAndPlay( HWND hwnd, const TCHAR *path )
 	if_Player_ZeroSampleOffset();
 	MainWindow_SetTitle( NULL );
 
-	FILE* fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+	FILE* fp = ux_fopen( path, "rb" ); if( !fp ) goto term;
 	res = g_pxtn->read( fp );
 	if( res != pxtnOK ) goto term;
 	fclose( fp ); fp = NULL;
@@ -72,7 +73,7 @@ bool Tune_is_valid_data()
 
 bool Tune_SelectAndPlay( HWND hwnd )
 {
-	TCHAR path_get [ MAX_PATH ] = {0};
+	uxDS path_get;
 	if( !g_path_dlg_tune->dialog_load( hwnd, path_get ) ) return false;
 	if( !Tune_LoadAndPlay            ( hwnd, path_get ) ) return false;
 	Interface_Process( hwnd, true );

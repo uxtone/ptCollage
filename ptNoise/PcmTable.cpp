@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnPulse_NoiseBuilder.h>
+#include <uxStr.h>
 extern pxtnPulse_NoiseBuilder* g_noise_bldr;
 
 #include <pxtonewinXA2.h>
@@ -66,12 +67,12 @@ void PcmTable_Release()
 }
 
 // ロード
-bool PcmTable_Wave_Load( const TCHAR *path )
+bool PcmTable_Wave_Load( const uxDS& path )
 {
 	if( !_b_init ) return false;
 
 	bool  b_ret = false;
-	FILE* fp    = _tfopen( path, _T("rb") ); if( !fp ) goto End;
+	FILE* fp    = ux_fopen( path, "rb" ); if( !fp ) goto End;
 
 	if( !_woice->Voice_Allocate( 1 ) ) goto End;
 	_woice->get_voice_variable( 0 )->type = pxtnVOICE_Sampling;
@@ -86,13 +87,13 @@ End:
 }
 
 // セーブ
-bool PcmTable_Wave_Save( const TCHAR *path )
+bool PcmTable_Wave_Save( const uxDS& path )
 {
 	char text[ 64 ] = {0};
 	sprintf( text, "ptNoise v%04d ", GetCompileVersion( 0, 0, 0, 0 ) ); // 文字偶数
 	text[ 0 ] = '\0';
 
-	FILE* fp = _tfopen( path, _T("wb") ); if( !fp ) return false;
+	FILE* fp = ux_fopen( path, "wb" ); if( !fp ) return false;
 	if( !_woice->get_voice( 0 )->p_pcm->write( fp, text ) )
 	{
 		fclose( fp );

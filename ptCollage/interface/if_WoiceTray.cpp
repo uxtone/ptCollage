@@ -84,7 +84,7 @@ void if_WoiceTray_RedrawName( int32_t w )
 	g_dxdraw->tex_glyph_text ( surface, p_name, &rc, 1 );
 }
 
-void if_WoiceTray_RedrawAllName( const TCHAR* new_font_name )
+void if_WoiceTray_RedrawAllName( const uxDS& new_font_name )
 {
 	for( int32_t s = SURF_WOICENAME; s < SURF_WOICENAME+10; s++ )
 	{

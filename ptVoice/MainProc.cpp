@@ -1,6 +1,8 @@
 ﻿
 
 #include <pxwDx09Draw.h>
+#include <uxStr.h>
+#include <pxPath.h>
 extern pxwDx09Draw*    g_dxdraw  ;
 
 #include <pxwAlteration.h>
@@ -58,21 +60,21 @@ extern WoiceUnit* g_vunit;
 
 extern HINSTANCE g_hInst         ;
 extern HWND      g_hWnd_Main     ;
-extern TCHAR     g_app_name  []  ;
-extern TCHAR     g_dir_module[]  ;
-extern TCHAR*    g_main_rect_name;
+extern uxSS<32>     g_app_name  ;
+extern uxSS<MAX_PATH>     g_dir_module  ;
+extern uxDS     g_main_rect_name;
 extern int32_t   g_client_min_w  ;
 extern int32_t   g_client_min_h  ;
 
 static bool      _bInterfaceActive        = false;
 
-static TCHAR*    _default_material_folder = _T("my_material" );
+static uxSS<12>     _default_material_folder = "my_material";
 
 
-static const TCHAR* _title_ptv_save = _T("");
-static const TCHAR* _title_ptv_load = _T("");
-static const TCHAR* _title_txt_save = _T("");
-static const TCHAR* _title_txt_load = _T("");
+static const uxSS<1>  _title_ptv_save = "";
+static const uxSS<1>  _title_ptv_load = "";
+static const uxSS<1>  _title_txt_save = "";
+static const uxSS<1>  _title_txt_load = "";
 
 static const pxFile2* _ref_file_profile = NULL;
 
@@ -91,21 +93,21 @@ dlg_YesNo(     HWND hwnd, UINT msg, WPARAM w, LPARAM l );
 INT_PTR CALLBACK
 dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-void MainWindow_SetTitle( const TCHAR *path )
+void MainWindow_SetTitle( const uxDS& path )
 {
-	TCHAR str[MAX_PATH];
-	TCHAR *p_name;
-	TCHAR *empty = _T("-");
+	uxSS<MAX_PATH> str;
+	uxDS p_name;
+	uxDS empty = "-";
 
 	if( !path || path[0] == '\0' ) p_name = empty;
-	else                           p_name = PathFindFileName( path );
+	else                           p_name = pxPath_name( path );
 
 #ifdef NDEBUG
-	_stprintf_s( str, MAX_PATH, _T("%s [%s]"      ), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s [%s]", g_app_name, *p_name );
 #else
-	_stprintf_s( str, MAX_PATH, _T("%s Debug [%s]"), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s Debug [%s]", g_app_name, *p_name );
 #endif
-	SetWindowText( g_hWnd_Main, str );
+	SetWindowText( g_hWnd_Main, uxT( str ) );
 }
 
 // 最小化
@@ -120,7 +122,7 @@ static void _RestoredWindow()
 	_bInterfaceActive = true ;
 }
 
-static bool _Load_PTVOICE( HWND hwnd, const TCHAR* path )
+static bool _Load_PTVOICE( HWND hwnd, const uxDS& path )
 {
 	g_interface->organkey_reset();
 
@@ -134,13 +136,13 @@ static bool _Load_PTVOICE( HWND hwnd, const TCHAR* path )
 	return true;
 }
 
-static bool _csv_attach( HWND hwnd, const TCHAR* path_src )
+static bool _csv_attach( HWND hwnd, const uxDS& path_src )
 {
 	g_interface->organkey_reset();
 
 	if( !g_vunit->csv_attach( path_src ) )
 	{
-		Japanese_MessageBox( hwnd, _T("read csv."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "read csv.", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -154,27 +156,27 @@ static bool _csv_attach( HWND hwnd, const TCHAR* path_src )
 // ファイルドロップ(ウインドウ)
 static bool _Function_WM_DROPFILES( HWND hwnd, WPARAM wParam )
 {
-	TCHAR path[ MAX_PATH ] = {0};
-	const TCHAR* p_ext     = NULL;
+	uxSS<MAX_PATH> path = {0};
+	const char*  p_ext     = "";
 	HDROP hDrop;
 
 	hDrop = (HDROP)wParam;
 
 	if( DragQueryFile( hDrop, -1, NULL, 0 ) != 0 )
 	{
-		DragQueryFile( hDrop,  0, path, MAX_PATH );
+		DragQueryFile( hDrop,  0, uxTOut( path ), MAX_PATH );
 
-		p_ext = PathFindExtension( path );
+		p_ext = pxPath_ext( path );
 
-		if     ( !_tcscmp( p_ext, _T(".ptvoice") ) )
+		if     ( !strcmp( p_ext, ".ptvoice" ) )
 		{
 			if( _Load_PTVOICE( hwnd, path ) ) g_path_dlg_ptv->set_loaded_path( path );
-			else                              MessageBox( hwnd, _T("ERROR: load ptvoice"), g_app_name, MB_ICONEXCLAMATION );
+			else                              MessageBox( hwnd, uxT( "ERROR: load ptvoice" ), uxT( g_app_name ), MB_ICONEXCLAMATION );
 		}
-		else if( !_tcscmp( p_ext, _T(".txt"    ) ) )
+		else if( !strcmp( p_ext, ".txt" ) )
 		{
 			if( _csv_attach  ( hwnd, path ) ) g_path_dlg_txt->set_loaded_path( path );
-			else                              MessageBox( hwnd, _T("ERROR: load txt"    ), g_app_name, MB_ICONEXCLAMATION );
+			else                              MessageBox( hwnd, uxT( "ERROR: load txt" ), uxT( g_app_name ), MB_ICONEXCLAMATION );
 		}
 	}
 
@@ -202,12 +204,12 @@ static bool _SystemTask()
 
 static void _Function_IDM_INITIALIZE( HWND hwnd )
 {
-	TCHAR str[32] = {0};
+	uxSS<32> str = {0};
 
-	if( Japanese_Is() ) _tcscpy_s( str, 32, _T("初期化します") );
-	else                _tcscpy_s( str, 32, _T("Initialize"  ) );
+	if( Japanese_Is() ) strcpy( str, "初期化します" );
+	else                strcpy( str, "Initialize" );
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), hwnd, dlg_YesNo, (LPARAM)str ) ) return;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_YESNO" ), hwnd, dlg_YesNo, (LPARAM)str ) ) return;
 
 	MainWindow_SetTitle( NULL );
 	g_path_dlg_ptv->last_filename_clear();
@@ -217,7 +219,7 @@ static void _Function_IDM_INITIALIZE( HWND hwnd )
 
 	if( !g_vunit->IDM_INITIALIZE_() )
 	{
-		Japanese_MessageBox( hwnd, _T("initialize voices"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "initialize voices", "error", MB_OK|MB_ICONEXCLAMATION );
 	}
 	g_alte   ->off       ();
 	g_curkey ->clear     ();
@@ -248,19 +250,19 @@ static bool _call_main_proc( HWND hwnd, bool b_draw )
 
 static void _Function_IDN_COPY( HWND hwnd, bool bBA )
 {
-	TCHAR str[32] = {0};
+	uxSS<32> str = {0};
 
 	if( !bBA )
 	{
-		if( Japanese_Is() ) _stprintf_s( str, _T("A を B にコピーします") );
-		else                _stprintf_s( str, _T("Copy A to B"          ) );
+		if( Japanese_Is() ) ux_sprintf_s( str, "A を B にコピーします" );
+		else                ux_sprintf_s( str, "Copy A to B" );
 	}
 	else
 	{
-		if( Japanese_Is() ) _stprintf_s( str, _T("B を A にコピーします") );
-		else                _stprintf_s( str, _T("Copy B to A"          ) );
+		if( Japanese_Is() ) ux_sprintf_s( str, "B を A にコピーします" );
+		else                ux_sprintf_s( str, "Copy B to A" );
 	}
-	if( MessageBox( hwnd, str, g_app_name, MB_OKCANCEL ) == IDOK )
+	if( MessageBox( hwnd, uxT( str ), uxT( g_app_name ), MB_OKCANCEL ) == IDOK )
 	{
 		if( !bBA ) g_vunit->copy_ptv_voice( 0, 1 );
 		else       g_vunit->copy_ptv_voice( 1, 0 );
@@ -273,29 +275,29 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	_cfg.load();
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_CONFIG" ), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
 
 	if( !_cfg.save() )
 	{
-		Japanese_MessageBox( hwnd, _T("Can't Save Config."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "Can't Save Config.", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	if( !g_strm_xa2->stream_finalize( 0.1f, 10, 3 ) )
 	{
-		MessageBox( hwnd, _T("stream stop timeout."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream stop timeout." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	if( !g_vunit->strm_ready() )
 	{
-		Japanese_MessageBox( NULL, _T("ready sample"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( NULL, "ready sample", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	// if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
 	// {
-	// 	MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+	// 	MessageBox( hwnd, "stream start.", "error", MB_OK|MB_ICONEXCLAMATION );
 	// 	return false;
 	// }
 
@@ -308,25 +310,23 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 static bool _Function_IDM_OUTPUT_TEXT( HWND hwnd )
 {
-	TCHAR path_dst[ MAX_PATH ] = {0};
-	TCHAR title   [    32    ] = {0};
-	TCHAR exte    [    32    ] = {0};
+	uxDS path_dst;
+	uxDS exte;
 
-	if( !g_path_dlg_txt->get_last_path( path_dst, MAX_PATH ) &&
-		g_path_dlg_ptv->get_last_path( path_dst, MAX_PATH ) )
+	if( !g_path_dlg_txt->get_last_path( path_dst ) &&
+		g_path_dlg_ptv->get_last_path( path_dst ) )
 	{
-		PathRemoveExtension( path_dst );
-		if( !g_path_dlg_txt->extension_get( exte ) ) _tcscpy( exte, _T("txta") ); // joke.
-		_tcscat( path_dst, exte );
+		pxPath_remove_ext( path_dst );
+		if( !g_path_dlg_txt->extension_get( exte ) ) exte = "txta"; // joke.
+		path_dst += exte;
 	}
 
-	if( !g_path_dlg_txt->dialog_save( hwnd, path_dst, _T("no name") ) ) return false;
+	if( !g_path_dlg_txt->dialog_save( hwnd, path_dst, "no name" ) ) return false;
 
 	if( !g_vunit->csv_output( path_dst ) )
 	{
-		if( Japanese_Is() ) _tcscpy( title, _T("テキストファイルの出力に失敗しました") );
-		else                _tcscpy( title, _T("Error output text-file"              ) );
-		Japanese_MessageBox( hwnd,   title, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		const char* title = Japanese_Is() ? "テキストファイルの出力に失敗しました" : "Error output text-file"; // a static message, not a copy
+		Japanese_MessageBox( hwnd,   title, "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	return true;
@@ -335,16 +335,13 @@ static bool _Function_IDM_OUTPUT_TEXT( HWND hwnd )
 // 音源ファイルを出力
 static bool _Function_IDM_SAVE_PTVOICE( HWND hwnd, bool b_as )
 {
-	TCHAR path_dst[ MAX_PATH ] = {0};
-	TCHAR title   [    32    ] = {0};
-
-	if( !g_path_dlg_ptv->entrust_save_path( hwnd, b_as, path_dst, _T("no name") ) ) return false;
+	uxDS path_dst;
+	if( !g_path_dlg_ptv->entrust_save_path( hwnd, b_as, path_dst, "no name" ) ) return false;
 
 	if( !VoiceFile_Save( path_dst ) )
 	{
-		if( Japanese_Is() ) _tcscpy( title, _T("音源の出力に失敗しました") );
-		else                _tcscpy( title, _T("Export *.ptvoice"        ) );
-		Japanese_MessageBox( hwnd,   title, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		const char* title = Japanese_Is() ? "音源の出力に失敗しました" : "Export *.ptvoice"; // a static message
+		Japanese_MessageBox( hwnd,   title, "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	g_path_dlg_txt->last_filename_clear();
@@ -355,15 +352,15 @@ static bool _Function_IDM_SAVE_PTVOICE( HWND hwnd, bool b_as )
 static bool _Function_IDM_LOAD_PTVOICE( HWND hwnd )
 {
 	bool  b_ret     = false;
-	TCHAR str[ 48 ] = { 0 };
+	uxSS<48> str = { 0 };
 
 	static HEARSELECTDIALOGSTRUCT hear = {0};
 
 	hear.visible_flags = HEARSELECTVISIBLE_PTV;
 
-	if( !g_path_dlg_ptv->get_last_path( hear.path_selected, MAX_PATH ) )
+	if( !g_path_dlg_ptv->get_last_path( hear.path_selected ) )
 	{
-		_stprintf_s( hear.dir_default, _T("%s\\%s"), g_dir_module, _default_material_folder );
+		ux_sprintf_s( hear.dir_default, "%s\\%s", g_dir_module, _default_material_folder );
 	}
 
 	{ int sps; g_strm_xa2->stream_get_quality_safe( NULL, &sps, NULL ); g_strm_woi->set_sps( sps ); }
@@ -373,9 +370,9 @@ static bool _Function_IDM_LOAD_PTVOICE( HWND hwnd )
 
 	if( !_Load_PTVOICE( hwnd, hear.path_selected ) )
 	{
-		if( Japanese_Is() ) _tcscpy( str, _T("音源の読み込みに失敗しました") );
-		else                _tcscpy( str, _T("ERROR: load ptvoice"         ) );
-		Japanese_MessageBox( hwnd, str, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		if( Japanese_Is() ) strcpy( str, "音源の読み込みに失敗しました" );
+		else                strcpy( str, "ERROR: load ptvoice" );
+		Japanese_MessageBox( hwnd, str, "error", MB_OK|MB_ICONEXCLAMATION );
 		goto End;
 	}
 
@@ -476,7 +473,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_SAVE           : _Function_IDM_SAVE_PTVOICE( hwnd, false ); break;
 		case IDM_LOAD_PTVOICE   : _Function_IDM_LOAD_PTVOICE( hwnd        ); break;
 		case IDM_CONFIG         : _Function_IDM_CONFIG      ( hwnd        ); break;
-		case IDM_ABOUT          : DialogBox( g_hInst, _T("DLG_ABOUT"), hwnd, dlg_About   ); break;
+		case IDM_ABOUT          : DialogBox( g_hInst, uxT( "DLG_ABOUT" ), hwnd, dlg_About   ); break;
 		case IDM_VOLUMEDIALOG   : OpenVolumeControl         ( hwnd        ); break;
 		case IDM_COPY_AB        : _Function_IDN_COPY        ( hwnd, false ); break;
 		case IDM_COPY_BA        : _Function_IDN_COPY        ( hwnd, true  ); break;

@@ -1,6 +1,9 @@
 ﻿
 #include "./pxwXAudio2Keep.h"
 
+#include <uxStr.h>
+#include <pxwUTF8.h>
+
 pxwXAudio2Keep_loadlib::pxwXAudio2Keep_loadlib(void)
 	:_h_lib(NULL)
 {
@@ -36,26 +39,19 @@ bool pxwXAudio2Keep_loadlib::invoke( bool b_debug )
 //
 //////////////////////////////////////////////////////////////////////////
 
-typedef std::basic_string<TCHAR, char_traits<TCHAR>, allocator<TCHAR> > tstring;
-
 bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 {
 	// Construct a string representation of the registry key in which the
 	// path to the desired XAudio2 COM DLL should be located.
 
-	tstring subKey;
+	uxDS subKey = "\\CLSID\\";
 	{
 		LPOLESTR szClsid = NULL;
 		StringFromCLSID( clsidXaudio2Dll, &szClsid );
-		subKey += _T("\\CLSID\\");
-		#ifdef UNICODE
-		subKey += szClsid;
-		#else
-		char clsid_a[64];
-		WideCharToMultiByte( CP_ACP, 0, szClsid, -1, clsid_a, sizeof(clsid_a), NULL, NULL );
-		subKey += clsid_a;
-		#endif
-		subKey += _T("\\InProcServer32");
+		char* p_clsid = NULL;
+		if( szClsid && pxwUTF8_wide_to_utf8( (const wchar_t*)szClsid, &p_clsid, NULL ) ) subKey += p_clsid;
+		pxMem_free( (void**)&p_clsid );
+		subKey += "\\InProcServer32";
 		CoTaskMemFree(szClsid);
 	}
 
@@ -65,7 +61,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 
 	HKEY hKey = 0;
 
-	if ( RegOpenKeyEx(HKEY_CLASSES_ROOT, subKey.c_str(), 0, KEY_READ, &hKey) != ERROR_SUCCESS)
+	if ( RegOpenKeyEx(HKEY_CLASSES_ROOT, uxT( subKey ), 0, KEY_READ, &hKey) != ERROR_SUCCESS)
 	{
 		DWORD err = GetLastError();
 	}
@@ -74,7 +70,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 		// Found the registry key. Now read its value: it should be the full
 		// path the the XAudio2 COM DLL.
 
-		TCHAR buf[ MAX_PATH ] = { 0 };
+		TCHAR buf[ MAX_PATH ] = { 0 }; // registry text: OS side, stays TCHAR
 		DWORD bufSize = sizeof(buf);
 
 		if( RegQueryValueEx(hKey, NULL, NULL, NULL, (LPBYTE)buf, &bufSize) != ERROR_SUCCESS )
@@ -84,7 +80,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 		else
 		{
 			b_found   = true;
-			_path_dll = buf ; // Save the path for logging.
+			_path_dll = uxDS_from_t( buf ); // Save the path for logging.
 		}
 
 		RegCloseKey( hKey );
@@ -103,7 +99,7 @@ bool pxwXAudio2Keep_loadlib::_registry_find_dll_path(REFCLSID clsidXaudio2Dll)
 //////////////////////////////////////////////////////////////////////////
 bool pxwXAudio2Keep_loadlib::_explicit_load()
 {
-	_h_lib = LoadLibrary( _path_dll.c_str() );
+	_h_lib = LoadLibrary( uxT( _path_dll ) );
 	if( _h_lib == NULL ) return false;
 	return true;
 }

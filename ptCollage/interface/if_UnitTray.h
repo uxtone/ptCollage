@@ -1,6 +1,6 @@
 ﻿#include <pxStdDef.h>
 
-void   if_UnitTray_RedrawAllName( const TCHAR* new_font_name );
+void   if_UnitTray_RedrawAllName( const uxDS& new_font_name );
 void   if_UnitTray_Put          ();
 void   if_UnitTray_JustScroll   ();
 

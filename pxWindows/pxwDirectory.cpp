@@ -1,35 +1,37 @@
 ﻿// '16/01/29 pxwDirectory.
 
 #include <pxStr.h>
+#include <uxStr.h>
 #include <pxPath.h>
 #include <pxError.h>
 
 #include "./pxwDirectory.h"
 
 
-bool pxwDirectory_find( const TCHAR *path_dir, const TCHAR *ext, bool b_sub_dir, pxfunc_find_path func, void *user )
+bool pxwDirectory_find( const uxDS& path_dir, const uxDS& ext, bool b_sub_dir, pxfunc_find_path func, void *user )
 {
 	bool            b_ret = false;
 	HANDLE          hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA find;
-	TCHAR           path[ MAX_PATH ];
+	uxSS<MAX_PATH>           path;
 
-	_stprintf_s( path, MAX_PATH, _T("%s\\*") , path_dir      );
-	if( ( hFind = FindFirstFile( path, &find ) ) == INVALID_HANDLE_VALUE ) return false;
+	ux_sprintf_s( path, MAX_PATH, "%s\\*" , *path_dir      );
+	if( ( hFind = FindFirstFile( uxT( path ), &find ) ) == INVALID_HANDLE_VALUE ) return false;
 
 	do
 	{
-		if( _tcscmp( find.cFileName, _T(".") ) && _tcscmp( find.cFileName, _T("..") ) )
+		uxDS name = uxDS_from_t( find.cFileName ); // UTF-8
+		if( name != "." && name != ".." )
 		{
-			_stprintf_s( path, MAX_PATH, _T("%s\\%s"), path_dir, find.cFileName );
-			if( PathIsDirectory( path ) )
+			ux_sprintf_s( path, MAX_PATH, "%s\\%s", *path_dir, *name );
+			if( PathIsDirectory( uxT( path ) ) )
 			{
 				if( b_sub_dir && !pxwDirectory_find( path, ext, b_sub_dir, func, user ) ) goto End;
 			}
 			else
 			{
-				const TCHAR* p_ext = pxPath_find_ext( find.cFileName );
-				if( p_ext && !_tcsicmp( ext, p_ext ) )
+				const char* p_ext = pxPath_find_ext( name );
+				if( p_ext && !ux_stricmp( ext, p_ext ) )
 				{
 					if( !func( user, path ) ) goto End;
 				}
@@ -44,27 +46,28 @@ End:
 	return b_ret;
 }
 
-bool pxwDirectory_copy_folders( const TCHAR *path_dst, const TCHAR* path_src )
+bool pxwDirectory_copy_folders( const uxDS& path_dst, const uxDS& path_src )
 {
 	bool            b_ret = false;
 	HANDLE          hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA find;
-	TCHAR           path_s[ MAX_PATH ];
-	TCHAR           path_d[ MAX_PATH ];
+	uxSS<MAX_PATH>           path_s;
+	uxSS<MAX_PATH>           path_d;
 
-	_stprintf_s( path_s, MAX_PATH, _T("%s\\*")   , path_src      );
-	if( ( hFind = FindFirstFile( path_s, &find ) ) == INVALID_HANDLE_VALUE ) return false;
+	ux_sprintf_s( path_s, MAX_PATH, "%s\\*"   , *path_src      );
+	if( ( hFind = FindFirstFile( uxT( path_s ), &find ) ) == INVALID_HANDLE_VALUE ) return false;
 
-	if( !PathIsDirectory( path_dst ) && !CreateDirectory( path_dst, NULL ) ) goto term;
+	if( !PathIsDirectory( uxT( path_dst ) ) && !CreateDirectory( uxT( path_dst ), NULL ) ) goto term;
 
 	do
 	{
-		if( _tcscmp( find.cFileName, _T(".") ) && _tcscmp( find.cFileName, _T("..") ) )
+		uxDS name = uxDS_from_t( find.cFileName ); // UTF-8
+		if( name != "." && name != ".." )
 		{
-			_stprintf_s( path_s, MAX_PATH, _T("%s\\%s"), path_src, find.cFileName );
-			if( PathIsDirectory( path_s ) )
+			ux_sprintf_s( path_s, MAX_PATH, "%s\\%s", *path_src, *name );
+			if( PathIsDirectory( uxT( path_s ) ) )
 			{
-				_stprintf_s( path_d, MAX_PATH, _T("%s\\%s"), path_dst, find.cFileName );
+				ux_sprintf_s( path_d, MAX_PATH, "%s\\%s", *path_dst, *name );
 
 				if( !pxwDirectory_copy_folders( path_d, path_s ) ) goto term;
 			}
@@ -78,38 +81,39 @@ term:
 	return b_ret;
 }
 
-bool pxwDirectory_remove( const TCHAR* dir_path )
+bool pxwDirectory_remove( const uxDS& dir_path )
 {
 	bool            b_ret = false;
 	HANDLE          hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA find;
-	TCHAR           path[ MAX_PATH ];
+	uxSS<MAX_PATH>           path;
 
-	if( !PathIsDirectory( dir_path ) ) return false;
+	if( !PathIsDirectory( uxT( dir_path ) ) ) return false;
 
-	_stprintf_s( path, MAX_PATH, _T("%s\\*"), dir_path );
+	ux_sprintf_s( path, MAX_PATH, "%s\\*", *dir_path );
 
-	if( ( hFind = FindFirstFile( path, &find ) ) != INVALID_HANDLE_VALUE )
+	if( ( hFind = FindFirstFile( uxT( path ), &find ) ) != INVALID_HANDLE_VALUE )
 	{
 		do
 		{
-			if( _tcscmp( find.cFileName, _T(".") ) && _tcscmp( find.cFileName, _T("..") ) )
+			uxDS name = uxDS_from_t( find.cFileName ); // UTF-8
+			if( name != "." && name != ".." )
 			{
-				_stprintf_s( path, MAX_PATH, _T("%s\\%s"), dir_path, find.cFileName );
-				if( PathIsDirectory( path ) )
+				ux_sprintf_s( path, MAX_PATH, "%s\\%s", *dir_path, *name );
+				if( PathIsDirectory( uxT( path ) ) )
 				{
 					if( !pxwDirectory_remove( path ) ){ pxerr_t( "rmv:", path ); goto term; }
 				}
 				else
 				{
-					if( !DeleteFile         ( path ) ){ pxerr_t( "rmv:", path ); goto term; }
+					if( !DeleteFile         ( uxT( path ) ) ){ pxerr_t( "rmv:", path ); goto term; }
 				}
 			}
 		}
 		while( FindNextFile( hFind, &find ) );
 	}
 
-	if( !RemoveDirectory( dir_path ) ){ pxerr_t( "rmv:", dir_path ); goto term; }
+	if( !RemoveDirectory( uxT( dir_path ) ) ){ pxerr_t( "rmv:", dir_path ); goto term; }
 
 	b_ret = true;
 term:
@@ -117,31 +121,31 @@ term:
 	return b_ret;
 }
 
-bool pxwDirectory_create( const TCHAR* dir_path )
+bool pxwDirectory_create( const uxDS& dir_path )
 {
-	if(  PathIsDirectory( dir_path       ) ) return true;
-	if( !CreateDirectory( dir_path, NULL ) ) return false;
+	if(  PathIsDirectory( uxT( dir_path )       ) ) return true;
+	if( !CreateDirectory( uxT( dir_path ), NULL ) ) return false;
 	return true;
 }
 
 
-bool pxwDirectory_rename( const TCHAR *path_orginal, const TCHAR* path_new, bool b_remove_exist )
+bool pxwDirectory_rename( const uxDS& path_orginal, const uxDS& path_new, bool b_remove_exist )
 {
-	if( PathFileExists ( path_new ) )
+	if( PathFileExists ( uxT( path_new ) ) )
 	{
 		if( !b_remove_exist ) return false;
 
-		if( PathIsDirectory( path_new ) )
+		if( PathIsDirectory( uxT( path_new ) ) )
 		{
 			if( !pxwDirectory_remove( path_new ) ) return false;
 		}
 		else
 		{
-			if( !DeleteFile( path_new ) ) return false;
+			if( !DeleteFile( uxT( path_new ) ) ) return false;
 		}
 	}
 
-	if( !MoveFile( path_orginal, path_new ) ) return false;
+	if( !MoveFile( uxT( path_orginal ), uxT( path_new ) ) ) return false;
 
 	return true;
 

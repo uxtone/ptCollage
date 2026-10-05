@@ -1,5 +1,6 @@
 ﻿
 #include <pxStdDef.h>
+#include <uxStr.h>
 
 #include <pxwWindowRect.h>
 
@@ -8,7 +9,7 @@
 #include "../resource.h"
 
 
-TCHAR*  gStrVersion = _T("version.%d.%d.%d.%d - %04d/%02d/%02d");
+uxDS   gStrVersion = "version.%d.%d.%d.%d - %04d/%02d/%02d";
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 void    GetCompileDate   ( int32_t *year, int32_t *month, int32_t *day     );
 
@@ -22,16 +23,16 @@ dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 	case WM_INITDIALOG:
 
 	{
-		TCHAR   str[64] = {0};
+		uxSS<64>    str = {0};
 		int32_t y, m, d;
 		int32_t v1,v2,v3,v4;
 		GetCompileDate( &y, &m, &d );
 		GetCompileVersion( &v1, &v2, &v3, &v4 );
-		_stprintf_s( str, 64, gStrVersion, v1, v2, v3, v4, y, m, d );
-		SetDlgItemText( hDlg, IDC_VERSION, str );
+		ux_sprintf_s( str, 64, *gStrVersion, v1, v2, v3, v4, y, m, d );
+		SetDlgItemText( hDlg, IDC_VERSION, uxT( str ) );
 	}
 
-		SetDlgItemText( hDlg, IDC_MESSAGE, _T("beta test") );
+		SetDlgItemText( hDlg, IDC_MESSAGE, uxT( "beta test" ) );
 
 		pxwWindowRect_center( hDlg );
 		Japanese_DialogItem_Change( hDlg );

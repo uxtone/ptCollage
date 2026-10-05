@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
 
@@ -66,7 +67,7 @@ bool if_Panel_Comment_HitButton( float cur_x, float cur_y )
 	if( cur_x > p_rc->l + _BUTTON_X && cur_x < p_rc->l + _BUTTON_X + _BUTTON_W &&
 		cur_y > p_rc->t + _BUTTON_Y && cur_y < p_rc->t + _BUTTON_Y + _BUTTON_H )
 	{
-		if( DialogBox( g_hInst, _T("DLG_COMMENT"), g_hWnd_Main, dlg_Comment ) ) g_alte->set();
+		if( DialogBox( g_hInst, uxT( "DLG_COMMENT" ), g_hWnd_Main, dlg_Comment ) ) g_alte->set();
 		KeyControl_Clear();
 		return true;
 	}

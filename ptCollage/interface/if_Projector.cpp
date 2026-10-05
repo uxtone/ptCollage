@@ -47,11 +47,11 @@ static _PROJECTORSTRUCT _projector = {0};
 static fRECT            _rcPanel   = {0};
 static fRECT            _rc_view   = {0};
 
-static const TCHAR*     _status_name  = _T("projector.status");
+static const uxSS<17>      _status_name  = "projector.status";
 static const char *     _default_name =    "-PXTONE COLLAGE-" ;
 static const pxFile2*   _ref_file_profile = NULL;
 
-void if_Projector_RedrawName( const TCHAR* new_font_name )
+void if_Projector_RedrawName( const uxDS& new_font_name )
 {
 	const char* p_name    = g_pxtn->text->get_name_buf( NULL );
 

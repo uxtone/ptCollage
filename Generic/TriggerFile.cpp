@@ -1,46 +1,47 @@
-﻿
+﻿#include <uxStr.h>
+
 //#include "FilePath.h"
 //#include <pxwfilepath
 
-extern const TCHAR *_p_temporary_path = NULL;
+uxDS _p_temporary_path;
 
-void TriggerFile_SetTemporaryPath( const TCHAR *path )
+void TriggerFile_SetTemporaryPath( const uxDS& path )
 {
 	_p_temporary_path = path;
 }
 
 // ステータスフォルダにキーファイルを作る
-bool TriggerFile_Make( const TCHAR *name )
+bool TriggerFile_Make( const uxDS& name )
 {
-	TCHAR path[MAX_PATH];
+	uxSS<MAX_PATH> path;
 	FILE *fp;
 
-	_stprintf_s( path, MAX_PATH, _T("%s\\%s"), _p_temporary_path, name );
-	if( !( fp = _tfopen( path, _T("wb") ) ) ) return false;
+	ux_sprintf_s( path, MAX_PATH, "%s\\%s", *_p_temporary_path, *name );
+	if( !( fp = ux_fopen( path, "wb" ) ) ) return false;
 	fclose( fp );
 
 	return true;
 }
 
 // ステータスフォルダにキーファイルを確認する
-bool TriggerFile_Is( const TCHAR *name )
+bool TriggerFile_Is( const uxDS& name )
 {
-	TCHAR path[MAX_PATH];
+	uxSS<MAX_PATH> path;
 	FILE *fp;
 
-	_stprintf_s( path, MAX_PATH, _T("%s\\%s"), _p_temporary_path, name );
-	if( !( fp = _tfopen( path, _T("rb") ) ) ) return false;
+	ux_sprintf_s( path, MAX_PATH, "%s\\%s", *_p_temporary_path, *name );
+	if( !( fp = ux_fopen( path, "rb" ) ) ) return false;
 	fclose( fp );
 
 	return true;
 }
 
 // ステータスフォルダのキーファイルを消す
-void TriggerFile_Delete( const TCHAR *name )
+void TriggerFile_Delete( const uxDS& name )
 {
-	TCHAR path[MAX_PATH];
+	uxSS<MAX_PATH> path;
 
-	_stprintf_s( path, MAX_PATH, _T("%s\\%s"), _p_temporary_path, name );
-	SetFileAttributes( path, FILE_ATTRIBUTE_NORMAL );
-	DeleteFile( path );
+	ux_sprintf_s( path, MAX_PATH, "%s\\%s", *_p_temporary_path, *name );
+	SetFileAttributes( uxT( path ), FILE_ATTRIBUTE_NORMAL );
+	DeleteFile( uxT( path ) );
 }

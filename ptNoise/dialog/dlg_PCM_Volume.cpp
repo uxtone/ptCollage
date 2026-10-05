@@ -1,5 +1,6 @@
 ﻿
 #include <pxwWindowRect.h>
+#include <uxStr.h>
 #include <pxwFile.h>
 
 #include "../../Generic/Japanese.h"
@@ -16,15 +17,15 @@ CONVERTPCM_VOLUME;
 static void _SetParameter( HWND hDlg, float *p_v )
 {
 	{
-		TCHAR str[ 10 ];
-		_stprintf_s( str, 10, _T("%0.2f"), *p_v );
-		SetDlgItemText( hDlg, IDC_VOLUME_RATE, str );
+		uxSS<10> str;
+		ux_sprintf_s( str, 10, "%0.2f", *p_v );
+		SetDlgItemText( hDlg, IDC_VOLUME_RATE, uxT( str ) );
 	}
 }
 
 static bool _GetInputParameter( HWND hDlg, float *p_v )
 {
-	TCHAR str[ 10 ] = {0}; GetDlgItemText( hDlg, IDC_VOLUME_RATE, str, 10 ); *p_v = _ttof( str );
+	uxSS<10> str = {0}; GetDlgItemText( hDlg, IDC_VOLUME_RATE, uxTOut( str ), 10 ); *p_v = _ttof( uxT( str ) );
 	return true;
 }
 

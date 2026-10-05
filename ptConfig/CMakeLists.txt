@@ -23,6 +23,7 @@ add_pxtone_library(
     STATIC
     "${PROJECT_SOURCES};${PROJECT_HEADERS}"
     pxtone::wrapper
+    pxtone::windows
     pxtone::works
 )
 

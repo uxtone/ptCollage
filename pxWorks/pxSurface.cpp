@@ -64,7 +64,7 @@ pxSurface::pxSurface()
 void pxSurface::release_buffer()
 {
 	pxMem_free ( (void**)&_p_buf    );
-	pxStrT_free(         &_png_path );
+	pxStrT_free(         _png_path );
 
 	_w          = 0;
 	_h          = 0;
@@ -185,18 +185,20 @@ bool pxSurface::get_size( int32_t* pw, int32_t* ph ) const
 	return true;
 }
 
-bool pxSurface::get_png_path( const TCHAR** p_ref_png_path ) const
+#if 0 // now inline in pxSurface.h: const uxDS& get_png_path() const
+bool pxSurface::get_png_path( const uxDS * p_ref_png_path ) const
 {
 	if( !_png_path     ) return false;
 	if( p_ref_png_path ) *p_ref_png_path = _png_path;
 	return true;
 }
+#endif
 
 
-bool pxSurface::set_png_path( const TCHAR* ref_png_path )
+bool pxSurface::set_png_path( const uxDS& ref_png_path )
 {
 	if( !ref_png_path ) return false;
-	return pxStrT_copy_allocate( &_png_path, ref_png_path );
+	return pxStrT_copy_allocate( _png_path, ref_png_path );
 }
 
 bool pxSurface::copy_from( const pxSurface* src )
@@ -217,7 +219,7 @@ bool pxSurface::copy_from( const pxSurface* src )
 	if( !pxMem_zero_alloc( (void**)&_p_buf,              _row_size * _h ) ) goto term;
 	memcpy(                         _p_buf, src->_p_buf, _row_size * _h );
 
-	if( src->_png_path && !pxStrT_copy_allocate( &_png_path, src->_png_path ) ) goto term;
+	if( src->_png_path && !pxStrT_copy_allocate( _png_path, src->_png_path ) ) goto term;
 
 	_edit_unique = src->_edit_unique;
 

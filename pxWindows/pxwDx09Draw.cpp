@@ -1,4 +1,5 @@
-﻿#include <pxStdDef.h>
+﻿#include <uxStr.h>
+#include <pxStdDef.h>
 
 #ifdef pxwDX09
 
@@ -23,7 +24,7 @@
 
 #define _BUFSIZE_DRAWFONT (1024 * 10)
 
-static const TCHAR*  _default_font_name = _T("MS UI Gothic");
+static const uxSS<13>   _default_font_name = "MS UI Gothic";
 static const int32_t _default_font_size =                 11;
 
 int32_t pxwDx09Draw::SceneCount() const{ return _scene_count; }
@@ -494,8 +495,8 @@ uint32_t  pxwDx09Draw::tex_create ( int32_t w, int32_t h, uint32_t argb, int t )
 
 	pt->p_tex->UnlockRect( 0 );
 
-	_free( (void**)&pt->p_name );
-	_free( (void**)&pt->p_dir  );
+	pt->p_name = uxDS();
+	pt->p_dir = uxDS();
 
 	pt->color_ARGB   = argb;
 	pt->origin_img_w = w;
@@ -511,7 +512,7 @@ End:
 }
 
 
-bool pxwDx09Draw::d3d_font_init( const TCHAR *font_name, int32_t font_size )
+bool pxwDx09Draw::d3d_font_init( const uxDS& font_name, int32_t font_size )
 {
 	HRESULT hr = D3DXCreateFont(
 		_device,
@@ -524,7 +525,7 @@ bool pxwDx09Draw::d3d_font_init( const TCHAR *font_name, int32_t font_size )
 		OUT_TT_ONLY_PRECIS ,     // 出力精度
 		ANTIALIASED_QUALITY,     // 出力品質
 		FF_DONTCARE,             // フォントピッチとファミリ
-		font_name,               // フォント名
+		uxT( font_name ),               // フォント名
 		&_d3d_font               // フォントポインタ
 		);
 
@@ -550,7 +551,7 @@ bool pxwDx09Draw::tex_glyph_init( int32_t t, const pxGLYPH_PARAM1 *p_prm, int32_
 	return true;
 }
 
-bool pxwDx09Draw::tex_glyph_another_font( int32_t t, const TCHAR* font_name, int32_t font_h, bool b_bold )
+bool pxwDx09Draw::tex_glyph_another_font( int32_t t, const uxDS& font_name, int32_t font_h, bool b_bold )
 {
 	if( !_texs            ) return false;
 	if( t >= _MAX_TEXTURE ) return false;
@@ -688,12 +689,12 @@ bool pxwDx09Draw::tex_glyph_text( int32_t t, const char *txt, const fRECT *p_rc_
 }
 
 
-uint32_t  pxwDx09Draw::tex_load   ( const TCHAR *dir, const TCHAR *name, int32_t tx_idx, float stretch )
+uint32_t  pxwDx09Draw::tex_load   ( const uxDS& dir, const uxDS& name, int32_t tx_idx, float stretch )
 {
 	return tex_load( dir, name, tx_idx, stretch, false );
 }
 
-uint32_t  pxwDx09Draw::tex_load   ( const TCHAR *dir, const TCHAR *name, int32_t tx_idx )
+uint32_t  pxwDx09Draw::tex_load   ( const uxDS& dir, const uxDS& name, int32_t tx_idx )
 {
 	return tex_load( dir, name, tx_idx,       1, false );
 }
@@ -705,7 +706,7 @@ bool pxwDx09Draw::default_palette_set( const pxPalette* p_def_pal )
 	return true;
 }
 
-uint32_t  pxwDx09Draw::tex_load( const TCHAR *dir, const TCHAR *name, int32_t tx_idx, float stretch, bool b_ignore_screen_mag )
+uint32_t  pxwDx09Draw::tex_load( const uxDS& dir, const uxDS& name, int32_t tx_idx, float stretch, bool b_ignore_screen_mag )
 {
 	pxwDx09TEXTURE* pt   = NULL;
 	pxDescriptor*   desc = NULL;
@@ -781,12 +782,12 @@ uint32_t  pxwDx09Draw::tex_load( const TCHAR *dir, const TCHAR *name, int32_t tx
 	}
 
 	{
-		TCHAR* p_name = pt->p_name;
-		TCHAR* p_dir  = pt->p_dir ;
-		if( name && !pxStrT_copy_allocate( &pt->p_name, name ) ) goto term;
-		if( dir  && !pxStrT_copy_allocate( &pt->p_dir , dir  ) ) goto term;
-		pxStrT_free( &p_name );
-		pxStrT_free( &p_dir  );
+		uxDS  p_name = pt->p_name;
+		uxDS  p_dir  = pt->p_dir ;
+		if( name && !pxStrT_copy_allocate( pt->p_name, name ) ) goto term;
+		if( dir  && !pxStrT_copy_allocate( pt->p_dir , dir  ) ) goto term;
+		pxStrT_free( p_name );
+		pxStrT_free( p_dir  );
 	}
 
 	pt->origin_img_w = src_w;
@@ -854,8 +855,8 @@ void pxwDx09Draw::tex_release( int32_t t )
 	if( !pt ) return;
 
 	if( pt->p_tex ) pt->p_tex->Release(); pt->p_tex = NULL;
-	_free( (void**)&pt->p_dir  );
-	_free( (void**)&pt->p_name );
+	pt->p_dir = uxDS();
+	pt->p_name = uxDS();
 
 	if( pt->glph_units ) free( pt->glph_units ); pt->glph_units = NULL;
 	SAFE_DELETE( pt->glph );

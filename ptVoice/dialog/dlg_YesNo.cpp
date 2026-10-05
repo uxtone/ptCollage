@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxwWindowRect.h>
 
 #include "../../Generic/Japanese.h"
@@ -12,7 +13,7 @@ dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 	{
 	case WM_INITDIALOG:
 
-		SetDlgItemText( hWnd, IDC_MESSAGE, (TCHAR *)l );
+		SetDlgItemText( hWnd, IDC_MESSAGE, uxT( (const char*)l ) );
 		pxwWindowRect_center( hWnd );
 		Japanese_DialogItem_Change( hWnd );
 		break;

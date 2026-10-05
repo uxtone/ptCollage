@@ -1,5 +1,6 @@
 ﻿
 #include <stdio.h>
+#include <uxStr.h>
 #include <tchar.h>
 
 #include <pxMem.h>
@@ -33,11 +34,11 @@ static bool _io_pos( void* user, int32_t* p_pos )
 
 
 
-void _log( const TCHAR *fmt, ... )
+void _log( const uxDS& fmt, ... )
 {
-	TCHAR str[ 100 ];
-	va_list ap; va_start( ap, fmt ); _vstprintf_s( str, 100, fmt, ap ); va_end( ap );
-	OutputDebugString( str );
+	uxSS<100> str;
+	va_list ap; va_start( ap, fmt ); ux_vsprintf_s( str, 100, fmt, ap ); va_end( ap );
+	OutputDebugString( uxT( str ) );
 }
 
 bool pxtonewinXA2::_Voice_SetConfig()
@@ -355,13 +356,13 @@ void pxtonewinXA2::_voice_sampling( LPVOID p1, int32_t size1 )
 			case pxtnxaVOICE_ORDER_none    : break;
 
 			case pxtnxaVOICE_ORDER_new     :
-				_log( _T("vc odr new %d proc\n"), po->play_id );
+				_log( "vc odr new %d proc\n", po->play_id );
 				_voice_set_new( po );
 				break;
 
 			case pxtnxaVOICE_ORDER_freq    :
 
-				_log( _T("vc odr freq %d proc\n"), po->play_id );
+				_log( "vc odr freq %d proc\n", po->play_id );
 				for( int t = 0; t < _vc_max_tone; t++ )
 				{
 					if( _vc_tones[ t ].b_act && _vc_tones[ t ].play_id == po->play_id )
@@ -373,7 +374,7 @@ void pxtonewinXA2::_voice_sampling( LPVOID p1, int32_t size1 )
 
 			case pxtnxaVOICE_ORDER_stop    :
 
-				_log( _T("vc odr stop %d proc\n"), po->play_id );
+				_log( "vc odr stop %d proc\n", po->play_id );
 
 				for( int t = 0; t < _vc_max_tone; t++ )
 				{

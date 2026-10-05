@@ -1,7 +1,8 @@
-﻿typedef struct
+﻿#include <pxStdDef.h>
+typedef struct
 {
-	const TCHAR *p_message;
-	const TCHAR *p_title  ;
+	const uxDS p_message;
+	const uxDS p_title  ;
 }
 MESSAGEDIALOGSTRUCT;
 

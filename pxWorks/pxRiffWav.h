@@ -26,7 +26,7 @@ bool    read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p_sps, int3
 int32_t read_sample( pxDescriptor* desc, void *p_dst, int32_t smp_num );
 };
 
-bool pxRiffWav_save( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src );
+bool pxRiffWav_save( const uxDS& path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src );
 
 
 class pxRiffWav_output

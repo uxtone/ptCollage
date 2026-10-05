@@ -1,5 +1,7 @@
 ﻿
 #include <pxtnPulse_Oggv.h>
+#include <uxStr.h>
+#include <pxPath.h>
 
 #include <pxtnService.h>
 extern pxtnService*    g_pxtn    ;
@@ -46,11 +48,11 @@ extern pxwAlteration* g_alte;
 
 #define _BUFNUM_DELETE_WOICE (pxtnMAX_TUNEWOICENAME + 100)
 
-static const TCHAR* _default_material_folder = _T("my_material");
+static const uxSS<12>  _default_material_folder = "my_material";
 
 extern HINSTANCE    g_hInst;
 extern HWND         g_hWnd_Main;
-extern TCHAR        g_dir_module[];
+extern uxSS<MAX_PATH>         g_dir_module;
 
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 bool    InquireOperation();
@@ -73,17 +75,17 @@ void Woice_init( const pxFile2* file_profile )
 
 
 // パス→ユニット名
-static bool _MakeWoiceName( pxtnWoice *p_w, const TCHAR* path )
+static bool _MakeWoiceName( pxtnWoice *p_w, const uxDS& path )
 {
-	TCHAR   name_t   [ MAX_PATH ] = {0};
+	uxSS<MAX_PATH>    name_t = {0};
 	char*   sjis_name = NULL;
 	int32_t sjis_size;
 
-	_tcscpy            ( name_t, PathFindFileName( path ) );
-	PathRemoveExtension( name_t );
+	strcpy            ( name_t, pxPath_name( path ) );
+	pxPath_remove_ext( name_t );
 
 #ifdef UNICODE
-	if( !pxwUTF8_wide_to_sjis( name_t, &sjis_name, &sjis_size ) ) return false;
+	if( !pxwUTF8_wide_to_sjis( uxT( name_t ), &sjis_name, &sjis_size ) ) return false;
 #else
 	if( !pxStr_copy_allocate( &sjis_name, name_t ) ) return false;
 //    if( !( sjis_name = pxStr_copy_allocate( name_t ) ) ) return false;
@@ -130,50 +132,49 @@ bool Woice_Replace( int32_t old_pos, int32_t new_pos )
 	return true;
 }
 
-static const TCHAR *_PathFindExt( const TCHAR *path )
+static const uxDS _PathFindExt( const uxDS& path )
 {
-	int32_t l = (int32_t)_tcslen( path );
-	for( int32_t i = l-1; i >= 0; i-- )
+	for( int32_t i = (int32_t)path.size() - 1; i >= 0; i-- )
 	{
-		if( path[ i ] == '.' ) return &path[ i ];
+		if( ( *path )[ i ] == '.' ){ uxDS ext = path; ext.range( i, -1 ); return ext; } // sdsrange: from the dot to the end
 	}
 	return path;
 }
 
-static pxtnWOICETYPE _CheckFileType_byExt( const TCHAR* path )
+static pxtnWOICETYPE _CheckFileType_byExt( const uxDS& path )
 {
-	if( !_tcsicmp( _PathFindExt( path ), _T(".wav"    ) ) ) return pxtnWOICE_PCM ;
-	if( !_tcsicmp( _PathFindExt( path ), _T(".ptvoice") ) ) return pxtnWOICE_PTV ;
-	if( !_tcsicmp( _PathFindExt( path ), _T(".ptnoise") ) ) return pxtnWOICE_PTN ;
-	if( !_tcsicmp( _PathFindExt( path ), _T(".ogg"    ) ) ) return pxtnWOICE_OGGV;
+	if( !ux_stricmp( _PathFindExt( path ), ".wav" ) ) return pxtnWOICE_PCM ;
+	if( !ux_stricmp( _PathFindExt( path ), ".ptvoice" ) ) return pxtnWOICE_PTV ;
+	if( !ux_stricmp( _PathFindExt( path ), ".ptnoise" ) ) return pxtnWOICE_PTN ;
+	if( !ux_stricmp( _PathFindExt( path ), ".ogg" ) ) return pxtnWOICE_OGGV;
 	return pxtnWOICE_None;
 }
 
-bool Woice_Add( HWND hWnd, const TCHAR* path )
+bool Woice_Add( HWND hWnd, const uxDS& path )
 {
 	int32_t w = g_pxtn->Woice_Num();
-	if( w >= g_pxtn->Woice_Max() ){ Japanese_MessageBox( hWnd, _T("full voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( w >= g_pxtn->Woice_Max() ){ Japanese_MessageBox( hWnd, "full voice", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
 
 	bool           b_ret    = false;
 	pxtnERR        pxtn_err = pxtnERR_VOID;
-	FILE*          fp       = _tfopen( path, _T("rb") );
+	FILE*          fp       = ux_fopen( path, "rb" );
 
 	if( !fp )
 	{
-		Japanese_MessageBox( hWnd, _T("can't open"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false;
+		Japanese_MessageBox( hWnd, "can't open", "error", MB_OK|MB_ICONEXCLAMATION ); return false;
 	}
 
 	if( g_pxtn->Woice_read( w, fp, _CheckFileType_byExt( path ) ) != pxtnOK )
 	{
-		Japanese_MessageBox( hWnd, _T("add voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); goto term;
+		Japanese_MessageBox( hWnd, "add voice", "error", MB_OK|MB_ICONEXCLAMATION ); goto term;
 	}
 
-	if( !_MakeWoiceName( g_pxtn->Woice_Get_variable( w ), path ) ){ Japanese_MessageBox( hWnd, _T("make voice-name" ), _T("error"), MB_OK|MB_ICONEXCLAMATION ); goto term; }
+	if( !_MakeWoiceName( g_pxtn->Woice_Get_variable( w ), path ) ){ Japanese_MessageBox( hWnd, "make voice-name", "error", MB_OK|MB_ICONEXCLAMATION ); goto term; }
 
 	pxtn_err = g_pxtn->Woice_ReadyTone( w );
 	if( pxtn_err != pxtnOK )
 	{
-		Japanese_MessageBox( hWnd, _T("ready voice-work"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); goto term;
+		Japanese_MessageBox( hWnd, "ready voice-work", "error", MB_OK|MB_ICONEXCLAMATION ); goto term;
 	}
 
 	if_WoiceTray_RedrawName( w );
@@ -195,7 +196,7 @@ int32_t Woice_Dialog_Add()
 	int w  = g_pxtn->Woice_Num();
 	if( w >= g_pxtn->Woice_Max() )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("full voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "full voice", "error", MB_OK|MB_ICONEXCLAMATION );
 		return -1;
 	}
 
@@ -209,9 +210,9 @@ int32_t Woice_Dialog_Add()
 
 	hear.b_japanese = Japanese_Is();
 
-	if( !g_path_dlg_add->get_last_path( hear.path_selected, MAX_PATH ) )
+	if( !g_path_dlg_add->get_last_path( hear.path_selected ) )
 	{
-		_stprintf_s( hear.dir_default, MAX_PATH, _T("%s\\%s"), g_dir_module, _default_material_folder );
+		ux_sprintf_s( hear.dir_default, MAX_PATH, "%s\\%s", g_dir_module, _default_material_folder );
 	}
 
 	{ ptConfig cfg( _ref_file_profile, ptcDEFAULT_SPS, ptcDEFAULT_CH_NUM, ptcDEFAULT_BUF_SEC ); cfg.load(); g_strm_woi->set_sps( cfg.strm->sps ); }
@@ -267,7 +268,7 @@ int32_t Woice_Dialog_Add()
 		}
 		else
 		{
-			Japanese_MessageBox( g_hWnd_Main, _T("can't add unit"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( g_hWnd_Main, "can't add unit", "error", MB_OK|MB_ICONEXCLAMATION );
 		}
 	}
 
@@ -280,7 +281,7 @@ void Woice_Dialog_Edit( int32_t w )
 {
 	if( !InquireOperation() ) return;
 
-	if( DialogBoxParam( g_hInst, _T("DLG_WOICE"), g_hWnd_Main, dlg_Woice, (LPARAM)w ) )
+	if( DialogBoxParam( g_hInst, uxT( "DLG_WOICE" ), g_hWnd_Main, dlg_Woice, (LPARAM)w ) )
 	{
 		if_WoiceTray_RedrawAllName( NULL );
 		g_alte->set();
@@ -315,14 +316,14 @@ void Woice_Dialog_Change( int32_t w )
 	}
 
 	// ファイル選択 =============================================
-	_stprintf_s( hear.dir_default, MAX_PATH, _T("%s\\%s"), g_dir_module, _default_material_folder );
+	ux_sprintf_s( hear.dir_default, MAX_PATH, "%s\\%s", g_dir_module, _default_material_folder );
 
 	{ ptConfig cfg( _ref_file_profile, ptcDEFAULT_SPS, ptcDEFAULT_CH_NUM, ptcDEFAULT_BUF_SEC ); cfg.load(); g_strm_woi->set_sps( cfg.strm->sps ); }
 
 	if( !pxtoneTool_HearSelect_Dialog( g_hWnd_Main, &hear ) ) return;
 
 	{
-		FILE* fp = _tfopen( hear.path_selected, _T("rb") ); if( !fp ) goto End;
+		FILE* fp = ux_fopen( hear.path_selected, "rb" ); if( !fp ) goto End;
 		if( p_w->read( fp, _CheckFileType_byExt( hear.path_selected ) ) != pxtnOK )
 		{
 			fclose( fp ); goto End;
@@ -349,12 +350,12 @@ End:
 	if( !b_ret )
 	{
 		WoiceFocus_Set( 0 );
-		Japanese_MessageBox( g_hWnd_Main, _T("reload voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "reload voice", "error", MB_OK|MB_ICONEXCLAMATION );
 		g_alte->set();
 	}
 	else if( g_pxtn->Woice_ReadyTone( w ) != pxtnOK )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("ready voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "ready voice", "error", MB_OK|MB_ICONEXCLAMATION );
 	}
 }
 
@@ -364,8 +365,8 @@ bool Woice_Dialog_Export( int32_t w )
 
 	bool     b_ret                    = false;
 	wchar_t* p_wide                   = NULL ;
-	TCHAR    path_dst    [ MAX_PATH ] = { 0 };
-	TCHAR    path_def_dir[ MAX_PATH ] = { 0 };
+	uxDS     path_dst;
+	uxSS<MAX_PATH>     path_def_dir = { 0 };
 	char     woice_name  [ pxtnMAX_TUNEWOICENAME + 1 ] = {0};
 
 	const pxtnWoice* p_w = g_pxtn->Woice_Get( w ); if( !p_w ) return false;
@@ -375,7 +376,7 @@ bool Woice_Dialog_Export( int32_t w )
 	// ファイル選択 =============================================
 
 	{
-		TCHAR*         p_name_t = NULL  ;
+		uxDS          p_name_t;
 		pxwPathDialog* path_dlg = NULL  ;
 
 		switch( p_w->get_type() )
@@ -390,19 +391,14 @@ bool Woice_Dialog_Export( int32_t w )
 		int32_t name_size = 0;
 		strcpy( woice_name, p_w->get_name_buf( &name_size ) );
 		pxwFilePath_ncomp_x_sjis( woice_name );
-#ifdef UNICODE
-		if( !pxwUTF8_sjis_to_wide( woice_name, &p_wide, NULL ) ) goto term;
-		p_name_t = p_wide;
-#else
-		p_name_t = woice_name;
-#endif
+		if( !( p_name_t = uxDS_from_sjis( woice_name ) ) ) goto term; // SJIS -> UTF-8
 		// set woice name.
-		if( path_dlg->get_last_path( path_dst, MAX_PATH ) )
+		if( path_dlg->get_last_path( path_dst ) )
 		{
-			PathRemoveFileSpec( path_dst );
-			if( _tcslen( path_dst ) != 3 )
-				_tcscat( path_dst, _T("\\") );
-			_tcscat( path_dst, p_name_t );
+			pxPath_remove_filename( path_dst );
+			if( path_dst.size() != 3 )
+				path_dst += "\\";
+			path_dst += p_name_t;
 		}
 
 		dlog_c( "expt w call(get save path)" );
@@ -413,7 +409,7 @@ bool Woice_Dialog_Export( int32_t w )
 
 	dlog_c( "expt w exporting" );
 	{
-		FILE* fp = _tfopen( path_dst, _T("wb") ); if( !fp ) goto term;
+		FILE* fp = ux_fopen( path_dst, "wb" ); if( !fp ) goto term;
 
 		switch( p_w->get_type() )
 		{
@@ -436,7 +432,7 @@ bool Woice_Dialog_Export( int32_t w )
 term:
 	pxMem_free( (void**)&p_wide );
 
-	if( !b_ret ) Japanese_MessageBox( g_hWnd_Main, _T("export"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+	if( !b_ret ) Japanese_MessageBox( g_hWnd_Main, "export", "error", MB_OK|MB_ICONEXCLAMATION );
 	return b_ret;
 }
 
@@ -449,27 +445,22 @@ bool Woice_Dialog_Remove( int32_t w )
 	const pxtnWoice *p_w = g_pxtn->Woice_Get( w );
 	if( !p_w )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("no voice"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "no voice", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	int32_t     num      = g_pxtn->evels->get_Count( EVENTKIND_VOICENO, (int32_t)w );
-	const TCHAR*      p_name_t = NULL ;
+	uxDS       p_name_t;
 	wchar_t*    p_wide   = NULL ;
 	int32_t     buf_size =     0;
 	const char* p_c      = p_w->get_name_buf( &buf_size );
-	TCHAR       str[ _BUFNUM_DELETE_WOICE ] = {0};
+	uxSS<_BUFNUM_DELETE_WOICE>        str = {0};
 
-#ifdef UNICODE
-	if( !pxwUTF8_sjis_to_wide( p_c, &p_wide, NULL ) ) goto term;
-	p_name_t = p_wide;
-#else
-	p_name_t = p_c;
-#endif
+	if( !( p_name_t = uxDS_from_sjis( p_c ) ) ) goto term; // SJIS -> UTF-8
 
-	if( Japanese_Is() ) _stprintf_s( str, _BUFNUM_DELETE_WOICE, _T("音源 \'%s\' を削除します\r\n\r\n%d 個の該当音源イベントを削除します"), p_name_t, num );
-	else                _stprintf_s( str, _BUFNUM_DELETE_WOICE, _T("Remove : '%s\'\r\n\r\nand I delete %d voice-no events."             ), p_name_t, num );
-	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ) goto term;
+	if( Japanese_Is() ) ux_sprintf_s( str, _BUFNUM_DELETE_WOICE, "音源 \'%s\' を削除します\r\n\r\n%d 個の該当音源イベントを削除します", *p_name_t, num );
+	else                ux_sprintf_s( str, _BUFNUM_DELETE_WOICE, "Remove : '%s\'\r\n\r\nand I delete %d voice-no events.", *p_name_t, num );
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_YESNO" ), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ) goto term;
 
 	g_strm_xa2->Voice_order_stop_all();
 

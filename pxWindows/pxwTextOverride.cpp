@@ -1,9 +1,12 @@
 ﻿
 #include <pxMem.h>
+#include <uxStr.h>
+#include <vector>
 #include <pxStrT.h>
 #include <pxCSV2.h>
 #include <pxUTF8.h>
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include "./pxwUTF8.h"
 
@@ -18,25 +21,40 @@ pxwTextOverride::pxwTextOverride()
 
 pxwTextOverride::~pxwTextOverride()
 {
-	pxMem_free ( (void**)&_inv_name );
 	SAFE_DELETE( _csv );
 }
 
 
-const TCHAR* pxwTextOverride::get_inv_name() const
+const uxDS& pxwTextOverride::get_inv_name() const
 {
 	return _inv_name;
 }
 
-static bool _is_ignore_text( const TCHAR* p_t )
+static bool _is_ignore_text( const uxDS& p_t )
 {
 	int32_t res = 0;
-	if( !pxStrT_compare( p_t, _T("*-"), 2, &res ) ) return true;
+	if( !pxStrT_compare( p_t, "*-", 2, &res ) ) return true;
 	if( res ) return true;
 	return false;
 }
 
-bool pxwTextOverride::_find_original_to_tt( pxTText* tt_ovr, const TCHAR* t_src )
+bool pxwTextOverride::_find_original_to_tt( uxDS& tt_ovr, const uxDS& t_src )
+{
+	int32_t     r          =     0;
+	const char* p_str_ride = NULL ;
+
+	if( !t_src ) return false;
+
+	if( !_csv->find_value( &r, 0, *t_src ) ) return false; // find (both sides are UTF-8)
+	if( !_csv->get_value ( &p_str_ride, r, 1    ) ) return false; // get
+
+	tt_ovr = p_str_ride;
+	return true;
+}
+
+#if 0 // was: pxTText out-parameter, and a TCHAR -> UTF-8 conversion of the source
+bool pxwTextOverride::_find_original_to_tt( pxTText* tt_ovr, const uxDS& t_src )
+bool pxwTextOverride::_find_original_to_tt( uxDS& tt_ovr, const uxDS& t_src )
 {
 	bool        b_ret      = false;
 	char*       utf8_src   = NULL ;
@@ -59,18 +77,21 @@ term:
 	pxMem_free( (void**)&utf8_src );
 	return b_ret;
 }
+#endif
 
 bool pxwTextOverride::_update_title     ( HWND hwnd   )
 {
-	TCHAR   text_src[ 100 ] = {0};
-	pxTText tt_dst;
+	uxSS<100>   text_src = {0};
+	// pxTText tt_dst;
+	uxDS tt_dst;
 
-	GetWindowText( hwnd, text_src, 100 );
+	GetWindowText( hwnd, uxTOut( text_src ), 100 );
 
 	if( _is_ignore_text( text_src ) ) return true; // ignore..
 
-	if     ( _find_original_to_tt( &tt_dst, text_src ) ) SetWindowText( hwnd, tt_dst.tchr() );
-	else if( !_inv_name                                ){ if( !pxStrT_copy_allocate( &_inv_name, text_src, 0 ) ) return false; }
+	// if     ( _find_original_to_tt( &tt_dst, text_src ) ) SetWindowText( hwnd, tt_dst.tchr() );
+	if     ( _find_original_to_tt( tt_dst, text_src ) ) SetWindowText( hwnd, uxT( tt_dst ) );
+	else if( !_inv_name                                ){ if( !pxStrT_copy_allocate( _inv_name, text_src, 0 ) ) return false; }
 	return true;
 }
 
@@ -79,18 +100,18 @@ bool pxwTextOverride::_update_combo_box( HWND h_ctrl )
 	bool    b_ret = false;
 	int     sel   = SendMessage( h_ctrl, CB_GETCURSEL, 0, 0 );
 	int     count = SendMessage( h_ctrl, CB_GETCOUNT , 0, 0 );
-	TCHAR** list  = NULL;
-	pxTText tt_dst;
-
-	if( !pxMem_zero_alloc( (void**)&list, sizeof(TCHAR*) * count ) ) goto term;
+	std::vector<uxDS> list( count > 0 ? count : 0 );
+	// pxTText tt_dst;
+	uxDS tt_dst;
 
 	for( int i = 0; i < count; i++ )
 	{
 		int len = SendMessage( h_ctrl, CB_GETLBTEXTLEN, i, 0);
 		if( len > 0 )
 		{
-			pxMem_zero_alloc( (void**)&list[ i ], sizeof(TCHAR)* (len + 1) );
-			if( SendMessage( h_ctrl, CB_GETLBTEXT, i, (LPARAM)list[ i ] ) == CB_ERR ) goto term;
+			std::vector<TCHAR> text( len + 1, 0 );
+			if( SendMessage( h_ctrl, CB_GETLBTEXT, i, (LPARAM)text.data() ) == CB_ERR ) goto term;
+			list[ i ] = uxDS_from_t( text.data() );
 		}
 	}
 
@@ -101,9 +122,10 @@ bool pxwTextOverride::_update_combo_box( HWND h_ctrl )
 	{
 		if( list[ i ] )
 		{
-			if     ( _is_ignore_text     (          list[ i ] ) ) SendMessage( h_ctrl, CB_ADDSTRING, i, (LPARAM)list[ i ]          );
-			else if( _find_original_to_tt( &tt_dst, list[ i ] ) ) SendMessage( h_ctrl, CB_ADDSTRING, i, (LPARAM)tt_dst.tchr() );
-			else                                                  SendMessage( h_ctrl, CB_ADDSTRING, i, (LPARAM)list[ i ]          );
+			if     ( _is_ignore_text     (          list[ i ] ) ) SendMessage( h_ctrl, CB_ADDSTRING, i, uxLP( list[ i ] ) );
+			// else if( _find_original_to_tt( &tt_dst, list[ i ] ) ) SendMessage( h_ctrl, CB_ADDSTRING, i, (LPARAM)tt_dst.tchr()                  );
+			else if( _find_original_to_tt( tt_dst, list[ i ] ) ) SendMessage( h_ctrl, CB_ADDSTRING, i, uxLP( tt_dst ) );
+			else                                                  SendMessage( h_ctrl, CB_ADDSTRING, i, uxLP( list[ i ] ) );
 		}
 	}
 
@@ -111,35 +133,31 @@ bool pxwTextOverride::_update_combo_box( HWND h_ctrl )
 
 	b_ret = true;
 term:
-
-	if( list )
-	{
-		for( int i = 0; i < count; i++ ) pxMem_free( (void**)&list[ i ] );
-		pxMem_free( (void**)&list );
-	}
 	return b_ret;
 }
 
 bool pxwTextOverride::_override_callback( HWND h_ctrl )
 {
 	bool    b_ret             = false;
-	TCHAR   text_src  [ 100 ] = { 0 };
-	TCHAR   class_name[ 100 ] = { 0 };
-	pxTText tt_dst;
+	uxSS<100>   text_src = { 0 };
+	uxSS<100>   class_name = { 0 };
+	// pxTText tt_dst;
+	uxDS tt_dst;
 
-	GetWindowText( h_ctrl, text_src  , 100 );
-	GetClassName ( h_ctrl, class_name, 100 );
+	GetWindowText( h_ctrl, uxTOut( text_src )  , 100 );
+	GetClassName ( h_ctrl, uxTOut( class_name ), 100 );
 
 	if( _is_ignore_text( text_src ) ) return true;
 
-	if( !_tcscmp( class_name, _T("Static") ) ||
-		!_tcscmp( class_name, _T("Button") ) )
+	if( !strcmp( class_name, "Static" ) ||
+		!strcmp( class_name, "Button" ) )
 	{
-		if     ( _find_original_to_tt( &tt_dst, text_src ) ) SetWindowText( h_ctrl, tt_dst.tchr() );
-		else if( !_inv_name                                ){ if( !pxStrT_copy_allocate( &_inv_name, text_src, 0 ) ) return false; }
+		// if     ( _find_original_to_tt( &tt_dst, text_src ) ) SetWindowText( h_ctrl, tt_dst.tchr() );
+		if     ( _find_original_to_tt( tt_dst, text_src ) ) SetWindowText( h_ctrl, uxT( tt_dst ) );
+		else if( !_inv_name                                ){ if( !pxStrT_copy_allocate( _inv_name, text_src, 0 ) ) return false; }
 	}
 	// combo..
-	else if( !_tcscmp( class_name, _T("ComboBox") ) )
+	else if( !strcmp( class_name, "ComboBox" ) )
 	{
 		if( !_update_combo_box( h_ctrl ) ) goto term;
 	}
@@ -160,7 +178,7 @@ bool pxwTextOverride::override_dialog( HWND hdlg, pxDescriptor* desc, bool b_UTF
 {
 	if( !hdlg ) return false;
 
-	pxMem_free( (void**)_inv_name );
+	_inv_name = uxDS();
 	SAFE_DELETE( _csv ); _csv = new pxCSV2( ';', '"', '"' );
 	if( !_csv->read( desc, b_UTF8 ) ) return false;
 
@@ -176,7 +194,7 @@ bool pxwTextOverride::override_menu( HMENU hmenu, pxDescriptor* desc, bool b_UTF
 {
 	if( !hmenu ) return false;
 
-	pxMem_free( (void**)_inv_name );
+	_inv_name = uxDS();
 	SAFE_DELETE( _csv ); _csv = new pxCSV2( ';', '"', '"' );
 	if( !_csv->read( desc, b_UTF8 ) ) return false;
 
@@ -189,18 +207,17 @@ bool pxwTextOverride::_override_menu( HMENU hmenu )
 
 	bool    b_ret    = false;
 	int32_t len      =     0;
-	TCHAR*  p_src    = NULL ;
+	uxDS    p_src ;
 	int32_t item_num = GetMenuItemCount( hmenu );
 
-	pxTText tt_dst;
+	// pxTText tt_dst;
+	uxDS tt_dst;
 
 	for( int i = 0; i < item_num; i++ )
 	{
 		if( len = GetMenuString( hmenu, i, NULL, 0, MF_BYPOSITION ) )
 		{
-			pxMem_free( (void**)&p_src );
-			if( !pxMem_zero_alloc( (void**)&p_src, sizeof(TCHAR) * (len+1) ) ) goto term;
-			if( !GetMenuString( hmenu, i, p_src, len+1, MF_BYPOSITION )      ) goto term;
+			if( !GetMenuString( hmenu, i, uxTOut( p_src, len + 1 ), len + 1, MF_BYPOSITION ) ) goto term; // into a uxDS
 
 			int id = GetMenuItemID( hmenu, i );
 			if( id == -1 )
@@ -208,21 +225,24 @@ bool pxwTextOverride::_override_menu( HMENU hmenu )
 				HMENU h_sub = GetSubMenu( hmenu, i );
 				if( h_sub )
 				{
-					if( _find_original_to_tt( &tt_dst, p_src ) )
+					// if( _find_original_to_tt( &tt_dst, p_src ) )
+					if( _find_original_to_tt( tt_dst, p_src ) )
 					{
-						ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, (uintptr_t)h_sub, tt_dst.tchr() );
+						// ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, (uintptr_t)h_sub, tt_dst.tchr() );
+						ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, (uintptr_t)h_sub, uxT( tt_dst ) );
 					}
 					_override_menu( h_sub ); // 再帰！！
 				}
 			}
-			else if( _find_original_to_tt( &tt_dst, p_src ) )
+			// else if( _find_original_to_tt( &tt_dst, p_src ) )
+			else if( _find_original_to_tt( tt_dst, p_src ) )
 			{
-				ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, id, tt_dst.tchr() );
+				// ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, id, tt_dst.tchr() );
+				ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, id, uxT( tt_dst ) );
 			}
 		}
 	}
 	b_ret = true;
 term:
-	pxMem_free( (void**)&p_src );
 	return b_ret;
 }

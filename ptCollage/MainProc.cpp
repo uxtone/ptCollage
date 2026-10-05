@@ -1,5 +1,7 @@
 ﻿
 #include <pxwDx09Draw.h>
+#include <uxStr.h>
+#include <pxPath.h>
 extern pxwDx09Draw*            g_dxdraw  ;
 
 #include <pxtnService.h>
@@ -53,8 +55,8 @@ extern pxMidiIn *g_midi_in;
 
 #include "./MidiInput.h"
 
-extern TCHAR*       g_main_rect_name;
-extern TCHAR        g_app_name[]    ;
+extern uxDS        g_main_rect_name;
+extern uxSS<32>        g_app_name    ;
 
 extern int32_t      g_MinimizeWidth ;
 extern int32_t      g_MinimizeHeight;
@@ -63,10 +65,10 @@ extern HINSTANCE    g_hInst         ;
 extern HMENU        g_hMenu_Main    ;
 extern HWND         g_hWnd_Main     ;
 
-extern TCHAR*       g_posted_path   ;
+extern uxDS        g_posted_path   ;
 
 static bool         _bInterfaceActive = false;
-static const TCHAR* _bld_cfg_name     = _T("bld_cfg.bin");
+static const uxSS<12>  _bld_cfg_name     = "bld_cfg.bin";
 static const pxFile2* _ref_file_profile = NULL;
 
 void MainProc_set_file_profile( const pxFile2* file_profile )
@@ -97,7 +99,7 @@ dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 // メニュー（プロジェクト）
 bool Function_WM_DROPFILES    ( HWND hWnd, WPARAM wParam );
-bool Function_DropProjectFile ( HWND hWnd, TCHAR *lpszArgs );
+bool Function_DropProjectFile ( HWND hWnd, uxDS& lpszArgs );
 
 bool pxtoneProject_IDM_INITPROJECT ( HWND hWnd );
 bool pxtoneProject_IDM_SAVEPROJECT ( HWND hWnd, bool b_as );
@@ -106,8 +108,8 @@ bool pxtoneProject_IDM_HISTORY     ( HWND hWnd, UINT idm );
 bool pxtoneProject_IDM_OUTPUTTUNEAS( HWND hWnd );
 bool pxtoneProject_IDM_SAVEPROJECTDIFFERENCE( HWND hWnd, bool *pb_bool );
 
-bool    pxtoneProject_load_and_init_tools( HWND hWnd, const TCHAR *path, bool *pb_cancel, bool *pb_save_failed );
-bool    GetDroppedPath_Window     ( HWND hWnd, WPARAM wParam, TCHAR *path_drop );
+bool    pxtoneProject_load_and_init_tools( HWND hWnd, const uxDS& path, bool *pb_cancel, bool *pb_save_failed );
+bool    GetDroppedPath_Window     ( HWND hWnd, WPARAM wParam, uxDS& path_drop );
 int32_t GetCompileVersion         ( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 
 
@@ -117,33 +119,33 @@ void Interface_Process( HWND hWnd, bool bDraw );
 
 
 // タイトルバー表記
-void MainWindow_SetTitle( const TCHAR *path )
+void MainWindow_SetTitle( const uxDS& path )
 {
-	TCHAR str[MAX_PATH];
-	TCHAR *p_name;
-	TCHAR *empty = _T("-");
+	uxSS<MAX_PATH> str;
+	uxDS p_name;
+	uxDS empty = "-";
 
 	if( !path || path[0] == '\0' ) p_name = empty;
-	else                           p_name = PathFindFileName( path );
+	else                           p_name = pxPath_name( path );
 
 #ifdef NDEBUG
-	_stprintf_s( str, MAX_PATH, _T("%s [%s]"      ), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s [%s]", g_app_name, *p_name );
 #else
-	_stprintf_s( str, MAX_PATH, _T("%s Debug [%s]"), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s Debug [%s]", g_app_name, *p_name );
 #endif
-	SetWindowText( g_hWnd_Main, str );
+	SetWindowText( g_hWnd_Main, uxT( str ) );
 }
 
 void MainWindow_SetAsterisk( bool b )
 {
-	TCHAR   str[MAX_PATH] = { 0 };
+	uxSS<MAX_PATH>    str = { 0 };
 	int32_t len           =   0  ;
-	GetWindowText( g_hWnd_Main, str, MAX_PATH );
-	len = _tcslen( str );
+	GetWindowText( g_hWnd_Main, uxTOut( str ), MAX_PATH );
+	len = strlen( str );
 	if( !len ) return;
 
-	if(  b && str[len-1] != '*' ){ _tcscat( str, _T("*") )   ; SetWindowText( g_hWnd_Main, str ); }
-	if( !b && str[len-1] == '*' ){          str[len-1] = '\0'; SetWindowText( g_hWnd_Main, str ); }
+	if(  b && str[len-1] != '*' ){ strcat( str, "*" )   ; SetWindowText( g_hWnd_Main, uxT( str ) ); }
+	if( !b && str[len-1] == '*' ){          str[len-1] = '\0'; SetWindowText( g_hWnd_Main, uxT( str ) ); }
 
 }
 
@@ -184,7 +186,7 @@ bool InquireOperation()
 		Sleep( 100 );
 		if( !g_strm_xa2->tune_is_sampling() ) return true;
 	}
-	MessageBox( g_hWnd_Main, _T("stopping timeout."), g_app_name, MB_ICONEXCLAMATION );
+	MessageBox( g_hWnd_Main, uxT( "stopping timeout." ), uxT( g_app_name ), MB_ICONEXCLAMATION );
 	return false;
 }
 
@@ -209,7 +211,7 @@ bool Function_IDM_REDOEVENT()
 bool Function_IDM_TRANSPOSE( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
-	DialogBoxParam( g_hInst, _T("DLG_EVENTVOLUME"), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Key );
+	DialogBoxParam( g_hInst, uxT( "DLG_EVENTVOLUME" ), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Key );
 	return true;
 }
 
@@ -217,7 +219,7 @@ bool Function_IDM_TRANSPOSE( HWND hwnd )
 bool Function_IDM_PAN_TIME( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
-	DialogBoxParam( g_hInst, _T("DLG_EVENTVOLUME"), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_TimePan );
+	DialogBoxParam( g_hInst, uxT( "DLG_EVENTVOLUME" ), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_TimePan );
 	return true;
 }
 
@@ -225,7 +227,7 @@ bool Function_IDM_PAN_TIME( HWND hwnd )
 bool Function_IDM_PAN_VOLUME( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
-	DialogBoxParam( g_hInst, _T("DLG_EVENTVOLUME"), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_VolPan );
+	DialogBoxParam( g_hInst, uxT( "DLG_EVENTVOLUME" ), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_VolPan );
 	return true;
 }
 
@@ -233,7 +235,7 @@ bool Function_IDM_PAN_VOLUME( HWND hwnd )
 bool Function_IDM_VELOCITY( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
-	DialogBoxParam( g_hInst, _T("DLG_EVENTVOLUME"), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Velocity );
+	DialogBoxParam( g_hInst, uxT( "DLG_EVENTVOLUME" ), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Velocity );
 	return true;
 }
 
@@ -241,7 +243,7 @@ bool Function_IDM_VELOCITY( HWND hwnd )
 bool Function_IDM_VOLUME( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
-	DialogBoxParam( g_hInst, _T("DLG_EVENTVOLUME"), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Volume );
+	DialogBoxParam( g_hInst, uxT( "DLG_EVENTVOLUME" ), hwnd, dlg_EventVolume, (LPARAM)enum_EventKind_Volume );
 	return true;
 }
 
@@ -276,7 +278,7 @@ bool Function_IDM_DELAY( int32_t index )
 		delay.rate  = p_delay->get_rate ();
 	}
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_DELAY"), g_hWnd_Main, dlg_Delay_Procedure, (LPARAM)&delay ) ) return true;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_DELAY" ), g_hWnd_Main, dlg_Delay_Procedure, (LPARAM)&delay ) ) return true;
 
 	if( delay.b_delete )
 	{
@@ -297,7 +299,7 @@ bool Function_IDM_DELAY( int32_t index )
 		}
 		if( g_pxtn->Delay_ReadyTone( index ) != pxtnOK )
 		{
-			Japanese_MessageBox( g_hWnd_Main, _T("ready delay tone"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( g_hWnd_Main, "ready delay tone", "error", MB_OK|MB_ICONEXCLAMATION );
 		}
 	}
 	// delete
@@ -330,7 +332,7 @@ bool Function_IDM_OVERDRIVE( int32_t index )
 		over.amp   = p_ov->get_amp  ();
 	}
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_OVERDRIVE"), g_hWnd_Main, dlg_OverDrive_Procedure, (LPARAM)&over ) ) return true;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_OVERDRIVE" ), g_hWnd_Main, dlg_OverDrive_Procedure, (LPARAM)&over ) ) return true;
 
 	if( over.b_delete )
 	{
@@ -366,11 +368,11 @@ static void _Function_IDM_BUILD( HWND hwnd, bool bBuildAs )
 	}
 	SAFE_DELETE( desc );
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_BUILDOPTION"), hwnd, dlg_BuildOption_Procedure, (LPARAM)&_cfg_bld ) ) return;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_BUILDOPTION" ), hwnd, dlg_BuildOption_Procedure, (LPARAM)&_cfg_bld ) ) return;
 
 	if( !_ref_file_profile->open_w( &desc, _bld_cfg_name, NULL, NULL ) || !_cfg_bld.write( desc ) )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("Save Build Config."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "Save Build Config.", "error", MB_OK|MB_ICONEXCLAMATION );
 	}
 	SAFE_DELETE( desc );
 
@@ -389,14 +391,14 @@ static void _Function_IDM_BUILD( HWND hwnd, bool bBuildAs )
 
 	// make file-name( .wav )
 	{
-		TCHAR path[ MAX_PATH ] = {0};
-		TCHAR exte[ 32       ] = {0};
-		if( !g_path_dlg_proj ->get_last_path( path, MAX_PATH ) ) return;
+		uxDS path;
+		uxDS exte;
+		if( !g_path_dlg_proj ->get_last_path( path ) ) return;
 		if( !g_path_dlg_build->extension_get( exte           ) ) return;
-		PathRemoveExtension( path );
-		_tcscat( path, _T(".") );
-		_tcscat( path, exte    );
-		if( !g_path_dlg_build->dialog_save( hwnd, _build.output_path, PathFindFileName( path ) ) ) return;
+		pxPath_remove_ext( path );
+		path += ".";
+		path += exte;
+		if( !g_path_dlg_build->dialog_save( hwnd, _build.output_path, pxPath_name( path ) ) ) return;
 	}
 
 	{
@@ -404,14 +406,14 @@ static void _Function_IDM_BUILD( HWND hwnd, bool bBuildAs )
 
 		g_pxtn->get_destination_quality( &old_ch_num, &old_sps );
 		g_pxtn->set_destination_quality( _cfg_bld.strm->ch_num, _cfg_bld.strm->sps );
-		if( g_pxtn->tones_ready() != pxtnOK ){ Japanese_MessageBox( hwnd, _T("ready tones."), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return; }
+		if( g_pxtn->tones_ready() != pxtnOK ){ Japanese_MessageBox( hwnd, "ready tones.", "error", MB_OK|MB_ICONEXCLAMATION ); return; }
 
 		{
 			WINDOWPLACEMENT place;
 			place.length = sizeof(WINDOWPLACEMENT);
 			GetWindowPlacement( hwnd, &place );
 			ShowWindow        ( hwnd, SW_HIDE );
-			DialogBoxParam( g_hInst, _T("DLG_BUILDPROGRESS"), hwnd, dlg_BuildProgress, (LPARAM)&_build );
+			DialogBoxParam( g_hInst, uxT( "DLG_BUILDPROGRESS" ), hwnd, dlg_BuildProgress, (LPARAM)&_build );
 			ShowWindow        ( hwnd, place.showCmd );
 		}
 
@@ -429,11 +431,11 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	_cfg.load();
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_CONFIG" ), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
 
 	if( !_cfg.save() )
 	{
-		Japanese_MessageBox( hwnd, _T("Can't Save Config."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "Can't Save Config.", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -445,13 +447,13 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	if( !g_strm_xa2->stream_finalize( 0.1f, 10, 3 ) )
 	{
-		MessageBox( hwnd, _T("stream stop timeout."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream stop timeout." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
 	{
-		MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream start." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -468,7 +470,7 @@ static bool _Function_IDM_COPYMEAS( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
 
-	if( DialogBoxParam( g_hInst, _T("DLG_COPYMEAS"), hwnd, dlg_CopyMeas, NULL ) ){
+	if( DialogBoxParam( g_hInst, uxT( "DLG_COPYMEAS" ), hwnd, dlg_CopyMeas, NULL ) ){
 
 	}
 	return true;
@@ -479,7 +481,7 @@ bool Function_IDM_SCOPE( HWND hwnd )
 {
 	if( !InquireOperation() ) return false;
 
-	if( DialogBoxParam( g_hInst, _T("DLG_SCOPE"), hwnd, dlg_Scope, NULL ) ){
+	if( DialogBoxParam( g_hInst, uxT( "DLG_SCOPE" ), hwnd, dlg_Scope, NULL ) ){
 
 	}
 	return true;
@@ -491,24 +493,24 @@ static bool _Function_WM_DROPFILES( HWND hWnd, WPARAM wParam )
 	HDROP hDrop;
 	bool  b_ret = false;
 	WORD  num;
-	TCHAR  path[ MAX_PATH ];
+	uxSS<MAX_PATH>  path;
 
 	hDrop = (HDROP)wParam;
 	num   = DragQueryFile( hDrop, -1, NULL, 0 );
 
 	for( WORD i = 0; i < num && i < pxtnMAX_TUNEWOICESTRUCT; i++ )
 	{
-		DragQueryFile( hDrop, i, path, MAX_PATH );
-		if( !i && !_tcsicmp( PathFindExtension( path ), _T(".ptcop")   ) )
+		DragQueryFile( hDrop, i, uxTOut( path ), MAX_PATH );
+		if( !i && !ux_stricmp( pxPath_ext( path ), ".ptcop"   ) )
 		{
 			bool b_cancel = false, b_save_failed = false;
 			pxtoneProject_load_and_init_tools( hWnd, path, &b_cancel, &b_save_failed );
 			break;
 		}
-		else if(  !_tcsicmp( PathFindExtension( path ), _T(".wav"    ) ) ||
-				  !_tcsicmp( PathFindExtension( path ), _T(".ptvoice") ) ||
-				  !_tcsicmp( PathFindExtension( path ), _T(".ptnoise") ) ||
-				  !_tcsicmp( PathFindExtension( path ), _T(".ogg"    ) ) )
+		else if(  !ux_stricmp( pxPath_ext( path ), ".wav" ) ||
+				  !ux_stricmp( pxPath_ext( path ), ".ptvoice" ) ||
+				  !ux_stricmp( pxPath_ext( path ), ".ptnoise" ) ||
+				  !ux_stricmp( pxPath_ext( path ), ".ogg" ) )
 		{
 			if( !Woice_Add( hWnd, path ) ) goto End;
 		}
@@ -609,8 +611,8 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_CLOSE        : SendMessage( hWnd, WM_CLOSE, 0, 0 ); break;
 
 		// property
-		case IDM_PROPERTY     : DialogBox( g_hInst, _T("DLG_PROPERTY"), hWnd, dlg_Property ); break;
-		case IDM_ABOUT        : DialogBox( g_hInst, _T("DLG_ABOUT"   ), hWnd, dlg_About    ); break;
+		case IDM_PROPERTY     : DialogBox( g_hInst, uxT( "DLG_PROPERTY" ), hWnd, dlg_Property ); break;
+		case IDM_ABOUT        : DialogBox( g_hInst, uxT( "DLG_ABOUT" ), hWnd, dlg_About    ); break;
 
 		case IDM_BUILDAS      : _Function_IDM_BUILD(    hWnd, true  ); break;
 		case IDM_CONFIG       : _Function_IDM_CONFIG(   hWnd        ); break;

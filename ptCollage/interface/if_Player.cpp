@@ -67,7 +67,7 @@ PLAYERSTRUCT;
 static PLAYERSTRUCT   _player  = {0};
 static fRECT          _rcPanel = {0};
 static fRECT          _rc_view = {0};
-static const TCHAR*   _status_name = _T("player.status");
+static const uxSS<14>    _status_name = "player.status";
 static const pxFile2* _ref_file_profile = NULL;
 
 void if_Player_init( const pxFile2* file_profile )
@@ -322,7 +322,7 @@ bool if_Player_StartPlay()
 
 	if( !g_strm_xa2->tune_order_start( &prep ) )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("ready play"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "ready play", "error", MB_OK|MB_ICONEXCLAMATION );
 		goto term;
 	}
 

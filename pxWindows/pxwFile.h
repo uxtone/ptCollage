@@ -7,22 +7,25 @@
 #ifndef pxwFile_H
 #define pxwFile_H
 
-bool  pxwFile_set_master_base_dir( const TCHAR* dir_base );
-bool  pxwFile_set_master_cmmn_dir( const TCHAR* dir_cmmn );
-bool  pxwFile_set_trns_dir       ( const TCHAR* dir_trns );
 
-bool  pxwFile_cerate_trns_sub_dir ( const TCHAR* dir_name );
+#include <pxStdDef.h>
 
-const TCHAR *pxwFile_get_master_base_dir();
-const TCHAR *pxwFile_get_master_cmmn_dir();
-const TCHAR *pxwFile_get_trns_dir       ();
+bool  pxwFile_set_master_base_dir( const uxDS& dir_base );
+bool  pxwFile_set_master_cmmn_dir( const uxDS& dir_cmmn );
+bool  pxwFile_set_trns_dir       ( const uxDS& dir_trns );
+
+bool  pxwFile_cerate_trns_sub_dir ( const uxDS& dir_name );
+
+const uxDS pxwFile_get_master_base_dir();
+const uxDS pxwFile_get_master_cmmn_dir();
+const uxDS pxwFile_get_trns_dir       ();
 
 void  pxwFile_release    ();
-bool  pxwFile_delete     ( const TCHAR *path );
-bool  pxwFile_trns_delete( const TCHAR *dir_name, const TCHAR *file_name );
+bool  pxwFile_delete     ( const uxDS& path );
+bool  pxwFile_trns_delete( const uxDS& dir_name, const uxDS& file_name );
 
-bool pxwFile_make_real_path_master_base( TCHAR** p_real_path, const TCHAR *dir_name, const TCHAR *file_name );
-bool pxwFile_make_real_path_master_cmmn( TCHAR** p_real_path, const TCHAR *dir_name, const TCHAR *file_name );
-bool pxwFile_make_real_path_trns       ( TCHAR** p_real_path, const TCHAR *dir_name, const TCHAR *file_name );
+bool pxwFile_make_real_path_master_base( uxDS& real_path_dst, const uxDS& dir_name, const uxDS& file_name );
+bool pxwFile_make_real_path_master_cmmn( uxDS& real_path_dst, const uxDS& dir_name, const uxDS& file_name );
+bool pxwFile_make_real_path_trns       ( uxDS& real_path_dst, const uxDS& dir_name, const uxDS& file_name );
 
 #endif

@@ -35,7 +35,7 @@ _COPIERSTRUCT;
 static _COPIERSTRUCT  _copier      = {0};
 static fRECT          _rcPanel     = {0};
 static fRECT          _rc_view     = {0};
-static const TCHAR*   _status_name = _T("copier.status");
+static const uxSS<14>    _status_name = "copier.status";
 static const pxFile2* _ref_file_profile = NULL;
 
 
@@ -246,4 +246,3 @@ void if_Copier_SetOpen()
 	if( _copier.flags & COPIERFLAG_STATUS_OPEN ){ _copier.flags &= ~COPIERFLAG_STATUS_OPEN;                       }
 	else                                        { _copier.flags |=  COPIERFLAG_STATUS_OPEN; if_Copier_SetFocus(); }
 }
-

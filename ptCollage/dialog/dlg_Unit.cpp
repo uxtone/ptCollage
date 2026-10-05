@@ -1,5 +1,6 @@
 ﻿
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -19,11 +20,14 @@ extern pxtnService *g_pxtn;
 // 情報を表示
 static void _SetParameter( HWND hDlg, int32_t unit_index )
 {
-	pxTText tt;
+	// pxTText tt;
+	uxDS tt;
 
-	if( tt.set_sjis_to_t( g_pxtn->Unit_Get( unit_index )->get_name_buf( NULL ) ) )
+	// if( tt.set_sjis_to_t( g_pxtn->Unit_Get( unit_index )->get_name_buf( NULL ) ) )
+	if( ( tt = uxDS_from_sjis( g_pxtn->Unit_Get( unit_index )->get_name_buf( NULL ) ) ) )
 	{
-		SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		// SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		SetDlgItemText( hDlg, IDC_NAME, uxT( tt ) );
 	}
 
 	SetDlgItemInt(  hDlg, IDC_EVENTNUM, g_pxtn->evels->get_Count( (unsigned char)unit_index ), true );
@@ -32,15 +36,18 @@ static void _SetParameter( HWND hDlg, int32_t unit_index )
 
 static bool _GetParameter( HWND hDlg, int32_t unit_index )
 {
-	TCHAR name_t[ pxtnMAX_TUNEUNITNAME + 1 ];
+	uxSS<pxtnMAX_TUNEUNITNAME + 1> name_t;
 
 
-	GetDlgItemText( hDlg, IDC_NAME, name_t, pxtnMAX_TUNEUNITNAME+1 );
+	GetDlgItemText( hDlg, IDC_NAME, uxTOut( name_t ), pxtnMAX_TUNEUNITNAME+1 );
 
-	pxTText tt; if( !tt.set_TCHAR_to_sjis( name_t ) ) return false;
+	// pxTText tt; if( !tt.set_TCHAR_to_sjis( name_t ) ) return false;
+	uxDS tt; if( !( tt = uxDS_to_sjis( name_t ) ) ) return false;
 	int32_t size = 0;
-	pxShiftJIS_check_size( tt.sjis(), &size, true );
-	g_pxtn->Unit_Get_variable( unit_index )->set_name_buf( tt.sjis(), size );
+	// pxShiftJIS_check_size( tt.sjis(), &size, true );
+	pxShiftJIS_check_size( *tt, &size, true );
+	// g_pxtn->Unit_Get_variable( unit_index )->set_name_buf( tt.sjis(), size );
+	g_pxtn->Unit_Get_variable( unit_index )->set_name_buf( *tt, size );
 
 	return true;
 }

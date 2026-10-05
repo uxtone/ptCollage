@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnPulse_Oggv.h>
+#include <uxStr.h>
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -7,7 +8,8 @@ extern pxtnService *g_pxtn;
 #include <pxwWindowRect.h>
 
 #include <pxShiftJIS.h>
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include "../../Generic/Japanese.h"
 #include "../../Generic/MessageBox.h"
@@ -20,13 +22,13 @@ static void _Initialize( HWND hDlg, int32_t w )
 	switch( g_pxtn->Woice_Get( w )->get_type() )
 	{
 	case pxtnWOICE_PCM :
-		SetDlgItemText( hDlg, IDC_TYPE, _T("PCM"         ) );
+		SetDlgItemText( hDlg, IDC_TYPE, uxT( "PCM" ) );
 		break;
 	case pxtnWOICE_PTN :
-		SetDlgItemText( hDlg, IDC_TYPE, _T("pxtone Noise") );
+		SetDlgItemText( hDlg, IDC_TYPE, uxT( "pxtone Noise" ) );
 		break;
 	case pxtnWOICE_PTV :
-		SetDlgItemText( hDlg, IDC_TYPE, _T("pxtone Voice") );
+		SetDlgItemText( hDlg, IDC_TYPE, uxT( "pxtone Voice" ) );
 
 		EnableWindow( GetDlgItem( hDlg, IDC_BASICKEY       ), false );
 		EnableWindow( GetDlgItem( hDlg, IDC_TEXT_BASICKEY  ), false );
@@ -41,14 +43,14 @@ static void _Initialize( HWND hDlg, int32_t w )
 		break;
 
 	case pxtnWOICE_OGGV:
-		SetDlgItemText( hDlg, IDC_TYPE, _T("Ogg Vorbis") );
+		SetDlgItemText( hDlg, IDC_TYPE, uxT( "Ogg Vorbis" ) );
 		break;
 	}
 }
 
 static void _SetParameter( HWND hDlg, int32_t w )
 {
-	TCHAR status[ 100 ];
+	uxSS<100> status;
 	const pxtnWoice     *p_w   = g_pxtn->Woice_Get( w ); if( !p_w  ) return;
 	const pxtnVOICEUNIT *p_vc  = p_w->get_voice( 0 );    if( !p_vc ) return;
 	const pxtnPulse_PCM   *p_pcm =  p_vc->p_pcm;
@@ -61,23 +63,23 @@ static void _SetParameter( HWND hDlg, int32_t w )
 	switch( p_w->get_type() )
 	{
 	case pxtnWOICE_PCM :
-		if( ch == 2 ) _stprintf_s( status, 100, _T("Stereo %dbit %dHz %dsample"), bps, sps, smp_body );
-		else          _stprintf_s( status, 100, _T("Mono %dbit %dHz %dsample"  ), bps, sps, smp_body );
+		if( ch == 2 ) ux_sprintf_s( status, 100, "Stereo %dbit %dHz %dsample", bps, sps, smp_body );
+		else          ux_sprintf_s( status, 100, "Mono %dbit %dHz %dsample", bps, sps, smp_body );
 		break;
 
 	case pxtnWOICE_OGGV:
 #ifdef pxINCLUDE_OGGVORBIS
 		int ch, sps, smp_num;
 		p_vc->p_oggv->GetInfo( &ch, &sps, &smp_num );
-		if( ch == 2 ) _stprintf_s( status, 100, _T("Stereo %dHz %dsample"      ), sps, smp_num );
-		else          _stprintf_s( status, 100, _T("Mono %dHz %dsample"        ), sps, smp_num );
+		if( ch == 2 ) ux_sprintf_s( status, 100, "Stereo %dHz %dsample", sps, smp_num );
+		else          ux_sprintf_s( status, 100, "Mono %dHz %dsample", sps, smp_num );
 #else
-		_stprintf_s( status, 100, _T("not support ogg.") );
+		ux_sprintf_s( status, 100, "not support ogg." );
 #endif
 		break;
 
-	case pxtnWOICE_PTN : _stprintf_s( status, 100, _T("%0.2f sec"   ), p_vc->p_ptn->get_sec() ); break;
-	case pxtnWOICE_PTV : _stprintf_s( status, 100, _T("ptvoice [%d]"), p_w->get_voice_num  () ); break;
+	case pxtnWOICE_PTN : ux_sprintf_s( status, 100, "%0.2f sec", p_vc->p_ptn->get_sec() ); break;
+	case pxtnWOICE_PTV : ux_sprintf_s( status, 100, "ptvoice [%d]", p_w->get_voice_num  () ); break;
 	}
 
 	// フラグ
@@ -91,15 +93,17 @@ static void _SetParameter( HWND hDlg, int32_t w )
 		else                                             CheckDlgButton( hDlg, IDC_CHECK_BEATFIT,  false );
 	}
 
-	pxTText tt; if( tt.set_sjis_to_t( p_w->get_name_buf( NULL ) ) )
+	// pxTText tt; if( tt.set_sjis_to_t( p_w->get_name_buf( NULL ) ) )
+	uxDS tt; if( ( tt = uxDS_from_sjis( p_w->get_name_buf( NULL ) ) ) )
 	{
-		SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		// SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		SetDlgItemText( hDlg, IDC_NAME, uxT( tt ) );
 	}
-	SetDlgItemText( hDlg, IDC_STATUS, status    );
+	SetDlgItemText( hDlg, IDC_STATUS, uxT( status )    );
 
-	TCHAR str[10] = {0};
-	_stprintf_s( str, 10, _T("%0.3f"), p_vc->tuning );
-	SetDlgItemText( hDlg, IDC_TUNING  , str );
+	uxSS<10> str = {0};
+	ux_sprintf_s( str, 10, "%0.3f", p_vc->tuning );
+	SetDlgItemText( hDlg, IDC_TUNING  , uxT( str ) );
 	SetDlgItemInt ( hDlg, IDC_BASICKEY, p_vc->basic_key / 0x100, false );
 }
 
@@ -108,16 +112,20 @@ static bool _GetParameter( HWND hDlg, int32_t woice_index )
 	pxtnWoice     *p_w  = g_pxtn->Woice_Get_variable( woice_index ); if( !p_w  ) return false;
 	pxtnVOICEUNIT *p_vc = p_w->get_voice_variable   (           0 ); if( !p_vc ) return false;
 
-	TCHAR name[ pxtnMAX_TUNEWOICENAME + 1 ];
-	pxTText tt;
+	uxSS<pxtnMAX_TUNEWOICENAME + 1> name;
+	// pxTText tt;
+	uxDS tt;
 
-	GetDlgItemText( hDlg, IDC_NAME, name, pxtnMAX_TUNEWOICENAME+1 );
+	GetDlgItemText( hDlg, IDC_NAME, uxTOut( name ), pxtnMAX_TUNEWOICENAME+1 );
 
-	if( !tt.set_TCHAR_to_sjis( name ) ){ mbox_t_ERR( hDlg, _T("name to sjis: %s"), name ); return false; }
+	// if( !tt.set_TCHAR_to_sjis( name ) ){ mbox_t_ERR( hDlg, "name to sjis: %s", name ); return false; }
+	if( !( tt = uxDS_to_sjis( name ) ) ){ mbox_t_ERR( hDlg, "name to sjis: %s", name ); return false; }
 
 	int32_t size = 0;
-	pxShiftJIS_check_size( tt.sjis(), &size, true );
-	p_w->set_name_buf( tt.sjis(), size );
+	// pxShiftJIS_check_size( tt.sjis(), &size, true );
+	pxShiftJIS_check_size( *tt, &size, true );
+	// p_w->set_name_buf( tt.sjis(), size );
+	p_w->set_name_buf( *tt, size );
 
 	// フラグ
 	if( p_w->get_type() != pxtnWOICE_PTV )
@@ -130,8 +138,8 @@ static bool _GetParameter( HWND hDlg, int32_t woice_index )
 		else                                                 p_vc->voice_flags  &= ~PTV_VOICEFLAG_BEATFIT ;
 	}
 
-	TCHAR str[ 10 ] = {0};
-	GetDlgItemText( hDlg, IDC_TUNING,  str, 10 ); p_vc->tuning = (float)_ttof( str );
+	uxSS<10> str = {0};
+	GetDlgItemText( hDlg, IDC_TUNING,  uxTOut( str ), 10 ); p_vc->tuning = (float)_ttof( uxT( str ) );
 	if( p_vc->tuning <   0 ) p_vc->tuning *=  -1;
 	if( p_vc->tuning > 256 ) p_vc->tuning  = 256;
 

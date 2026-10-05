@@ -24,7 +24,7 @@ set(PROJECT_SOURCES
     pxStrT.cpp
     pxSurface.cpp
     pxSurface_png.cpp
-    pxTText.cpp
+#    pxTText.cpp # unused: replaced by uxStr.h (uxT / uxDS_from_sjis ...)
     pxUTF8.cpp
     pxWords.cpp
 )
@@ -52,7 +52,7 @@ set(PROJECT_HEADERS
     pxStr.h
     pxStrT.h
     pxSurface.h
-    pxTText.h
+#    pxTText.h
     pxUTF8.h
     pxWords.h
 )

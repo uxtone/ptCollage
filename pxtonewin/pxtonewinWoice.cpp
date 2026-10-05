@@ -1,5 +1,6 @@
 ﻿
 #include <stdio.h>
+#include <uxStr.h>
 #include <cstdint>
 
 #pragma comment(lib, "shlwapi" )
@@ -10,6 +11,14 @@
 #include <pxtnPulse_NoiseBuilder.h>
 
 #include "./pxtonewinWoice.h"
+#include <pxPath.h>
+
+// file name of a UTF-8 path (the whole path when it has no directory part)
+static uxDS _file_name( const uxDS& path )
+{
+	const char* f = pxPath_find_filename( path );
+	return uxDS( f ? f : *path );
+}
 
 
 // I/O..
@@ -75,12 +84,12 @@ void pxtonewinWoice::set_sps( int sps )
 }
 
 
-bool pxtonewinWoice::_load_and_play_PCM( const TCHAR* path, bool b_loop, int key, bool* pb_timer )
+bool pxtonewinWoice::_load_and_play_PCM( const uxDS& path, bool b_loop, int key, bool* pb_timer )
 {
 	if( !_b_init ) return false;
 
 	bool           b_ret = false;
-	const TCHAR*   p_name;
+	uxDS          p_name;
 	float          sec   ;
 	int            sps, bps;
 	pxtnVOICEUNIT* p_vc  ;
@@ -90,19 +99,19 @@ bool pxtonewinWoice::_load_and_play_PCM( const TCHAR* path, bool b_loop, int key
 	p_vc = _woice->get_voice_variable( 0 );
 
 	{
-		FILE* fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+		FILE* fp = ux_fopen( path, "rb" ); if( !fp ) goto term;
 		if( p_vc->p_pcm->read( fp ) != pxtnOK ) goto term;
 	}
 
 	p_vc->type = pxtnVOICE_Sampling;
 
 	// コントロール表示
-	p_name = PathFindFileName( path );
+	p_name = _file_name( path );
 	sec    = p_vc->p_pcm->get_sec();
 	sps    = p_vc->p_pcm->get_sps();
 	bps    = p_vc->p_pcm->get_bps();
-	if( p_vc->p_pcm->get_ch() == 1 ) _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Mono\r\n %d Hz\r\n %d bps\r\n %0.2f sec"  ), p_name, sps, bps, sec );
-	else                             _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Stereo\r\n %d Hz\r\n %d bps\r\n %0.2f sec"), p_name, sps, bps, sec );
+	if( p_vc->p_pcm->get_ch() == 1 ) ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n Mono\r\n %d Hz\r\n %d bps\r\n %0.2f sec", *p_name, sps, bps, sec );
+	else                             ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n Stereo\r\n %d Hz\r\n %d bps\r\n %0.2f sec", *p_name, sps, bps, sec );
 
 	// 変換
 	if( _woice->Tone_Ready_sample( _ptn_bldr ) != pxtnOK ) goto term;
@@ -128,27 +137,27 @@ term:
 }
 
 
-bool pxtonewinWoice::_load_and_play_PTV( const TCHAR* path, int key, bool* pb_timer )
+bool pxtonewinWoice::_load_and_play_PTV( const uxDS& path, int key, bool* pb_timer )
 {
 	if( !_b_init ) return false;
 
 	bool    b_ret     = false;
 	bool    b_new_fmt = false;
-	TCHAR*  p_name    = NULL ;
+	uxDS   p_name    = NULL ;
 
 
 	if( !_sps ) return false;
 
 	// unit の準備
 	{
-		FILE* fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+		FILE* fp = ux_fopen( path, "rb" ); if( !fp ) goto term;
 		if( _woice->PTV_Read( fp ) != pxtnOK ){ fclose( fp ); goto term; }
 		fclose( fp );
 	}
 
 	// コントロール表示
-	p_name = PathFindFileName( path );
-	_stprintf_s( _status_text, MAX_PATH, _T("%s\r\n%d voice"), p_name, _woice->get_voice_num() );
+	p_name = _file_name( path );
+	ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n%d voice", *p_name, _woice->get_voice_num() );
 
 	// 変換
 	if(  _woice->Tone_Ready_sample  ( _ptn_bldr ) != pxtnOK ) goto term;
@@ -174,13 +183,13 @@ term:
 }
 
 
-bool pxtonewinWoice::_load_and_play_PTN( const TCHAR* path, bool b_loop, int key, bool* pb_timer )
+bool pxtonewinWoice::_load_and_play_PTN( const uxDS& path, bool b_loop, int key, bool* pb_timer )
 {
 	if( !_b_init ) return false;
 
 	bool           b_ret     = false;
 	bool           b_new_fmt = false;
-	TCHAR*         p_name;
+	uxDS          p_name;
 	float          sec ;
 	pxtnVOICEUNIT* p_vc;
 
@@ -191,15 +200,15 @@ bool pxtonewinWoice::_load_and_play_PTN( const TCHAR* path, bool b_loop, int key
 
 	// unit の準備
 	{
-		FILE* fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+		FILE* fp = ux_fopen( path, "rb" ); if( !fp ) goto term;
 		if( p_vc->p_ptn->read( fp ) != pxtnOK ){ fclose( fp ); goto term; }
 		fclose( fp );
 	}
 
 	// コントロール表示
-	p_name = PathFindFileName( path );
+	p_name = _file_name( path );
 	sec = p_vc->p_ptn->get_sec();
-	_stprintf_s( _status_text, MAX_PATH, _T("%s\r\n%0.2f sec"), p_name, sec );
+	ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n%0.2f sec", *p_name, sec );
 
 	if( _woice->Tone_Ready_sample( _ptn_bldr ) != pxtnOK ) goto term;
 
@@ -224,7 +233,7 @@ term:
 	return b_ret;
 }
 
-bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int key, bool* pb_timer )
+bool pxtonewinWoice::_load_and_play_OGGV( const uxDS& path, bool b_loop, int key, bool* pb_timer )
 {
 	if( !_b_init ) return false;
 
@@ -232,7 +241,7 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 
 #ifdef pxINCLUDE_OGGVORBIS
 
-	TCHAR* p_name;
+	uxDS  p_name;
 
 	if( !_woice->Voice_Allocate( 1 ) ) goto term;
 
@@ -243,7 +252,7 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 	static pxDescriptor *desc = nullptr;
 	{
 		static FILE* fp;
-		fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+		fp = ux_fopen( path, "rb" ); if( !fp ) goto term;
 
 		if(desc != nullptr)
 			delete desc;
@@ -254,7 +263,7 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 		if( !desc->set_file_r( fp ) || p_vc->p_oggv->ogg_read( &desc ) != pxtnOK ) goto term;
 	}
 
-	p_name = PathFindFileName( path );
+	p_name = _file_name( path );
 
 	static int ch, smp_num, sps;
 	ch = {}; smp_num = {}; sps = {};
@@ -263,8 +272,8 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 
 	static float sec;
 	sec = (float)smp_num / (float)sps;
-	if( ch == 1 ) _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Mono\r\n %d Hz\r\n %0.2f sec"  ), p_name, sps, sec );
-	else          _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Stereo\r\n %d Hz\r\n %0.2f sec"), p_name, sps, sec );
+	if( ch == 1 ) ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n Mono\r\n %d Hz\r\n %0.2f sec", *p_name, sps, sec );
+	else          ux_sprintf_s( _status_text, MAX_PATH, "%s\r\n Stereo\r\n %d Hz\r\n %0.2f sec", *p_name, sps, sec );
 
 	if( _woice->Tone_Ready_sample( _ptn_bldr ) != pxtnOK ) goto term;
 
@@ -308,17 +317,18 @@ term:
 }
 
 
-bool pxtonewinWoice::load_and_play( const TCHAR* path, bool b_loop, int key, bool* pb_timer )
+bool pxtonewinWoice::load_and_play( const uxDS& path, bool b_loop, int key, bool* pb_timer )
 {
 	if( !_b_init ) return false;
 
 	bool         b_ret = false;
-	const TCHAR* p_ext = PathFindExtension( path );
+	const char* p_ext = pxPath_find_ext( path );
+	if( !p_ext ) return false;
 
-	if(      !_tcsicmp( p_ext, _T(".wav"    ) ) ) _load_and_play_PCM ( path, b_loop, key, pb_timer );
-	else if( !_tcsicmp( p_ext, _T(".ptvoice") ) ) _load_and_play_PTV ( path,         key, pb_timer );
-	else if( !_tcsicmp( p_ext, _T(".ptnoise") ) ) _load_and_play_PTN ( path, b_loop, key, pb_timer );
-	else if( !_tcsicmp( p_ext, _T(".ogg"    ) ) ) _load_and_play_OGGV( path, b_loop, key, pb_timer );
+	if(      !ux_stricmp( p_ext, ".wav" ) ) _load_and_play_PCM ( path, b_loop, key, pb_timer );
+	else if( !ux_stricmp( p_ext, ".ptvoice" ) ) _load_and_play_PTV ( path,         key, pb_timer );
+	else if( !ux_stricmp( p_ext, ".ptnoise" ) ) _load_and_play_PTN ( path, b_loop, key, pb_timer );
+	else if( !ux_stricmp( p_ext, ".ogg" ) ) _load_and_play_OGGV( path, b_loop, key, pb_timer );
 	else goto End;
 
 	b_ret = true;
@@ -333,10 +343,10 @@ void pxtonewinWoice::stop( bool b_force )
 	_strm_xa2->Voice_order_stop( _wave_id, b_force );
 }
 
-bool pxtonewinWoice::get_text( TCHAR* txt_info, bool b_jp ) const
+bool pxtonewinWoice::get_text( uxDS& txt_info, bool b_jp ) const
 {
 	if( !_b_init      ) return false;
 	if( !_status_text ) return false;
-	_tcscpy( txt_info, _status_text );
+	txt_info = _status_text;
 	return true;
 }

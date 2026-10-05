@@ -12,15 +12,15 @@ enum SPECIALPATH
 
 void pxwFilePath_ncomp_x_sjis        ( char *name );
 
-bool pxwFilePath_ArgToPath           ( const TCHAR* arg, TCHAR* path_dst );
+bool pxwFilePath_ArgToPath           ( const uxDS& arg, uxDS& path_dst );
 
-void pxwFilePath_GetSpecial          (       TCHAR* path, SPECIALPATH special );
-void pxwFilePath_GetDesktop          (       TCHAR* path );
+void pxwFilePath_GetSpecial          (       uxDS& path, SPECIALPATH special );
+void pxwFilePath_GetDesktop          (       uxDS& path );
 
-bool pxwFilePath_GetShortcutDirectory( const TCHAR* path_lnk, TCHAR* path_dst );
-bool pxwFilePath_IsDrive             ( const TCHAR* path );
-void pxwFilePath_GetModuleDirectory  (       TCHAR* path );
+bool pxwFilePath_GetShortcutDirectory( const uxDS& path_lnk, uxDS& path_dst );
+bool pxwFilePath_IsDrive             ( const uxDS& path );
+void pxwFilePath_GetModuleDirectory  (       uxDS& path );
 
-bool pxwFilePath_MakeFolderPath      (       TCHAR** p_path_dst, const TCHAR *name, bool b_create );
+bool pxwFilePath_MakeFolderPath      (       uxDS& out_path, const uxDS& name, bool b_create );
 
 #endif

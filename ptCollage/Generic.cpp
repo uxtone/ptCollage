@@ -1,5 +1,6 @@
 ﻿
 #include <pxwFilePath.h>
+#include <uxStr.h>
 
 
 // コンパイル日の取得
@@ -37,7 +38,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
 	UINT             vSize;
-	TCHAR            path[ MAX_PATH ] = {0};
+	uxSS<MAX_PATH>             path = {0};
 
 	int32_t v[ 4 ];
 
@@ -47,15 +48,15 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	if( p3 ) *p3 = 0;
 	if( p4 ) *p4 = 0;
 
-	GetModuleFileName( NULL, path, MAX_PATH );
+	GetModuleFileName( NULL, uxTOut( path ), MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy );
+	size = GetFileVersionInfoSize( uxT( path ), &dummy );
 	if( !size ) goto End;
 
 	p = malloc( size );
 	if( !p                                                ) goto End;
-	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
-	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
+	if( !GetFileVersionInfo( uxT( path ), 0, size, p )           ) goto End;
+	if( !VerQueryValue( p, uxT( "\\" ), (LPVOID*)&info, &vSize ) ) goto End;
 
 	v[ 0 ] = HIWORD(info->dwFileVersionMS);
 	v[ 1 ] = LOWORD(info->dwFileVersionMS);
@@ -95,28 +96,25 @@ int32_t GetDateLimit( SYSTEMTIME *st_limit1, SYSTEMTIME *st_limit2 )
 
 // ファイル名に追加 "c:\test.wav" -> "c:\test2.wav"
 // 全角の拡張子は未対応
-bool AddStringToFileName( TCHAR *path, TCHAR *str )
+bool AddStringToFileName( uxDS& path, const uxDS& str )
 {
-	TCHAR ext[16] = {0};
-	int32_t a;
-
-	a = (int32_t)_tcslen( path );
-	while( a > 0 && path[a] != '.' ) a--;
+	int32_t a = (int32_t)path.size();
+	while( a > 0 && ( *path )[ a ] != '.' ) a--;
 	if( a == 0 ) return false;
-	_tcscpy( ext,      &path[a] ); // ".wav" -> ext
-	_tcscpy( &path[a], str      );
-	_tcscat( path,     ext      );
-
+	uxDS ext( *path + a ); // ".wav"
+	path.truncate( (size_t)a );
+	path += str;
+	path += ext;
 	return true;
 }
 
 //サイズ取得 2147483647byteまで
-int32_t GetFileSizeLong( TCHAR *path )
+int32_t GetFileSizeLong( uxDS& path )
 {
 	HANDLE  hFile;
 	int32_t size ;
 
-	hFile = CreateFile( path, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
+	hFile = CreateFile( uxT( path ), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 	if( hFile == INVALID_HANDLE_VALUE ) return -1;
 	size = GetFileSize( hFile, NULL );
 	CloseHandle       ( hFile );

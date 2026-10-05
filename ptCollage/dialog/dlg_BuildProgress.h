@@ -16,7 +16,7 @@ enum BUILDTUNESCOPE
 
 typedef struct
 {
-	TCHAR              output_path[ MAX_PATH ]; // 出力
+	uxDS                         output_path; // 出力
 	int32_t            ver;
 	bool               bMute;
 	BUILDTUNESCOPE     scope;

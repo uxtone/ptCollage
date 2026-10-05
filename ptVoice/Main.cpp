@@ -3,6 +3,7 @@
 #pragma comment(lib, "d3dx9"  )
 
 #include <pxMem.h>
+#include <uxStr.h>
 #include <pxDebugLog.h>
 
 #include <pxStrT.h>
@@ -58,15 +59,15 @@ pxwPathDialog* g_path_dlg_wav = NULL;
 pxwPathDialog* g_path_dlg_txt = NULL;
 
 
-static const TCHAR* _title_save_ptv_j  = _T("ptvoice を保存する"    );
-static const TCHAR* _title_save_ptv_e  = _T("Save ptvoice"          );
-static const TCHAR* _title_load_ptv_j  = _T("ptvoice を読み込む"    );
-static const TCHAR* _title_load_ptv_e  = _T("Load ptvoice"          );
-static const TCHAR* _title_oput_txt_j  = _T("テキスト形式で出力する");
-static const TCHAR* _title_oput_txt_e  = _T("Output txt"            );
+static const uxSS<24>  _title_save_ptv_j  = "ptvoice を保存する";
+static const uxSS<13>  _title_save_ptv_e  = "Save ptvoice";
+static const uxSS<24>  _title_load_ptv_j  = "ptvoice を読み込む";
+static const uxSS<13>  _title_load_ptv_e  = "Load ptvoice";
+static const uxSS<34>  _title_oput_txt_j  = "テキスト形式で出力する";
+static const uxSS<11>  _title_oput_txt_e  = "Output txt";
 
-static const TCHAR* _app_name_t_jp = _T("ピストンボイス");
-static const TCHAR* _app_name_t_en = _T("pxtone Voice"  );
+static const uxSS<22>  _app_name_t_jp = "ピストンボイス";
+static const uxSS<13>  _app_name_t_en = "pxtone Voice";
 
 
 void MainProf_set_file_profile( const pxFile2* file_profile );
@@ -102,40 +103,41 @@ HWND           g_hWnd_Main              = NULL;
 HMENU          g_hMenu_Main             = NULL;
 fRECT          g_view_rect              = { 0, 0, PTVOICE_W, PTVOICE_H };
 
-TCHAR          g_dir_module[ MAX_PATH ] = { 0 };
-TCHAR          g_app_name  [       32 ] = { 0 };
-TCHAR*         g_dir_res                = NULL; // dummy for pxFile.
-TCHAR*         g_main_rect_name         = _T("main.rect");
+uxDS          g_dir_module;
+uxSS<32>          g_app_name = { 0 };
+uxDS          g_dir_res                = NULL; // dummy for pxFile.
+uxDS          g_main_rect_name         = "main.rect";
 
 int32_t        g_client_min_w           = 0;
 int32_t        g_client_min_h           = 0;
 
-static TCHAR*  _class_name              = _T("Main"     );
+static uxSS<5>   _class_name              = "Main";
 static int32_t _mag                     = 1;
 
 LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 void MainProc_set_file_profile( const pxFile2* file_profile );
 
-TCHAR* g_posted_path = NULL;
+uxDS  g_posted_path = NULL;
 
 //////////////////////////////////////////
 // ローカル関数 //////////////////////////
 //////////////////////////////////////////
 
 // ウインドウクラスの登録
-static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfnWndProc )
+static bool _RegistWindowClass( HINSTANCE hInst, const uxDS& class_name, WNDPROC lpfnWndProc )
 {
 	WNDCLASSEX wc;
 
 	memset( &wc, 0, sizeof(WNDCLASSEX) );
 
 	wc.cbSize        = sizeof(WNDCLASSEX);
-	wc.lpszClassName = class_name;
+	uxT t_class_name( class_name );              // OS text, valid for this function (RegisterClassEx copies the name)
+	wc.lpszClassName = t_class_name;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = lpfnWndProc;
 	wc.hInstance     = hInst;        //インスタンス
 	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//(HBRUSH)(COLOR_APPWORKSPACE + 1);
-	wc.hIcon         = LoadIcon( hInst, _T("0") );
+	wc.hIcon         = LoadIcon( hInst, uxT( "0" ) );
 	wc.hCursor       = LoadCursor( NULL, IDC_ARROW       );
 
 	if( !RegisterClassEx( &wc ) ) return false;
@@ -144,32 +146,9 @@ static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfn
 }
 
 // ファイルドロップ(アイコン)
-static bool _Function_DropProjectFile( TCHAR** pp_path, const TCHAR *lpszArgs )
+static bool _Function_DropProjectFile( uxDS& path_out, const uxDS& lpszArgs )
 {
-	TCHAR   path[MAX_PATH];
-	int32_t a;
-
-	if( !_tcslen( lpszArgs ) ) return false;
-
-	if( lpszArgs[0] == '"' )
-	{
-		for( a = 0; a < MAX_PATH-1; a++ )
-		{
-			if( lpszArgs[a+1] == '"' || lpszArgs[a+1] == '\0') break;
-			path[ a ] = lpszArgs[a+1];
-		}
-	}
-	else
-	{
-		for( a = 0; a < MAX_PATH-1; a++ )
-		{
-			if(                         lpszArgs[a+0] == '\0') break;
-			path[ a ] = lpszArgs[a+0];
-		}
-	}
-	path[ a ] = '\0';
-
-	return pxStrT_copy_allocate( pp_path, path );
+	return pxwFilePath_ArgToPath( lpszArgs, path_out ); // strips the quotes
 }
 
 
@@ -216,8 +195,8 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
-	static TCHAR *mutex_name   = _T("ptvoice"    );
-	static TCHAR *mapping_name = _T("map_ptvoice");
+	static uxSS<8> mutex_name   = "ptvoice";
+	static uxSS<12> mapping_name = "map_ptvoice";
 
 	g_hInst = hInst;
 
@@ -227,16 +206,16 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 	// 汎用のパスを取得-------------------------------------
 	pxwFilePath_GetModuleDirectory ( g_dir_module );
 
-	_app_file_common  = new pxFile2(); _app_file_common ->init_base( _T("data_common"), false );
-	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( _T("data_ptv"   ), false );
-	_app_file_profile = new pxFile2(); _app_file_profile->init_base( _T("temp_ptv"   ), true  );
+	_app_file_common  = new pxFile2(); _app_file_common ->init_base( "data_common", false );
+	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( "data_ptv", false );
+	_app_file_profile = new pxFile2(); _app_file_profile->init_base( "temp_ptv", true  );
 	pxPath_setMode( pxPathMode_auto );
 
 	MainProc_set_file_profile( _app_file_profile );
 	ptvVelocity_init         ( _app_file_profile );
 	pxwWindowRect_init       ( _app_file_profile );
 
-	pxDebugLog_init( _T("temp_ptv"), _T("debuglog") );
+	pxDebugLog_init( "temp_ptv", "debuglog" );
 	{
 		int32_t y, m, d;
 		GetCompileDate( &y, &m, &d );
@@ -246,18 +225,18 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 
 	// japanese..
 	{
-		TCHAR path[ MAX_PATH ] = {0}; _stprintf_s( path, MAX_PATH, _T("%s\\%s"), g_dir_module, _T("japanese.ico") );
-		FILE* fp = _tfopen( path, _T("rb") );
+		uxSS<MAX_PATH> path = {0}; ux_sprintf_s( path, MAX_PATH, "%s\\%s", *g_dir_module, "japanese.ico" );
+		FILE* fp = ux_fopen( path, "rb" );
 		if( fp ){ fclose( fp ); JapaneseTable_init( true  ); }
 		else    {               JapaneseTable_init( false ); }
 	}
-	if( Japanese_Is() ) _tcscpy( g_app_name, _app_name_t_jp );
-	else                _tcscpy( g_app_name, _app_name_t_en );
+	if( Japanese_Is() ) strcpy( g_app_name, _app_name_t_jp );
+	else                strcpy( g_app_name, _app_name_t_en );
 
 	// ウインドウクラスを定義
 	if( !_RegistWindowClass( hInst, _class_name, WindowProc_Main ) ) goto term;
 
-	g_hMenu_Main = LoadMenu( hInst, _T("MENU_MAIN") );
+	g_hMenu_Main = LoadMenu( hInst, uxT( "MENU_MAIN" ) );
 
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
@@ -269,7 +248,7 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 	}
 
 	g_hWnd_Main  = CreateWindow(
-		_class_name, g_app_name,
+		uxT( _class_name ), uxT( g_app_name ),
 		_WINDOW_STYLE,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -302,7 +281,7 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 		if( g_pxtn->init() != pxtnOK ){ mbox_c_ERR( NULL, "pxtone." ); goto term; }
 
 		g_freq    = new pxtnPulse_Frequency( _io_read, _io_write, _io_seek, _io_pos );
-		if( !g_freq->Init()         ){ MessageBox( NULL, _T("init frequency." ), _T("error"), MB_OK ); goto term; }
+		if( !g_freq->Init()         ){ MessageBox( NULL, uxT( "init frequency." ), uxT( "error" ), MB_OK ); goto term; }
 
 		// config
 		ptConfig cfg( _app_file_profile, ptvDEFAULT_SPS, ptvDEFAULT_CH_NUM , ptvDEFAULT_BUF_SEC );
@@ -311,73 +290,73 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 		g_strm_xa2 = new pxtonewinXA2();
 		if( !g_strm_xa2->init( g_pxtn, pxtnMAX_STREAMINGVOICE, pxtnMAX_STREAMINGVOICE ) )
 		{
-			Japanese_MessageBox( NULL, _T("Streaming Init")  , _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( NULL, "Streaming Init"  , "error", MB_OK|MB_ICONEXCLAMATION );
 			goto term;
 		}
 
-		if( !g_vunit->init( g_strm_xa2 ) ){ MessageBox( NULL, _T("initialize voice"), _T("error"), MB_OK ); goto term; }
+		if( !g_vunit->init( g_strm_xa2 ) ){ MessageBox( NULL, uxT( "initialize voice" ), uxT( "error" ), MB_OK ); goto term; }
 		ptvVelocity_load();
 
 		if( !g_vunit->strm_ready() )
 		{
-			Japanese_MessageBox( NULL, _T("ready voice streaming"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( NULL, "ready voice streaming", "error", MB_OK|MB_ICONEXCLAMATION );
 			goto term;
 		}
 
 		if( !g_strm_xa2->stream_start( cfg.strm->ch_num, cfg.strm->sps, cfg.strm->buf_sec ) )
 		{
-			MessageBox( NULL, _T("stream start"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			MessageBox( NULL, uxT( "stream start" ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 			goto term;
 		}
 
 		g_strm_woi = new pxtonewinWoice();
 		if( !g_strm_woi->init( g_strm_xa2 ) )
 		{
-			Japanese_MessageBox( NULL, _T("pxtone tool lib"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( NULL, "pxtone tool lib", "error", MB_OK|MB_ICONEXCLAMATION );
 			goto term;
 		}
 
 		{
-			const TCHAR* title_save = NULL;
-			const TCHAR* title_load = NULL;
+			const char* title_save = NULL;
+			const char* title_load = NULL;
 
 			if( Japanese_Is() ){ title_save = _title_save_ptv_j; title_load = _title_load_ptv_j; }
 			else               { title_save = _title_save_ptv_e; title_load = _title_load_ptv_e; }
 
 			g_path_dlg_ptv = new pxwPathDialog();
 			if( !g_path_dlg_ptv->init( _app_file_profile,
-									   _T("ptvoice {*.ptvoice}\0*.ptvoice*\0All files {*.*}\0*.*\0\0"),
-									   _T("ptvoice"     ),
-									   _T("ptv-ptv.path"),
+									   "ptvoice {*.ptvoice}\0*.ptvoice*\0All files {*.*}\0*.*\0\0",
+									   "ptvoice",
+									   "ptv-ptv.path",
 									   title_save, title_load, NULL ) ) goto term;
 
 			g_path_dlg_wav = new pxwPathDialog();
 			if( !g_path_dlg_wav->init( _app_file_profile,
-									   _T("wav {*.wav}\0*.wav\0All files {*.*}\0*.*\0\0"),
-									   _T("wav"     ),
-									   _T("ptv-wav.path"),
-									   _T("Save wav file"), _T("Load wav file"), NULL ) ) goto term;
+									   "wav {*.wav}\0*.wav\0All files {*.*}\0*.*\0\0",
+									   "wav",
+									   "ptv-wav.path",
+									   "Save wav file", "Load wav file", NULL ) ) goto term;
 
 			if( Japanese_Is() ){ title_save = _title_oput_txt_j; }
 			else               { title_save = _title_oput_txt_e; }
 
 			g_path_dlg_txt = new pxwPathDialog();
 			if( !g_path_dlg_txt->init( _app_file_profile,
-									   _T("text[*.txt}\0*.txt\0All files {*.*}\0*.*\0\0"),
-									   _T("txt"     ),
-									   _T("ptv-txt.path"),
+									   "text[*.txt}\0*.txt\0All files {*.*}\0*.*\0\0",
+									   "txt",
+									   "ptv-txt.path",
 									   title_save, title_load, NULL ) ) goto term;
 		}
 
 		g_alte = new pxwAlteration(); g_alte->set_window( g_hWnd_Main );
 		g_mouse     = new pxMouse( g_hWnd_Main );
-		g_interface = new Interface(); if( !g_interface->init() ) MessageBox( g_hWnd_Main, _T("interface error"), g_app_name, MB_OK );
+		g_interface = new Interface(); if( !g_interface->init() ) MessageBox( g_hWnd_Main, uxT( "interface error" ), uxT( g_app_name ), MB_OK );
 
 		pxtoneTool_HearSelect_Initialize( g_strm_woi, _app_file_profile );
 
 		{
 			bool b_err = false;
-			if( !g_dxdraw->tex_load( _T("img"), _T("parts.png"), SURF_PARTS ) ) b_err = true;
+			if( !g_dxdraw->tex_load( "img", "parts.png", SURF_PARTS ) ) b_err = true;
 			if( !g_dxdraw->tex_create( SCREEN_WAVEMINI_W, SCREEN_WAVEMINI_H, 0x00000000, SURF_WAVE_mini_0 ) ) b_err = true;
 			if( !g_dxdraw->tex_create( SCREEN_WAVEMINI_W, SCREEN_WAVEMINI_H, 0x00000000, SURF_WAVE_mini_1 ) ) b_err = true;
 			if( !g_dxdraw->tex_create( SCREEN_WAVE_W    , SCREEN_WAVE_H    , 0x00000000, SURF_WAVE_SCREEN ) ) b_err = true;
@@ -396,7 +375,7 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 		g_midi_in->Input_Start();
 
 		// ドラッグプロジェクト
-		if( args[0] ) _Function_DropProjectFile( &g_posted_path, args );
+		if( args[0] ) _Function_DropProjectFile( g_posted_path, args );
 
 		while( GetTickCount() < count + (1000 * 0.5f) ){}
 	}

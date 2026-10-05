@@ -1,101 +1,59 @@
 
 #include <pxStdDef.h>
-
-#include "./pxError.h"
+#include <uxStr.h>
 
 #include "./pxStrT.h"
 
-bool pxStrT_copy_allocate( TCHAR** pp_dst, const TCHAR *str )
+bool pxStrT_copy_allocate( uxDS& dst, const uxDS& src )
 {
-	return pxStrT_copy_allocate( pp_dst, str, 0 );
+	return pxStrT_copy( dst, src );
 }
 
-bool pxStrT_copy_allocate( TCHAR** pp_dst, const TCHAR *str, int32_t extra )
+bool pxStrT_copy_allocate( uxDS& dst, const uxDS& src, int32_t extra )
 {
-#ifdef UNICODE
-	int len = _tcslen( str );
-#else
-	int len = strlen ( str );
-#endif
+	(void)extra;
+	return pxStrT_copy( dst, src );
+}
 
-	*pp_dst = (TCHAR*)malloc( (len + 1 + extra )* sizeof(TCHAR) );
-	if( !(*pp_dst) ){ pxerr( "strt-alc" ); return false; }
-	memset( *pp_dst,   0,     (len + 1 + extra )* sizeof(TCHAR) );
-	memcpy( *pp_dst, str,     (len + 1         )* sizeof(TCHAR) );
+bool pxStrT_copy( uxDS& dst, const uxDS& src )
+{
+	dst = src; // deep copy; an unset source leaves dst unset
 	return true;
 }
 
-bool    pxStrT_copy         ( TCHAR* dst, const TCHAR* src )
+void pxStrT_free( uxDS& s )
 {
-#ifdef UNICODE
-	int len = _tcslen( src );
-#else
-	int len = strlen ( src );
-#endif
-	// was "len * sizeof(TCHAR) + 1", which is only half of a terminator. it is a whole TCHAR.
-	memcpy( dst, src, (len + 1) * sizeof(TCHAR) );
-	return true;
+	s = uxDS();
 }
 
-
-void pxStrT_free( TCHAR **pp )
+int32_t pxStrT_size( const uxDS& str )
 {
-	if( *pp ){ free( *pp ); *pp = NULL; }
+	return (int32_t)str.size();
 }
 
-int32_t pxStrT_size( const TCHAR* str )
-{
-	if( !str ) return 0;
-#ifdef UNICODE
-	int len = _tcslen( str );
-#else
-	int len = strlen ( str );
-#endif
-
-	return len * sizeof(TCHAR);
-}
-
-bool pxStrT_compare( const TCHAR *str1, const TCHAR *str2, int32_t num, int32_t* p_res )
+bool pxStrT_compare( const uxDS& str1, const uxDS& str2, int32_t num, int32_t* p_res )
 {
 	if( !str1 || !str2 || !p_res ) return false;
 
-#ifdef UNICODE
-	int len1 = _tcslen( str1 );
-	int len2 = _tcslen( str2 ); // was str1: num was never clamped to the second string.
-#else
-	int len1 = strlen ( str1 );
-	int len2 = strlen ( str2 );
-#endif
-
 	if( num )
 	{
+		int32_t len1 = (int32_t)str1.size();
+		int32_t len2 = (int32_t)str2.size(); // was str1: num was never clamped to the second string.
 		if( num > len1 ) num = len1;
 		if( num > len2 ) num = len2;
-		*p_res = memcmp( str1, str2, num * sizeof(TCHAR) );
+		*p_res = memcmp( *str1, *str2, num );
 	}
 	else
 	{
-#ifdef UNICODE
-		*p_res = _tcscmp( str1, str2 );
-#else
-		*p_res = strcmp ( str1, str2 );
-#endif
+		*p_res = str1.cmp( str2 ); // sdscmp
 	}
 	return true;
 }
 
-bool pxStrT_is_different( const TCHAR* a, const TCHAR* b )
+bool pxStrT_is_different( const uxDS& a, const uxDS& b )
 {
 	if(  a && !b ) return true ;
 	if( !a &&  b ) return true ;
-	if( a )
-	{
-		if( a == b         ) return false;
-#ifdef UNICODE
-		if( _tcscmp( a, b ) ) return true ;
-#else
-		if(  strcmp( a, b ) ) return true ;
-#endif
-	}
+	if( a ) return a.cmp( b ) != 0;
 	return false;
 }

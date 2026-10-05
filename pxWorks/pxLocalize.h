@@ -31,8 +31,8 @@ private:
 
 bool          _b_init        ;
 pxLOCALREGION _region        ;
-TCHAR*        _dir_localize  ;
-TCHAR*        _dir_region    ;
+uxDS         _dir_localize  ;
+uxDS         _dir_region    ;
 
 void _release          ();
 void _update_dir_region();
@@ -41,12 +41,12 @@ public:
 pxLocalize();
 ~pxLocalize();
 
-bool          init          ( const TCHAR*  dir_localize );
+bool          init          ( const uxDS& dir_localize );
 bool          read          ( pxDescriptor* desc );
 bool          set_and_write ( pxLOCALREGION region,  pxDescriptor* desc );
 bool          set           ( pxLOCALREGION region );
 pxLOCALREGION get           () const;
-const TCHAR*  get_region_dir() const;
+const uxDS   get_region_dir() const;
 };
 
 #endif

@@ -11,7 +11,7 @@
 #include "./pxwrDirectory.h"
 
 
-bool pxwrDirectory_find( const TCHAR *path_dir, const TCHAR *ext, bool b_sub_dir, pxfunc_find_path func, void *user )
+bool pxwrDirectory_find( const uxDS& path_dir, const uxDS& ext, bool b_sub_dir, pxfunc_find_path func, void *user )
 {
 #ifdef pxPLATFORM_windows
 	return pxwDirectory_find( path_dir, ext, b_sub_dir, func, user );
@@ -22,7 +22,7 @@ bool pxwrDirectory_find( const TCHAR *path_dir, const TCHAR *ext, bool b_sub_dir
 #endif
 }
 
-bool pxwrDirectory_copy_folders( const TCHAR *path_dst, const TCHAR* path_src )
+bool pxwrDirectory_copy_folders( const uxDS& path_dst, const uxDS& path_src )
 {
 #ifdef pxPLATFORM_windows
 	return pxwDirectory_copy_folders( path_dst, path_src );
@@ -33,7 +33,7 @@ bool pxwrDirectory_copy_folders( const TCHAR *path_dst, const TCHAR* path_src )
 #endif
 }
 
-bool pxwrDirectory_create( const TCHAR *path_dir )
+bool pxwrDirectory_create( const uxDS& path_dir )
 {
 #ifdef pxPLATFORM_windows
 	return pxwDirectory_create( path_dir );

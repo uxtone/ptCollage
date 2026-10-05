@@ -7,7 +7,7 @@
 #define _VELOCITY_DEFAULT 104
 
 static int32_t        _velocity_volume  = _VELOCITY_DEFAULT;
-static TCHAR*         _file_name        = _T("ptv-velo.bin");
+static uxSS<13>          _file_name        = "ptv-velo.bin";
 static const pxFile2* _ref_file_profile = NULL;
 
 void ptvVelocity_init( const pxFile2* file_profile )

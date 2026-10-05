@@ -44,7 +44,7 @@ bool    read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p_sps, int3
 int32_t read_sample( pxDescriptor* desc, void *p_dst, int32_t smp_num );
 void    vb_close   ();
 
-static bool sttc_save( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src );
+static bool sttc_save( const uxDS& path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src );
 };
 
 

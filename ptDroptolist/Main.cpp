@@ -11,18 +11,18 @@ static pxFile2* _app_file_data    = NULL;
 
 #include "resource.h"
 
-HWND         g_hDlg                   = NULL ;
-TCHAR        g_dir_module[ MAX_PATH ] = { 0 };
+HWND        g_hDlg                   = NULL ;
+uxSS<MAX_PATH>        g_dir_module = { 0 };
 
-static bool  _bSuspend = false;
-static TCHAR _input_path[ MAX_PATH ];
+static bool _bSuspend = false;
+static uxSS<MAX_PATH> _input_path;
 
 
 DWORD CALLBACK thrd_Search( LPVOID l );
 bool thrd_Search_Init     ();
 void thrd_Search_Release  ();
 
-static const TCHAR* _app_name_t_en = _T("pxtone droplist");
+static const uxSS<16>  _app_name_t_en = "pxtone droplist";
 
 #pragma comment(lib,"version")
 
@@ -33,7 +33,7 @@ static int32_t _GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
 	UINT             vSize;
-	TCHAR            path[ MAX_PATH ];
+	uxSS<MAX_PATH>             path;
 
 	int32_t v[ 4 ];
 
@@ -51,7 +51,7 @@ static int32_t _GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_
 	p = malloc( size );
 	if( !p                                                    ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )               ) goto End;
-	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
+	if( !VerQueryValue( p, "\\", (LPVOID*)&info, &vSize ) ) goto End;
 
 	v[ 0 ] = HIWORD(info->dwFileVersionMS);
 	v[ 1 ] = LOWORD(info->dwFileVersionMS);
@@ -118,11 +118,11 @@ pxwENTRY_POINT( hInst, hPrev, lpCmd, nCmd )
 
 	pxwFilePath_GetModuleDirectory( g_dir_module );
 
-	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( _T("data_ptd"), false );
-	_app_file_profile = new pxFile2(); _app_file_profile->init_base( _T("temp_ptd"), true  );
+	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( "data_ptd", false );
+	_app_file_profile = new pxFile2(); _app_file_profile->init_base( "temp_ptd", true  );
 	pxPath_setMode( pxPathMode_auto );
 
-	if( !pxDebugLog_init( _T("temp_ptd"), _T("debuglog") ) ) return -1;
+	if( !pxDebugLog_init( "temp_ptd", "debuglog" ) ) return -1;
 
 	dlog_c( "version %d.", _GetCompileVersion( 0, 0, 0, 0 ) );
 
@@ -131,21 +131,21 @@ pxwENTRY_POINT( hInst, hPrev, lpCmd, nCmd )
 	memset( _input_path, 0, MAX_PATH );
 
 	{
-		const TCHAR*  p_file_name = _T("last_path.txt");
+		const uxDS   p_file_name = "last_path.txt";
 		pxDescriptor* desc        = NULL;
 
 		if( pxwFilePath_ArgToPath( lpCmd, _input_path ) )
 		{
 			if( _app_file_profile->open_w( &desc, p_file_name, NULL, NULL ) )
 			{
-				desc->w_asfile( _input_path, sizeof(TCHAR), MAX_PATH );
+				desc->w_asfile( _input_path, sizeof(char), MAX_PATH );
 			}
 		}
 		else
 		{
 			if( _app_file_profile->open_r( &desc, p_file_name, NULL, NULL ) )
 			{
-				desc->r( _input_path, sizeof(TCHAR), MAX_PATH );
+				desc->r( _input_path, sizeof(char), MAX_PATH );
 			}
 		}
 		SAFE_DELETE( desc );
@@ -154,7 +154,7 @@ pxwENTRY_POINT( hInst, hPrev, lpCmd, nCmd )
 	}
 
 
-	DialogBox( hInst, _T("DLG_PROGRESS"), NULL, _Procedure );
+	DialogBox( hInst, "DLG_PROGRESS", NULL, _Procedure );
 
 	thrd_Search_Release();
 

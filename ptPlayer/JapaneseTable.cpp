@@ -6,58 +6,58 @@
 
 JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 {
-	{IDC_TEXT_ABOUTTITLE    , _T("≪このソフトウェアについて≫") },
-	{IDC_TEXT_CONFIGTITLE   , _T("≪環境設定≫"                ) },
-	{IDC_DEFAULT            , _T("初期値"                      ) },
-	{IDC_TEXT_DEVICE        , _T("デバイス"                    ) },
-	{IDC_TEXT_SECOND        , _T("秒"                          ) },
+	{IDC_TEXT_ABOUTTITLE    , "≪このソフトウェアについて≫" },
+	{IDC_TEXT_CONFIGTITLE   , "≪環境設定≫" },
+	{IDC_DEFAULT            , "初期値" },
+	{IDC_TEXT_DEVICE        , "デバイス" },
+	{IDC_TEXT_SECOND        , "秒" },
 
-	{IDC_TEXT_SOUNDQUALITY  , _T("音質"                        ) },
-	{IDC_TEXT_CHANNEL       , _T("チャンネル"                  ) },
-	{IDC_TEXT_SPS           , _T("秒間サンプル"                ) },
-	{IDC_TEXT_BUFFER        , _T("バッファ"                    ) },
+	{IDC_TEXT_SOUNDQUALITY  , "音質" },
+	{IDC_TEXT_CHANNEL       , "チャンネル" },
+	{IDC_TEXT_SPS           , "秒間サンプル" },
+	{IDC_TEXT_BUFFER        , "バッファ" },
 
-	{IDC_TEXT_CONFIGTITLE   , _T("≪環境設定≫"                ) },
-	{IDC_TEXT_FONT          , _T("フォント"                    )},
-	{IDC_TEXT_BUILDOPTION   , _T("≪ビルド設定≫"              ) },
-	{IDC_TEXT_PLAYINFOMATION, _T("演奏データ情報"              ) },
-	{IDC_TEXT_SEC1          , _T("秒"                          ) },
+	{IDC_TEXT_CONFIGTITLE   , "≪環境設定≫" },
+	{IDC_TEXT_FONT          , "フォント"},
+	{IDC_TEXT_BUILDOPTION   , "≪ビルド設定≫" },
+	{IDC_TEXT_PLAYINFOMATION, "演奏データ情報" },
+	{IDC_TEXT_SEC1          , "秒" },
 
-	{IDC_TEXT_SEC2          , _T("秒"                          ) },
-	{IDC_TEXT_SEC3          , _T("秒"                          ) },
-	{IDC_TEXT_SEC4          , _T("秒"                          ) },
-	{IDC_TEXT_PLAYSCOPE     , _T("ビルド範囲"                  ) },
-	{IDC_TEXT_PLAYTIME      , _T("演奏時間"                    ) },
+	{IDC_TEXT_SEC2          , "秒" },
+	{IDC_TEXT_SEC3          , "秒" },
+	{IDC_TEXT_SEC4          , "秒" },
+	{IDC_TEXT_PLAYSCOPE     , "ビルド範囲" },
+	{IDC_TEXT_PLAYTIME      , "演奏時間" },
 
-	{IDC_TEXT_EXTRAFADE     , _T("追加フェードアウト"          ) },
-	{IDC_TEXT_TOTALTIME     , _T("合計時間"                    ) },
-	{IDC_TEXT_LOOPTIME      , _T("ループ部"                    ) },
-	{IDC_TEXT_HEADTIME      , _T("前奏部"                      ) },
+	{IDC_TEXT_EXTRAFADE     , "追加フェードアウト" },
+	{IDC_TEXT_TOTALTIME     , "合計時間" },
+	{IDC_TEXT_LOOPTIME      , "ループ部" },
+	{IDC_TEXT_HEADTIME      , "前奏部" },
 };
 
 JAPANESETEXTSTRUCT_TEXTSET _MenuItem_table[] =
 {
-	{ _T("About"         ),    _T("情報"              ) },
-	{ _T("Quit"          ),    _T("終了"              ) },
-	{ _T("Volume"        ),    _T("音量"              ) },
-	{ _T("Etc"           ),    _T("その他"            ) },
-	{ _T("Config"        ),    _T("環境設定"          ) },
+	{ "About",    "情報" },
+	{ "Quit",    "終了" },
+	{ "Volume",    "音量" },
+	{ "Etc",    "その他" },
+	{ "Config",    "環境設定" },
 
-	{ _T("Setting"       ),    _T("設定"              ) },
-	{ _T("File"          ),    _T("ファイル"          ) },
-	{ _T("Load"          ),    _T("読み込み"          ) },
-	{ _T("History"       ),    _T("履歴"              ) },
-	{ _T("Export *.wav"  ),    _T("wavファイルに出力" ) },
+	{ "Setting",    "設定" },
+	{ "File",    "ファイル" },
+	{ "Load",    "読み込み" },
+	{ "History",    "履歴" },
+	{ "Export *.wav",    "wavファイルに出力" },
 
-	{ _T("pxtone Collage"),    _T("ピストンコラージュ") },
+	{ "pxtone Collage",    "ピストンコラージュ" },
 };
 
 JAPANESETEXTSTRUCT_TEXTSET _Message_table[] =
 {
-	{ _T("open file"     ), _T("ファイルが開けませんでした") },
-	{ _T("read file"     ), _T("ファイルが読めませんでした") },
-	{ _T("unknown format"), _T("無効なフォーマットです"    ) },
-	{ _T("error"         ), _T("エラー"                    ) },
+	{ "open file", "ファイルが開けませんでした" },
+	{ "read file", "ファイルが読めませんでした" },
+	{ "unknown format", "無効なフォーマットです" },
+	{ "error", "エラー" },
 };
 
 void JapaneseTable_init( bool b_japanese )

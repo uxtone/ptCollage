@@ -1,8 +1,10 @@
 ﻿
 #include <pxwWindowRect.h>
+#include <uxStr.h>
 #include <pxwFilePath.h>
 
 #include "../../Generic/Japanese.h"
+#include "../../Generic/pxMidiIn.h"
 
 #include "../../ptConfig/ptConfig_DlgCtrl.h"
 #include "../../ptConfig/ptConfig.h"
@@ -10,7 +12,7 @@
 #include "../resource.h"
 
 
-static const TCHAR* _dummy_font_name = _T("-");
+static const uxSS<2>  _dummy_font_name = "-";
 static HFONT        _hFont           = NULL ;
 static bool         _b_midi_devices  = false;
 
@@ -21,7 +23,7 @@ static int CALLBACK _EnumFont( ENUMLOGFONT *p_elf, NEWTEXTMETRIC *p_ntm, int typ
 
 	if( type & TRUETYPE_FONTTYPE && IsWindow( hWnd ) )
 	{
-		len = (int32_t)_tcslen( p_elf->elfLogFont.lfFaceName );
+		len = 0; while( p_elf->elfLogFont.lfFaceName[ len ] ) len++; // OS text: wide
 
 		for( int32_t i = 0; i < len; i++ )
 		{
@@ -37,12 +39,12 @@ static int CALLBACK _EnumFont( ENUMLOGFONT *p_elf, NEWTEXTMETRIC *p_ntm, int typ
 
 static bool _PreviewFont( HWND hDlg )
 {
-	TCHAR        name[ BUFSIZE_FONTNAME ];
-	const TCHAR* p = NULL;
+	uxSS<BUFSIZE_FONTNAME>        name;
+	uxDS  p;
 
-	GetDlgItemText( hDlg, IDC_COMBO_FONT, name, BUFSIZE_FONTNAME );
+	GetDlgItemText( hDlg, IDC_COMBO_FONT, uxTOut( name ), BUFSIZE_FONTNAME );
 
-	if(_tcsicmp( name, _dummy_font_name ) ) p = name;
+	if(ux_stricmp( name, _dummy_font_name ) ) p = name;
 
 	if( _hFont ){ DeleteObject( _hFont ); _hFont = NULL; }
 	_hFont = CreateFont( 12, 0,
@@ -57,7 +59,7 @@ static bool _PreviewFont( HWND hDlg )
 						 CLIP_DEFAULT_PRECIS,
 						 DEFAULT_QUALITY,
 						 FIXED_PITCH,
-						 p );
+						 uxT( p ) );
 
 	if( _hFont ) SendMessage( GetDlgItem( hDlg, IDC_FONTSAMPLE ), WM_SETFONT, (WPARAM)_hFont, true );
 
@@ -70,7 +72,7 @@ static void _InitDialog( HWND hDlg )
 	ptConfig_cmb_quality_init( hDlg, IDC_COMBO_CHANNEL, IDC_COMBO_SPS, Japanese_Is() );
 
 	{
-		SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_ADDSTRING, 0, (LPARAM)_dummy_font_name );
+		SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_ADDSTRING, 0, uxLP( _dummy_font_name ) );
 		HDC hDC = GetDC( hDlg );
 		EnumFontFamilies(      hDC, NULL, (FONTENUMPROC)_EnumFont, (LPARAM)hDlg );
 		ReleaseDC(       hDlg, hDC );
@@ -78,7 +80,7 @@ static void _InitDialog( HWND hDlg )
 
 	// midi..
 	{
-		int num = midiInGetNumDevs();
+		int num = pxMidiIn_get_device_num();
 		if( num )
 		{
 			_b_midi_devices  = true;
@@ -103,9 +105,9 @@ static void _InitDialog( HWND hDlg )
 static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 {
 	{
-		TCHAR str[ 10 ];
-		_stprintf_s( str, 10, _T("%0.2f"), p_c->strm->buf_sec    ); SetDlgItemText( hDlg, IDC_BUFFER   , str );
-		_stprintf_s( str, 10, _T("%0.4f"), p_c->midi->key_tuning ); SetDlgItemText( hDlg, IDC_KEYTUNING, str );
+		uxSS<10> str;
+		ux_sprintf_s( str, 10, "%0.2f", p_c->strm->buf_sec    ); SetDlgItemText( hDlg, IDC_BUFFER   , uxT( str ) );
+		ux_sprintf_s( str, 10, "%0.4f", p_c->midi->key_tuning ); SetDlgItemText( hDlg, IDC_KEYTUNING, uxT( str ) );
 	}
 
 	ptConfig_cmb_quality_set( hDlg,
@@ -114,7 +116,7 @@ static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 
 	// font..
 	{
-		int32_t i = (int32_t)SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_FINDSTRING, 0, (LPARAM)p_c->font->name );
+		int32_t i = (int32_t)SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_FINDSTRING, 0, uxLP( p_c->font->name ) );
 		if( i == CB_ERR ) i = 0;
 		SendDlgItemMessage( hDlg, IDC_COMBO_FONT, CB_SETCURSEL , i, 0 );
 		_PreviewFont( hDlg );
@@ -123,13 +125,13 @@ static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 	// midi..
 	if( _b_midi_devices )
 	{
-		int32_t i = (int32_t)SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_FINDSTRING, 0, (LPARAM)p_c->midi->name );
+		int32_t i = (int32_t)SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_FINDSTRING, 0, uxLP( p_c->midi->name ) );
 		if( i == CB_ERR ) i = 0;
 		SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_SETCURSEL , i, 0 );
 	}
 	else
 	{
-		SetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, p_c->midi->name );
+		SetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, uxT( p_c->midi->name ) );
 	}
 
 	CheckDlgButton( hDlg, IDC_CHK_VELOCITY, p_c->midi->b_velo ? 1 : 0 );
@@ -141,9 +143,9 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 	p_c->set_default();
 
 	{
-		TCHAR str[ 10 ];
-		GetDlgItemText( hDlg, IDC_BUFFER   , str, 10 ); p_c->strm->buf_sec    = (float)_ttof( str );
-		GetDlgItemText( hDlg, IDC_KEYTUNING, str, 10 ); p_c->midi->key_tuning = (float)_ttof( str );
+		uxSS<10> str;
+		GetDlgItemText( hDlg, IDC_BUFFER   , uxTOut( str ), 10 ); p_c->strm->buf_sec    = (float)_ttof( uxT( str ) );
+		GetDlgItemText( hDlg, IDC_KEYTUNING, uxTOut( str ), 10 ); p_c->midi->key_tuning = (float)_ttof( uxT( str ) );
 	}
 
 	ptConfig_cmb_quality_get( hDlg,
@@ -151,12 +153,12 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 							  IDC_COMBO_SPS    , &p_c->strm->sps   );
 
 	{
-		GetDlgItemText( hDlg, IDC_COMBO_FONT, p_c->font->name, BUFSIZE_FONTNAME );
-		if( !_tcsicmp( p_c->font->name, _dummy_font_name ) ) memset( p_c->font->name, 0, sizeof(p_c->font->name) );
+		GetDlgItemText( hDlg, IDC_COMBO_FONT, uxTOut( p_c->font->name ), BUFSIZE_FONTNAME );
+		if( !ux_stricmp( p_c->font->name, _dummy_font_name ) ) memset( p_c->font->name, 0, sizeof(p_c->font->name) );
 	}
 
 	// midi..
-	GetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, p_c->midi->name, BUFSIZE_MIDIDEVICENAME );
+	GetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, uxTOut( p_c->midi->name ), BUFSIZE_MIDIDEVICENAME );
 	p_c->midi->b_velo = IsDlgButtonChecked( hDlg, IDC_CHK_VELOCITY ) ? true : false;
 
 
@@ -167,7 +169,7 @@ static bool _CheckParameter( HWND hDlg, ptConfig *p_c )
 {
 	if( p_c->strm->buf_sec < 0.01f || p_c->strm->buf_sec > 1.00f )
 	{
-		MessageBox( hDlg, _T("Sound Buffer :\r\nmin 0.01sec / max 1.00sec"), _T("error"), MB_OK );
+		MessageBox( hDlg, uxT( "Sound Buffer :\r\nmin 0.01sec / max 1.00sec" ), uxT( "error" ), MB_OK );
 		return false;
 	}
 	return true;

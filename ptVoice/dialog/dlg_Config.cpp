@@ -1,8 +1,10 @@
 ﻿
 #include <pxwWindowRect.h>
+#include <uxStr.h>
 #include <pxwFilePath.h>
 
 #include "../../Generic/Japanese.h"
+#include "../../Generic/pxMidiIn.h"
 
 #include "../../ptConfig/ptConfig_DlgCtrl.h"
 #include "../../ptConfig/ptConfig.h"
@@ -18,7 +20,7 @@ static void _InitDialog( HWND hDlg )
 
 	// midi..
 	{
-		int num = midiInGetNumDevs();
+		int num = pxMidiIn_get_device_num();
 		if( num )
 		{
 			_b_midi_devices  = true;
@@ -43,9 +45,9 @@ static void _InitDialog( HWND hDlg )
 static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 {
 	{
-		TCHAR str[ 10 ];
-		_stprintf_s( str, 10, _T("%0.2f"), p_c->strm->buf_sec    ); SetDlgItemText( hDlg, IDC_AT_BUFFER, str );
-		_stprintf_s( str, 10, _T("%0.4f"), p_c->midi->key_tuning ); SetDlgItemText( hDlg, IDC_KEYTUNING, str );
+		uxSS<10> str;
+		ux_sprintf_s( str, 10, "%0.2f", p_c->strm->buf_sec    ); SetDlgItemText( hDlg, IDC_AT_BUFFER, uxT( str ) );
+		ux_sprintf_s( str, 10, "%0.4f", p_c->midi->key_tuning ); SetDlgItemText( hDlg, IDC_KEYTUNING, uxT( str ) );
 	}
 
 	ptConfig_cmb_quality_set( hDlg,
@@ -54,13 +56,13 @@ static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 
 	if( _b_midi_devices )
 	{
-		int32_t i = SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_FINDSTRING, 0, (LPARAM)p_c->midi->name );
+		int32_t i = SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_FINDSTRING, 0, uxLP( p_c->midi->name ) );
 		if( i == CB_ERR ) i = 0;
 		SendDlgItemMessage( hDlg, IDC_COMBO_MIDIDEVICE, CB_SETCURSEL , i, 0 );
 	}
 	else
 	{
-		SetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, p_c->midi->name );
+		SetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, uxT( p_c->midi->name ) );
 	}
 
 	CheckDlgButton( hDlg, IDC_CHK_VELOCITY, p_c->midi->b_velo ? 1 : 0 );
@@ -71,9 +73,9 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 	p_c->set_default();
 
 	{
-		TCHAR str[ 10 ];
-		GetDlgItemText( hDlg, IDC_AT_BUFFER, str, 10 ); p_c->strm->buf_sec    = (float)_ttof( str );
-		GetDlgItemText( hDlg, IDC_KEYTUNING, str, 10 ); p_c->midi->key_tuning = (float)_ttof( str );
+		uxSS<10> str;
+		GetDlgItemText( hDlg, IDC_AT_BUFFER, uxTOut( str ), 10 ); p_c->strm->buf_sec    = (float)_ttof( uxT( str ) );
+		GetDlgItemText( hDlg, IDC_KEYTUNING, uxTOut( str ), 10 ); p_c->midi->key_tuning = (float)_ttof( uxT( str ) );
 	}
 
 	ptConfig_cmb_quality_get( hDlg,
@@ -81,7 +83,7 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 							  IDC_COMBO_AT_SPS    , &p_c->strm->sps   );
 
 	// midi..
-	GetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, p_c->midi->name, BUFSIZE_MIDIDEVICENAME );
+	GetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, uxTOut( p_c->midi->name ), BUFSIZE_MIDIDEVICENAME );
 	p_c->midi->b_velo = IsDlgButtonChecked( hDlg, IDC_CHK_VELOCITY ) ? true : false;
 
 	return true;
@@ -91,7 +93,7 @@ static bool _CheckParameter( HWND hDlg, ptConfig *p_c )
 {
 	if( p_c->strm->buf_sec < 0.01f || p_c->strm->buf_sec > 1.00f )
 	{
-		MessageBox( hDlg, _T("Sound Buffer :\r\nmin 0.01sec / max 1.00sec"), _T("error"), MB_OK );
+		MessageBox( hDlg, uxT( "Sound Buffer :\r\nmin 0.01sec / max 1.00sec" ), uxT( "error" ), MB_OK );
 		return false;
 	}
 	return true;

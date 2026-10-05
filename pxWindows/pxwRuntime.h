@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pxStdDef.h>
+
 #include <windows.h>
 #include "pxwEntryPoint.h"
 #include "pxwXAudio2Keep.h"
@@ -17,5 +19,5 @@ pxwRuntime() = default;
 pxwRuntime( const pxwRuntime& ) = delete;
 pxwRuntime& operator=( const pxwRuntime& ) = delete;
 
-bool init( const TCHAR* app_name, int* p_exit_code );
+bool init( const uxDS& app_name, int* p_exit_code );
 };

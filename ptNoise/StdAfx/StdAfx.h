@@ -14,3 +14,5 @@
 #include <imm.h>
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

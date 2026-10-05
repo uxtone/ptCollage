@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxwWindowRect.h>
 
 #include "../resource.h"
@@ -13,8 +14,8 @@ dlg_Message( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 	//ダイアログ起動
 	case WM_INITDIALOG:
 
-		SetDlgItemText( hWnd, IDC_MESSAGE, ( (MESSAGEDIALOGSTRUCT *)l )->p_message );
-		SetWindowText(  hWnd,              ( (MESSAGEDIALOGSTRUCT *)l )->p_title   );
+		SetDlgItemText( hWnd, IDC_MESSAGE, uxT( ( (MESSAGEDIALOGSTRUCT *)l )->p_message ) );
+		SetWindowText(  hWnd,              uxT( ( (MESSAGEDIALOGSTRUCT *)l )->p_title )   );
 		pxwWindowRect_center( hWnd );
 		return 1;
 

@@ -257,7 +257,7 @@ bool if_gen_splash( HWND hwnd, pxwDx09Draw *dxdraw, int32_t surf, float mag )
 	fRECT rc_logo = {  0,  0, 80 * mag, 16 * mag};
 	RECT  rc_client;
 
-	if( dxdraw->tex_load( _T("img"), _T("logo.png"), surf, mag ) < 0 ) return false;
+	if( dxdraw->tex_load( "img", "logo.png", surf, mag ) < 0 ) return false;
 
 	GetClientRect( hwnd, &rc_client );
 	rc_client.right  = (LONG)( rc_client.right  / dxdraw->get_screen_mag() );

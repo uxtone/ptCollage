@@ -5,7 +5,8 @@ extern pxtnService *g_pxtn;
 #include <pxwWindowRect.h>
 #include <pxwUTF8.h>
 
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 #include <pxStr.h>
 #include <pxMem.h>
 
@@ -32,8 +33,10 @@ void _SetUnitName_byCombo( HWND hDlg )
 		strcat( name_c, p_name_c );
 	}
 
-	pxTText tt; if( !tt.set_sjis_to_t( name_c ) ) return;
-	SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+	// pxTText tt; if( !tt.set_sjis_to_t( name_c ) ) return;
+	uxDS tt; if( !( tt = uxDS_from_sjis( name_c ) ) ) return;
+	// SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+	SetDlgItemText( hDlg, IDC_NAME, uxT( tt ) );
 }
 
 
@@ -45,22 +48,26 @@ static bool _init_dlg_addunit( HWND hDlg, const ADDUNITSTRUCT* p_addunit )
 	SendDlgItemMessage( hDlg, IDC_NAME, EM_SETLIMITTEXT, pxtnMAX_TUNEUNITNAME, 0 );
 
 	{
-		pxTText tt; if( !tt.set_sjis_to_t( p_addunit->name ) ) goto term;
-		SetDlgItemText(     hDlg, IDC_NAME, tt.tchr() );
+		// pxTText tt; if( !tt.set_sjis_to_t( p_addunit->name ) ) goto term;
+		uxDS tt; if( !( tt = uxDS_from_sjis( p_addunit->name ) ) ) goto term;
+		// SetDlgItemText(     hDlg, IDC_NAME, tt.tchr() );
+		SetDlgItemText(     hDlg, IDC_NAME, uxT( tt ) );
 	}
 
 	num = g_pxtn->Woice_Num();
 	if( !num )
 	{
-		if( Japanese_Is() ) SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, (LPARAM)_T("音源はありません") );
-		else                SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, (LPARAM)_T("no voice"        ) );
+		if( Japanese_Is() ) SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, uxLP( "音源はありません" ) );
+		else                SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, uxLP( "no voice" ) );
 	}
 	else
 	{
 		for( int32_t w = 0; w < num; w++ )
 		{
-			pxTText tt; if( !tt.set_sjis_to_t( g_pxtn->Woice_Get( w )->get_name_buf( NULL ) ) ) goto term;
-			SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, (LPARAM)tt.tchr() );
+			// pxTText tt; if( !tt.set_sjis_to_t( g_pxtn->Woice_Get( w )->get_name_buf( NULL ) ) ) goto term;
+			uxDS tt; if( !( tt = uxDS_from_sjis( g_pxtn->Woice_Get( w )->get_name_buf( NULL ) ) ) ) goto term;
+			// SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, (LPARAM)tt.tchr() );
+			SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_ADDSTRING, 0, uxLP( tt ) );
 		}
 	}
 	SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_SETCURSEL, 0, 0 );
@@ -70,24 +77,26 @@ static bool _init_dlg_addunit( HWND hDlg, const ADDUNITSTRUCT* p_addunit )
 term:
 	if( !b_ret )
 	{
-		MessageBox( hDlg, _T("unit name"), _T("Add Unit init Error"), MB_ICONERROR ); return false;
+		MessageBox( hDlg, uxT( "unit name" ), uxT( "Add Unit init Error" ), MB_ICONERROR ); return false;
 	}
 	return b_ret;
 }
 
 static bool _Get( HWND hDlg, ADDUNITSTRUCT* p_addunit )
 {
-	TCHAR buf_t[ pxtnMAX_TUNEUNITNAME + 1 ] = {0};
+	uxSS<pxtnMAX_TUNEUNITNAME + 1> buf_t = {0};
 
-	GetDlgItemText( hDlg, IDC_NAME, buf_t, pxtnMAX_TUNEUNITNAME + 1 );
+	GetDlgItemText( hDlg, IDC_NAME, uxTOut( buf_t ), pxtnMAX_TUNEUNITNAME + 1 );
 	p_addunit->voice_no = (int32_t)SendDlgItemMessage( hDlg, IDC_COMBO_VOICENO, CB_GETCURSEL, 0, 0 );
 
 	{
-		pxTText tt; if( !tt.set_TCHAR_to_sjis( buf_t ) )
+		// pxTText tt; if( !tt.set_TCHAR_to_sjis( buf_t ) )
+		uxDS tt; if( !( tt = uxDS_to_sjis( buf_t ) ) )
 		{
-			MessageBox( hDlg, _T("unit name"), _T("Add Unit Error"), MB_ICONERROR ); return false;
+			MessageBox( hDlg, uxT( "unit name" ), uxT( "Add Unit Error" ), MB_ICONERROR ); return false;
 		}
-		strcpy( p_addunit->name, tt.sjis() );
+		// strcpy( p_addunit->name, tt.sjis() );
+		strcpy( p_addunit->name, *tt );
 	}
 
 	return true;

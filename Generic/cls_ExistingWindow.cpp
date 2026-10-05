@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include "cls_ExistingWindow.h"
 // #include <errhandlingapi.h>
 
@@ -17,13 +18,13 @@ cls_EXISTINGWINDOW::~cls_EXISTINGWINDOW()
 }
 
 
-static void _ForgrandExistingWindow( const TCHAR *mapping_name, UINT msg )
+static void _ForgrandExistingWindow( const uxDS& mapping_name, UINT msg )
 {
 	// マテックスが既に有るなら、既存ウインドウを表示してfalseを返す
 	HANDLE  hMapping    = NULL;
 	HWND    *p_hwnd_map = NULL;
 
-	hMapping = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
+	hMapping = CreateFileMapping( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), uxT( mapping_name ) );
 	if( !hMapping ) return;
 
 	if( GetLastError() != ERROR_ALREADY_EXISTS )
@@ -49,12 +50,12 @@ static void _ForgrandExistingWindow( const TCHAR *mapping_name, UINT msg )
 }
 
 
-bool cls_EXISTINGWINDOW::Check( const TCHAR  *mutex_name, const TCHAR *mapping_name, UINT msg )
+bool cls_EXISTINGWINDOW::Check( const uxDS& mutex_name, const uxDS& mapping_name, UINT msg )
 {
 	// マテックスが無ければ生成して終わり
-	_hMutex = OpenMutex( MUTEX_ALL_ACCESS, false, mutex_name );
+	_hMutex = OpenMutex( MUTEX_ALL_ACCESS, false, uxT( mutex_name ) );
 	if( !_hMutex ){
-		_hMutex = CreateMutex( nullptr, 0, mutex_name );
+		_hMutex = CreateMutex( nullptr, 0, uxT( mutex_name ) );
 		if( !_hMutex ) return false;
 		return true;
 	}
@@ -63,12 +64,12 @@ bool cls_EXISTINGWINDOW::Check( const TCHAR  *mutex_name, const TCHAR *mapping_n
 	return false;
 }
 
-bool cls_EXISTINGWINDOW::Mapping( const TCHAR  *mutex_name, const TCHAR *mapping_name, HWND hWnd )
+bool cls_EXISTINGWINDOW::Mapping( const uxDS& mutex_name, const uxDS& mapping_name, HWND hWnd )
 {
-	_hMutex = CreateMutex(NULL, 0, mutex_name );
+	_hMutex = CreateMutex(NULL, 0, uxT( mutex_name ) );
 	if( !_hMutex     ) return false;
 
-	_hMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
+	_hMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), uxT( mapping_name ) );
 	if( !_hMapping   ){
 		ReleaseMutex(    _hMutex     ); _hMutex = NULL;
 		return false;

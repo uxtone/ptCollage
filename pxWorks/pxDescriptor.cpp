@@ -1,5 +1,6 @@
 ﻿#include "./pxMem.h"
 #include "./pxDescriptor.h"
+#include <vector>
 
 #define _BUFSIZE_HEEP 260
 
@@ -553,3 +554,24 @@ bool pxDescriptor::v_r  ( int32_t *p  )
 	return true;
 }
 */
+
+bool pxDescriptor::w_utf8( const uxDS& text )
+{
+	int32_t size = (int32_t)text.size();
+	if( !w_asfile( &size, sizeof(size), 1 ) ) return false;
+	return !size || w_asfile( *text, 1, size );
+}
+
+bool pxDescriptor::r_utf8( uxDS& text, int32_t max_size )
+{
+	int32_t size = 0;
+	if( !r( &size, sizeof(size), 1 )   ) return false;
+	if( size < 0 || size > max_size    ) return false;
+
+	std::vector<char> buf( (size_t)size + 1, 0 );
+	if( size && !r( &buf[ 0 ], 1, size ) ) return false;
+	if( memchr( &buf[ 0 ], 0, (size_t)size ) ) return false;
+
+	text = uxDS( &buf[ 0 ], (size_t)size );
+	return true;
+}

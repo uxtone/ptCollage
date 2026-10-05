@@ -1,5 +1,6 @@
 ﻿
 #include <png.h>
+#include <uxStr.h>
 
 #include "./pxError.h"
 #include "./pxMem.h"
@@ -263,7 +264,7 @@ bool pxSurface::png_write     ( pxDescriptor* desc ) const
 
 	int         color_type = PNG_COLOR_TYPE_RGB_ALPHA;
 
-//	if( !( fp = _tfopen( path_dst, _T("wb") ) ) ) goto term;
+//	if( !( fp = ux_fopen( path_dst, "wb" ) ) ) goto term;
 
 	png_ptr  = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	info_ptr = png_create_info_struct( png_ptr );

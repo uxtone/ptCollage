@@ -18,3 +18,5 @@
 #include <mmsystem.h>
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

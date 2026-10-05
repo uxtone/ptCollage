@@ -67,7 +67,7 @@ void if_Player_Initialize( HWND hWnd, const pxPalette* palette )
 
 static const char *_default_name = "-PXTONE PLAYER-";
 
-void if_Player_RedrawName( const TCHAR* new_font_name )
+void if_Player_RedrawName( const uxDS& new_font_name )
 {
 	const char* p_name;
 	int32_t     name_size = 0;

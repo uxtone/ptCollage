@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxMem.h"
+#include <uxStr.h>
 
 #include "./pxUTF8.h"
 
@@ -219,7 +220,7 @@ bool pxUTF8_copy_allocate( char** pp, const char* str_src )
 
 #include "./pxDescriptor.h"
 
-bool pxUTF8_test_reverse   ( const TCHAR* path_src, const TCHAR* path_dst )
+bool pxUTF8_test_reverse   ( const uxDS& path_src, const uxDS& path_dst )
 {
 	bool      b_ret     = false;
 	int32_t   file_size =     0;
@@ -232,7 +233,7 @@ bool pxUTF8_test_reverse   ( const TCHAR* path_src, const TCHAR* path_dst )
 
 	// read.
 	{
-		FILE*        fp = NULL; if( !( fp = _tfopen( path_src, _T("rb") ) ) ) return false;
+		FILE*        fp = NULL; if( !( fp = ux_fopen( path_src, "rb" ) ) ) return false;
 		pxDescriptor desc     ; desc.set_file_r( fp );
 
 		if( !desc.get_size_bytes( &file_size ) ) return false;
@@ -277,7 +278,7 @@ bool pxUTF8_test_reverse   ( const TCHAR* path_src, const TCHAR* path_dst )
 
 	// write.
 	{
-		FILE*        fp = NULL; if( !( fp = _tfopen( path_src, _T("wb") ) ) ) return false;
+		FILE*        fp = NULL; if( !( fp = ux_fopen( path_src, "wb" ) ) ) return false;
 		pxDescriptor desc     ; desc.set_file_w( fp );
 		if( !desc.w_asfile ( p_dst, 1, dst_size ) ) goto term;
 	}

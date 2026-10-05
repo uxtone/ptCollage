@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxwAlteration.h>
 extern pxwAlteration* g_alte;
 
@@ -219,7 +220,7 @@ void UndoEvent_Release()
 void UndoEvent_SetOrderUnit( int32_t u )
 {
 	if( u >= 0 && u < _max_unit ) _UndoOrder.b_units[ u ] = true;
-	else MessageBox( NULL, _T("217394080"), _T("error"), MB_OK );
+	else MessageBox( NULL, uxT( "217394080" ), uxT( "error" ), MB_OK );
 }
 
 void UndoEvent_SetOrderClock( int32_t clock1, int32_t clock2 )

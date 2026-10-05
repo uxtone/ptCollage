@@ -1,4 +1,5 @@
 ﻿
+#include <pxStdDef.h>
 #include <pxPalette.h>
 
 #include <pxtnService.h>
@@ -38,7 +39,7 @@ bool    if_Player_StartPlay ();
 void    if_Player_StopPlay  ();
 void    if_Player_ZeroSampleOffset();
 
-void    if_Player_RedrawName( const TCHAR* new_font_name );
+void    if_Player_RedrawName( const uxDS& new_font_name );
 
 bool    if_Player_IsVolume         ( float x, float y );
 void    if_Player_SetVolume_cur_pos( float x, float y );

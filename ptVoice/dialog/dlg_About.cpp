@@ -1,5 +1,6 @@
 ﻿
 #include <pxStdDef.h>
+#include <uxStr.h>
 
 #include <pxwWindowRect.h>
 
@@ -7,7 +8,7 @@
 
 #include "../resource.h"
 
-TCHAR *gStrVersion = _T("version.%d.%d.%d.%d - %04d/%02d/%02d");
+uxDS gStrVersion = "version.%d.%d.%d.%d - %04d/%02d/%02d";
 
 // コンパイル日の取得
 void GetCompileDate( int32_t *year, int32_t *month, int32_t *day )
@@ -41,7 +42,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
 	UINT             vSize;
-	TCHAR path[ MAX_PATH ];
+	uxSS<MAX_PATH> path;
 
 	int32_t v[ 4 ];
 
@@ -51,15 +52,15 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	if( p3 ) *p3 = 0;
 	if( p4 ) *p4 = 0;
 
-	GetModuleFileName( NULL, path, MAX_PATH );
+	GetModuleFileName( NULL, uxTOut( path ), MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy );
+	size = GetFileVersionInfoSize( uxT( path ), &dummy );
 	if( !size ) goto End;
 
 	p = malloc( size );
 	if( !p                                                ) goto End;
-	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
-	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
+	if( !GetFileVersionInfo( uxT( path ), 0, size, p )           ) goto End;
+	if( !VerQueryValue( p, uxT( "\\" ), (LPVOID*)&info, &vSize ) ) goto End;
 
 	v[ 0 ] = HIWORD(info->dwFileVersionMS);
 	v[ 1 ] = LOWORD(info->dwFileVersionMS);
@@ -86,16 +87,16 @@ dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 	case WM_INITDIALOG:
 
 	{
-		TCHAR str[64];
+		uxSS<64> str;
 		int32_t  y, m, d;
 		int32_t  v1,v2,v3,v4;
 		GetCompileDate( &y, &m, &d );
 		GetCompileVersion( &v1, &v2, &v3, &v4 );
-		_stprintf_s( str, gStrVersion, v1, v2, v3, v4, y, m, d );
-		SetDlgItemText( hDlg, IDC_VERSION, str );
+		ux_sprintf_s( str, *gStrVersion, v1, v2, v3, v4, y, m, d );
+		SetDlgItemText( hDlg, IDC_VERSION, uxT( str ) );
 	}
 
-		SetDlgItemText( hDlg, IDC_MESSAGE, _T("beta test") );
+		SetDlgItemText( hDlg, IDC_MESSAGE, uxT( "beta test" ) );
 
 		pxwWindowRect_center      ( hDlg );
 		Japanese_DialogItem_Change( hDlg );

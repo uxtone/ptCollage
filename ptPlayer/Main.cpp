@@ -1,5 +1,6 @@
 ﻿
 #include <pxDebugLog.h>
+#include <uxStr.h>
 #include <pxStrT.h>
 
 #include <pxwDx09Draw.h>
@@ -16,7 +17,7 @@ static pxFile2* _app_file_data    = NULL;
 static pxFile2* _app_file_profile = NULL;
 #include <pxPath.h>
 
-static TCHAR* _posted_path = NULL;
+static uxDS  _posted_path = NULL;
 
 #pragma comment(lib,"d3d9")
 #pragma comment(lib,"d3dx9")
@@ -70,22 +71,22 @@ HINSTANCE   g_hInst;
 HWND        g_hWnd_Main  = NULL;
 HMENU       g_hMenu_Main = NULL;
 
-TCHAR       g_dir_module[ MAX_PATH ] = {0};
-TCHAR       g_app_name_t[       64 ] = {0};
+uxDS       g_dir_module;
+uxSS<64>       g_app_name_t = {0};
 char        g_app_name_c[       64 ] = {0};
 
-static const TCHAR*   _rect_name         = _T("main.rect" );
-static TCHAR*         _class_name        = _T("Main"      );
+static const uxSS<10>    _rect_name         = "main.rect";
+static uxSS<5>          _class_name        = "Main";
 static int32_t        _mag               = 1;
-static const TCHAR*   _build_config_name = _T("build.conf");
+static const uxSS<11>    _build_config_name = "build.conf";
 static pxwPathDialog* _path_dlg_build    = NULL;
 
-static const TCHAR*   _title_save_wav_j = _T("WAVファイルに出力");
-static const TCHAR*   _title_save_wav_e = _T("Output *.wav"     );
+static const uxSS<25>    _title_save_wav_j = "WAVファイルに出力";
+static const uxSS<13>    _title_save_wav_e = "Output *.wav";
 
 
-static const TCHAR* _app_name_t_jp = _T("ピストンプレイヤー");
-static const TCHAR* _app_name_t_en = _T("pxtone Player"     );
+static const uxSS<28>  _app_name_t_jp = "ピストンプレイヤー";
+static const uxSS<14>  _app_name_t_en = "pxtone Player";
 
 static bool _bInterfaceActive = false;
 
@@ -118,19 +119,20 @@ static void _RestoredWindow()
 }
 
 // ウインドウクラスの登録
-static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfnWndProc )
+static bool _RegistWindowClass( HINSTANCE hInst, const uxDS& class_name, WNDPROC lpfnWndProc )
 {
 	WNDCLASSEX wc;
 
 	memset( &wc, 0, sizeof(WNDCLASSEX) );
 
 	wc.cbSize        = sizeof(WNDCLASSEX);
-	wc.lpszClassName = class_name;
+	uxT t_class_name( class_name );              // OS text, valid for this function (RegisterClassEx copies the name)
+	wc.lpszClassName = t_class_name;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = lpfnWndProc;
 	wc.hInstance     = hInst;        //インスタンス
 	wc.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE + 1);
-	wc.hIcon         = LoadIcon( hInst, _T("0") );
+	wc.hIcon         = LoadIcon( hInst, uxT( "0" ) );
 	wc.hCursor       = LoadCursor( NULL, IDC_ARROW    );
 
 	if( !RegisterClassEx( &wc ) ) return false;
@@ -139,21 +141,21 @@ static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfn
 }
 
 // タイトルバー表記
-void MainWindow_SetTitle( const TCHAR *path )
+void MainWindow_SetTitle( const uxDS& path )
 {
-	TCHAR str[MAX_PATH];
-	TCHAR *p_name;
-	TCHAR *empty = _T("-");
+	uxSS<MAX_PATH> str;
+	uxDS p_name;
+	uxDS empty = "-";
 
 	if( !path || path[0] == '\0' ) p_name = empty;
-	else                           p_name = PathFindFileName( path );
+	else                           p_name = pxPath_name( path );
 
 #ifdef NDEBUG
-	_stprintf_s( str, MAX_PATH, _T("[%s] %s "     ), p_name, g_app_name_t );
+	ux_sprintf_s( str, MAX_PATH, "[%s] %s ", *p_name, g_app_name_t );
 #else
-	_stprintf_s( str, MAX_PATH, _T("[%s] %s Debug"), p_name, g_app_name_t );
+	ux_sprintf_s( str, MAX_PATH, "[%s] %s Debug", *p_name, g_app_name_t );
 #endif
-	SetWindowText( g_hWnd_Main, str );
+	SetWindowText( g_hWnd_Main, uxT( str ) );
 }
 
 
@@ -161,16 +163,16 @@ void MainWindow_SetTitle( const TCHAR *path )
 
 
 // ファイルドロップ(ウインドウ)
-static bool _GetDroppedPath_Window( HWND hWnd, WPARAM wParam, TCHAR *path_drop )
+static bool _GetDroppedPath_Window( HWND hWnd, WPARAM wParam, uxDS& path_drop )
 {
 	HDROP hDrop = (HDROP)wParam;
 	bool  b_ret = false;
 
-	memset( path_drop, 0, MAX_PATH * sizeof(TCHAR) );
+	path_drop = "";
 
 	if( DragQueryFile( hDrop, -1, NULL, 0 ) != 0 )
 	{
-		DragQueryFile( hDrop,  0, path_drop, MAX_PATH );
+		DragQueryFile( hDrop,  0, uxTOut( path_drop ), MAX_PATH );
 		b_ret = true;
 	}
 
@@ -179,31 +181,9 @@ static bool _GetDroppedPath_Window( HWND hWnd, WPARAM wParam, TCHAR *path_drop )
 }
 
 // ファイルドロップ(アイコン)
-static bool _GetDroppedPath_Start( TCHAR *lpszArgs, TCHAR *path_drop )
+static bool _GetDroppedPath_Start( const uxDS& lpszArgs, uxDS& path_drop )
 {
-	int32_t a;
-
-	memset( path_drop, 0, MAX_PATH * sizeof(TCHAR) );
-	if( !_tcslen( lpszArgs ) ) return false;
-
-	if( lpszArgs[0] == '"' )
-	{
-		for( a = 0; a < MAX_PATH-1; a++ )
-		{
-			if( lpszArgs[a+1] == '"' || lpszArgs[a+1] == '\0') break;
-			path_drop[a] = lpszArgs[a+1];
-		}
-	}
-	else
-	{
-		for( a = 0; a < MAX_PATH-1; a++ ){
-			if(                         lpszArgs[a+0] == '\0') break;
-			path_drop[a] = lpszArgs[a+0];
-		}
-	}
-	path_drop[a] = '\0';
-
-	return true;
+	return pxwFilePath_ArgToPath( lpszArgs, path_drop ); // strips the quotes
 }
 
 bool InquireOperation()
@@ -216,7 +196,7 @@ bool InquireOperation()
 		Sleep( 100 );
 		if( !g_strm_xa2->tune_is_sampling() ) return true;
 	}
-	MessageBox( g_hWnd_Main, _T("stopping timeout."), g_app_name_t, MB_ICONEXCLAMATION );
+	MessageBox( g_hWnd_Main, uxT( "stopping timeout." ), uxT( g_app_name_t ), MB_ICONEXCLAMATION );
 	return false;
 }
 
@@ -229,7 +209,7 @@ static bool _Function_IDM_LOAD( HWND hWnd )
 
 static bool _Function_IDM_HISTORY( HWND hwnd, UINT idm )
 {
-	TCHAR path[ MAX_PATH ];
+	uxDS path;
 	if( !Menu_History_GetPath( idm , path ) ) return false;
 	if( !Tune_LoadAndPlay     ( hwnd, path ) ){ Menu_History_Delete( idm ); return false; }
 	return true;
@@ -243,17 +223,17 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	_cfg.load();
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return true;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_CONFIG" ), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return true;
 
 	if( !_cfg.save() )
 	{
-		Japanese_MessageBox( hwnd, _T("Save Config"), _T("Error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "Save Config", "Error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	if( !g_strm_xa2->stream_finalize( 0.1f, 10, 3 ) )
 	{
-		MessageBox( hwnd, _T("stream stop timeout."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream stop timeout." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -261,7 +241,7 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
 	{
-		MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream start." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -270,7 +250,7 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 	// font
 	if( !g_dxdraw->d3d_font_init( _cfg.font->name, 12 ) )
 	{
-		MessageBox( hwnd, _T("err: font init."), g_app_name_t, MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "err: font init." ), uxT( g_app_name_t ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	if_Player_RedrawName( _cfg.font->name );
@@ -291,13 +271,13 @@ static void _Function_IDM_BUILD( HWND hwnd )
 
 	if( _app_file_profile->open_r( &desc, _build_config_name, NULL, NULL ) ){ _bld.read( desc ); SAFE_DELETE( desc ); }
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_BUILDOPTION"), hwnd, dlg_BuildOption_Procedure, (LPARAM)&_bld ) ) return;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_BUILDOPTION" ), hwnd, dlg_BuildOption_Procedure, (LPARAM)&_bld ) ) return;
 
 	if( !_app_file_profile->open_w( &desc, _build_config_name, NULL, NULL ) ||
 		!_bld.write( desc ) )
 	{
 		SAFE_DELETE( desc );
-		MessageBox( hwnd, _T("save build-config"), _T("Error"), MB_ICONERROR );
+		MessageBox( hwnd, uxT( "save build-config" ), uxT( "Error" ), MB_ICONERROR );
 		return;
 	}
 	SAFE_DELETE( desc );
@@ -316,27 +296,27 @@ static void _Function_IDM_BUILD( HWND hwnd )
 
 	// make file-name( .wav )
 	{
-		TCHAR name[ MAX_PATH ] = {0};
-		TCHAR exte[ 32       ] = {0};
+		uxDS name;
+		uxDS exte;
 		if( !g_path_dlg_tune ->last_filename_get( name ) ) return;
 		if( ! _path_dlg_build->extension_get    ( exte ) ) return;
-		PathRemoveExtension( name );
-		_tcscat( name, _T(".") );
-		_tcscat( name, exte    );
+		pxPath_remove_ext( name );
+		name += ".";
+		name += exte;
 		_path_dlg_build->last_filename_set( name );
 	}
 
 	{
-		TCHAR path_tune[ MAX_PATH ] = {0};
-		if( !g_path_dlg_tune->get_last_path( path_tune, MAX_PATH ) ) return;
-		PathRemoveExtension( path_tune );
-		if( !_path_dlg_build->dialog_save( hwnd, _build.output_path, PathFindFileName( path_tune ) ) ) return;
+		uxDS path_tune;
+		if( !g_path_dlg_tune->get_last_path( path_tune ) ) return;
+		pxPath_remove_ext( path_tune );
+		if( !_path_dlg_build->dialog_save( hwnd, _build.output_path, pxPath_name( path_tune ) ) ) return;
 	}
 
 	g_pxtn->set_destination_quality(  _bld.strm->ch_num, _bld.strm->sps );
 	if( g_pxtn->tones_ready() != pxtnOK )
 	{
-		MessageBox( hwnd, _T("ready tones."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "ready tones." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return;
 	}
 
@@ -345,7 +325,7 @@ static void _Function_IDM_BUILD( HWND hwnd )
 		place.length = sizeof(WINDOWPLACEMENT);
 		GetWindowPlacement( hwnd, &place );
 		ShowWindow( hwnd, SW_HIDE );
-		DialogBoxParam( g_hInst, _T("DLG_BUILDPROGRESS"), hwnd, dlg_BuildProgress, (LPARAM)&_build );
+		DialogBoxParam( g_hInst, uxT( "DLG_BUILDPROGRESS" ), hwnd, dlg_BuildProgress, (LPARAM)&_build );
 		ShowWindow( hwnd, place.showCmd );
 	}
 
@@ -441,14 +421,14 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_LOAD            : _Function_IDM_LOAD  ( hwnd );          break;
 		case IDM_CLOSE           : SendMessage         ( hwnd, WM_CLOSE, 0, 0 ); break;
 		case IDM_CONFIG          : _Function_IDM_CONFIG( hwnd );        break;
-		case IDM_ABOUT           : DialogBox( g_hInst, _T("DLG_ABOUT"), hwnd, dlg_About ); break;
+		case IDM_ABOUT           : DialogBox( g_hInst, uxT( "DLG_ABOUT" ), hwnd, dlg_About ); break;
 		case IDM_VOLUMEDIALOG    : OpenVolumeControl   ( hwnd       );  break;
 		case IDM_EXPORTWAV       : _Function_IDM_BUILD(  hwnd );  break;
 		case IDM_PTCOLLAGE       :
 		{
-			static TCHAR path[ MAX_PATH ] = {0};
-			memset( path, 0, sizeof(path) );
-			if( !g_path_dlg_tune->get_last_path( path, MAX_PATH ) ) break;
+			static uxDS path;
+			path = "";
+			if( !g_path_dlg_tune->get_last_path( path ) ) break;
 			if_Player_StopPlay();
 			Call_ptCollage( hwnd, path );
 		}
@@ -476,7 +456,7 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 	// 起動後ファイルドロップ
 	case WM_DROPFILES:
 	{
-		TCHAR path[ MAX_PATH ] = {0};
+		uxDS path;
 		if( _GetDroppedPath_Window( hwnd, w, path ) ) Tune_LoadAndPlay( hwnd, path );
 		Interface_Process( hwnd, true );
 	}
@@ -485,7 +465,7 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 	// 起動後関連ファイル
 	case WM_USER_RELATEDFILE:
 	{
-		TCHAR path[ MAX_PATH ] = {0};
+		uxSS<MAX_PATH> path = {0};
 		if( _posted_path ) Tune_LoadAndPlay( hwnd, _posted_path );
 		Interface_Process( hwnd, true );
 	}
@@ -640,9 +620,9 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
-	static TCHAR* mutex_name   = _T("ptplayer"    );
-	static TCHAR* mapping_name = _T("map_ptplayer");
-	TCHAR path_drop[ MAX_PATH ];
+	static uxSS<9>  mutex_name   = "ptplayer";
+	static uxSS<13>  mapping_name = "map_ptplayer";
+	uxDS path_drop;
 
 	g_hInst = hInst;
 
@@ -653,9 +633,9 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 	pxwFilePath_GetModuleDirectory(  g_dir_module );
 
 
-	_app_file_common  = new pxFile2(); _app_file_common ->init_base( _T("data_common"), false );
-	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( _T("data_ptp"   ), false );
-	_app_file_profile = new pxFile2(); _app_file_profile->init_base( _T("temp_ptp"   ), true  );
+	_app_file_common  = new pxFile2(); _app_file_common ->init_base( "data_common", false );
+	_app_file_data    = new pxFile2(); _app_file_data   ->init_base( "data_ptp", false );
+	_app_file_profile = new pxFile2(); _app_file_profile->init_base( "temp_ptp", true  );
 	pxPath_setMode( pxPathMode_auto );
 
 	pxwWindowRect_init( _app_file_profile );
@@ -664,13 +644,13 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 
 	// japanese..
 	{
-		TCHAR path[ MAX_PATH ] = {0}; _stprintf_s( path, MAX_PATH, _T("%s\\%s"), g_dir_module, _T("japanese.ico") );
-		FILE* fp = _tfopen( path, _T("rb") );
+		uxSS<MAX_PATH> path = {0}; ux_sprintf_s( path, MAX_PATH, "%s\\%s", *g_dir_module, "japanese.ico" );
+		FILE* fp = ux_fopen( path, "rb" );
 		if( fp ){ fclose( fp ); JapaneseTable_init( true  ); }
 		else    {               JapaneseTable_init( false ); }
 	}
 
-	if( _GetDroppedPath_Start( lpszArgs, path_drop ) ) pxStrT_copy_allocate( &_posted_path, path_drop );
+	if( _GetDroppedPath_Start( lpszArgs, path_drop ) ) _posted_path = path_drop;
 
 	// 既に起動しているアプリを調べる
 	if( !existing_window.Check( mutex_name, mapping_name, WM_USER_RELATEDFILE ) ) return 0;
@@ -680,29 +660,29 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 	// 日本語モード
 	// japanese..
 	{
-		TCHAR path[ MAX_PATH ] = {0}; _stprintf_s( path, MAX_PATH, _T("%s\\%s"), g_dir_module, _T("japanese.ico") );
-		FILE* fp = _tfopen( path, _T("rb") );
+		uxSS<MAX_PATH> path = {0}; ux_sprintf_s( path, MAX_PATH, "%s\\%s", *g_dir_module, "japanese.ico" );
+		FILE* fp = ux_fopen( path, "rb" );
 		if( fp ){ fclose( fp ); JapaneseTable_init( true  ); }
 		else    {               JapaneseTable_init( false ); }
 	}
-	if( Japanese_Is() ){ _tcscpy( g_app_name_t, _app_name_t_jp ); strcpy( g_app_name_c, "ピストンプレイヤー" ); }
-	else               { _tcscpy( g_app_name_t, _app_name_t_en ); strcpy( g_app_name_c, "pxtone Player"      ); }
+	if( Japanese_Is() ){ strcpy( g_app_name_t, _app_name_t_jp ); strcpy( g_app_name_c, "ピストンプレイヤー" ); }
+	else               { strcpy( g_app_name_t, _app_name_t_en ); strcpy( g_app_name_c, "pxtone Player"      ); }
 
 	_path_dlg_build = new pxwPathDialog();
 
 	if( !_path_dlg_build->init( _app_file_profile,
-								_T("wav {*.wav}\0*.wav*\0") _T("All Files {*.*}\0*.*\0\0"),
-								_T("wav"), _T("ptp-build.path"), Japanese_Is() ? _title_save_wav_j : _title_save_wav_e,
+								"wav {*.wav}\0*.wav*\0" "All Files {*.*}\0*.*\0\0",
+								"wav", "ptp-build.path", Japanese_Is() ? _title_save_wav_j : _title_save_wav_e,
 								NULL, NULL ) )
 	{
-		MessageBox( NULL, _T("RESOURCE ERROR"), _app_name_t_en, MB_OK|MB_ICONERROR );
+		MessageBox( NULL, uxT( "RESOURCE ERROR" ), uxT( _app_name_t_en ), MB_OK|MB_ICONERROR );
 		goto term;
 	}
 
 	// ウインドウクラスを定義
 	if( !_RegistWindowClass( hInst, _class_name, _WindowProc ) ) return false;
 
-	g_hMenu_Main   = LoadMenu( hInst, _T("MENU_MAIN") );
+	g_hMenu_Main   = LoadMenu( hInst, uxT( "MENU_MAIN" ) );
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
 	{
@@ -719,8 +699,8 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 		dlog_c( "adh size( %d, %d )", w, h );
 
 		g_hWnd_Main  = CreateWindow(
-			_class_name,
-			g_app_name_t,
+			uxT( _class_name ),
+			uxT( g_app_name_t ),
 			WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -762,8 +742,8 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 
 	g_path_dlg_tune = new pxwPathDialog();
 	if( !g_path_dlg_tune->init( _app_file_profile,
-								_T("pttune {*.pttune;*.ptcop}\0*.pttune;*.ptcop*\0") _T("All files {*.*}\0*.*\0\0"),
-								_T("*"), _T("ptp-tune.path"), _T("Save File"), _T("Load File"), NULL ) ) goto term;
+								"pttune {*.pttune;*.ptcop}\0*.pttune;*.ptcop*\0" "All files {*.*}\0*.*\0\0",
+								"*", "ptp-tune.path", "Save File", "Load File", NULL ) ) goto term;
 
 	{// LOADING..表示
 
@@ -777,11 +757,11 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 		if( !if_gen_splash( g_hWnd_Main, g_dxdraw, SURF_LOADING, 1 ) ){ mbox_c_ERR( NULL, "error: splash." ); return false; }
 
 		{
-			if( g_dxdraw->tex_load( _T("img"), _T("tenkey.png"), SURF_TENKEY ) != SURF_TENKEY ){ mbox_c_ERR( NULL, "img:tenkey" ); return false; }
-			if( g_dxdraw->tex_load( _T("img"), _T("player.png"), SURF_PLAYER ) != SURF_PLAYER ){ mbox_c_ERR( NULL, "img:player" ); return false; }
+			if( g_dxdraw->tex_load( "img", "tenkey.png", SURF_TENKEY ) != SURF_TENKEY ){ mbox_c_ERR( NULL, "img:tenkey" ); return false; }
+			if( g_dxdraw->tex_load( "img", "player.png", SURF_PLAYER ) != SURF_PLAYER ){ mbox_c_ERR( NULL, "img:player" ); return false; }
 
 			pxGLYPH_PARAM1 prm; memset( &prm, 0, sizeof(prm) );
-			_tcscpy( prm.font_name, _T("MS Gothic") );
+			strcpy( prm.font_name, "MS Gothic" );
 			prm.font_h      = 12;
 			prm.font_argb   = 0xff80f000;
 			prm.type        = pxGLYPH_mono;
@@ -802,14 +782,14 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 
 		if( !g_strm_xa2->stream_start( cfg_ptp.strm->ch_num, cfg_ptp.strm->sps, cfg_ptp.strm->buf_sec ) )
 		{
-			Japanese_MessageBox( g_hWnd_Main, _T("ready pxtone"), _app_name_t_en, MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( g_hWnd_Main, "ready pxtone", _app_name_t_en, MB_OK|MB_ICONEXCLAMATION );
 			return false;
 		}
 
 		if_Player_RedrawName( cfg_ptp.font->name );
 
 		// ドラッグプロジェクト
-		if( _tcslen( path_drop ) ) Tune_LoadAndPlay( g_hWnd_Main, path_drop );
+		if( !path_drop.empty() ) Tune_LoadAndPlay( g_hWnd_Main, path_drop );
 
 		while( GetTickCount() < count + (1000 * 0.5f) ){}
 	}

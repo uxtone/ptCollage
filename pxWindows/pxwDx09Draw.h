@@ -28,8 +28,8 @@ pxwDx09GLYPHUNIT;
 typedef struct
 {
 	uint32_t           flags         ;
-	TCHAR*             p_name        ;
-	TCHAR*             p_dir         ;
+	uxDS              p_name        ;
+	uxDS              p_dir         ;
 	LPDIRECT3DTEXTURE9 p_tex         ;
 	int32_t            origin_img_w  ;
 	int32_t            origin_img_h  ;
@@ -132,9 +132,9 @@ bool  FillRect_clip( const fRECT *p_rc, uint32_t aBGR,                      cons
 bool  FillRect_view( const fRECT *p_rc, float a, float r, float g, float b );
 bool  FillRect_view( const fRECT *p_rc, uint32_t aBGR );
 
-uint32_t tex_load  ( const TCHAR *dir, const TCHAR *name, int32_t tx_idx, float stretch, bool b_ignore_screen_mag );
-uint32_t tex_load  ( const TCHAR *dir, const TCHAR *name, int32_t tx_idx, float stretch );
-uint32_t tex_load  ( const TCHAR *dir, const TCHAR *name, int32_t tx_idx );
+uint32_t tex_load  ( const uxDS& dir, const uxDS& name, int32_t tx_idx, float stretch, bool b_ignore_screen_mag );
+uint32_t tex_load  ( const uxDS& dir, const uxDS& name, int32_t tx_idx, float stretch );
+uint32_t tex_load  ( const uxDS& dir, const uxDS& name, int32_t tx_idx );
 void     tex_release( int32_t t );
 void     tex_release();
 uint32_t tex_create           ( int32_t w, int32_t h, uint32_t argb, int32_t tx_idx );
@@ -149,7 +149,7 @@ bool     tex_blt        ( int32_t t, const uint32_t *p_src, int32_t src_w, int32
 bool     tex_glyph_init ( int32_t t, const pxGLYPH_PARAM1 *p_prm, int32_t unit_num, bool b_UTF16LE );
 bool     tex_glyph_moji ( int32_t t, uint32_t moji   , const fRECT *p_rc_dst, fSIZE *p_size );
 bool     tex_glyph_text ( int32_t t, const char *text, const fRECT *p_rc_dst, int32_t gap_pix );
-bool     tex_glyph_another_font( int32_t t, const TCHAR* font_name, int32_t font_h, bool b_bold );
+bool     tex_glyph_another_font( int32_t t, const uxDS& font_name, int32_t font_h, bool b_bold );
 void     tex_glyph_clear( int32_t t );
 bool     tex_glyph_color( int32_t t, uint32_t argb );
 
@@ -163,7 +163,7 @@ bool     test_CreateBitmap();
 int32_t SceneCount() const;
 
     // directx 9..
-bool d3d_font_init   ( const TCHAR *font_name, int32_t font_size );
+bool d3d_font_init   ( const uxDS& font_name, int32_t font_size );
 bool d3d_font_color  ( float a, float r, float g, float b );
 bool d3d_font_put    ( const char *text, float x, float y, const fRECT *p_rc_view );
 void font_draw_on_tex( int32_t t, const fRECT *p_rc_dst, const char *text );

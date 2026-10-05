@@ -1,5 +1,7 @@
 ﻿
 #include "./pxwFilePath.h"
+#include <uxStr.h>
+#include <pxPath.h>
 
 #include <pxStdDef.h>
 
@@ -41,42 +43,25 @@ void pxwFilePath_ncomp_x_sjis( char *name )
 
 
 
-bool pxwFilePath_ArgToPath( const TCHAR* arg, TCHAR* path_dst )
+bool pxwFilePath_ArgToPath( const uxDS& arg, uxDS& path_dst )
 {
-	const TCHAR* p_src  = NULL;
-	TCHAR*       p_dst  = path_dst;
+	path_dst = "";
+	if( !arg ) return false;
 
-	memset( path_dst, 0, MAX_PATH * sizeof(TCHAR) );
+	// the argument may be quoted: "C:\\a path\\file.ptcop"
+	const char* p = arg;
+	if( *p == '"' ) p++;
+	const char* q = p;
+	while( *q && *q != '"' ) q++;
 
-	p_src = arg; if( *p_src == '"' ) p_src++;
-
-// unicode
-#ifdef UNICODE
-	while( *p_src )
-	{
-		if( *p_src == '"' ) break;
-		*p_dst = *p_src;
-		p_dst++; p_src++;
-	}
-#else
-// sjis
-	while( *p_src )
-	{
-		if( *p_src == '"' ) break;
-		if( _IsShiftJIS( *p_src ) ){ *p_dst = *p_src; p_dst++; p_src++; }
-		{                            *p_dst = *p_src; p_dst++; p_src++; }
-	}
-#endif
-
-	if( !_tcslen( path_dst ) ) return false;
-
-	return true;
+	path_dst = uxDS( p, (size_t)( q - p ) );
+	return !path_dst.empty();
 }
 
 #pragma comment(lib, "shell32")
 #include <shlobj.h>
 
-void pxwFilePath_GetSpecial( TCHAR *path, SPECIALPATH special )
+void pxwFilePath_GetSpecial( uxDS& path, SPECIALPATH special )
 {
 	ITEMIDLIST*    p_item  ;
 	IMalloc*       p_malloc;
@@ -92,18 +77,18 @@ void pxwFilePath_GetSpecial( TCHAR *path, SPECIALPATH special )
 	if( SUCCEEDED( SHGetMalloc( &p_malloc ) ) )
 	{
 		SHGetSpecialFolderLocation( GetDesktopWindow(), csidl, &p_item );
-		SHGetPathFromIDList( p_item, path );
+		SHGetPathFromIDList( p_item, uxTOut( path, MAX_PATH ) );
 		p_malloc->Free(      p_item );
 		p_malloc->Release();
 	}
 }
 
-void pxwFilePath_GetDesktop( TCHAR *path )
+void pxwFilePath_GetDesktop( uxDS& path )
 {
 	pxwFilePath_GetSpecial( path, SPECIALPATH_DESKTOP );
 }
 
-bool pxwFilePath_GetShortcutDirectory( const TCHAR* path_lnk, TCHAR* path_dst )
+bool pxwFilePath_GetShortcutDirectory( const uxDS& path_lnk, uxDS& path_dst )
 {
 	bool            b_ret = false;
 	IShellLink*     psl   = NULL ;  // IShellLinkへのポインタ
@@ -115,17 +100,13 @@ bool pxwFilePath_GetShortcutDirectory( const TCHAR* path_lnk, TCHAR* path_dst )
 	if( CoCreateInstance   ( CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&psl ) ) goto End; // get IShellLink.
 	if( psl->QueryInterface( IID_IPersistFile,                                            (void**)&ppf ) ) goto End; // ask IPersistFile.
 
-#ifdef UNICODE
-	_tcscpy( path_unicode, path_lnk );
-#else
-	MultiByteToWideChar( CP_ACP, 0, path_lnk, -1, (LPWSTR)path_unicode, MAX_PATH );
-#endif
+	MultiByteToWideChar( CP_UTF8, 0, *path_lnk, -1, (LPWSTR)path_unicode, MAX_PATH ); // path_lnk is UTF-8
 
 	// ショートカットをロードする
 	if( ppf->Load( (LPCOLESTR)path_unicode, STGM_READ )            ) goto End;
 
 	// リンク先を取得する
-	if( psl->GetPath( path_dst, MAX_PATH, &wfd, SLGP_UNCPRIORITY ) ) goto End;
+	if( psl->GetPath( uxTOut( path_dst, MAX_PATH ), MAX_PATH, &wfd, SLGP_UNCPRIORITY ) ) goto End;
 
 	// ディレクトリかどうか
 	if( !( wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )       ) goto End;
@@ -138,41 +119,39 @@ End:
 	return b_ret;
 }
 
-bool pxwFilePath_IsDrive( const TCHAR* path )
+bool pxwFilePath_IsDrive( const uxDS& path )
 {
 	if( !path ) return false;
 	// "c:\\"
-	if( _tcslen( path ) == 3 && path[ 1 ] == ':' )
+	if( path.size() == 3 && path[ 1 ] == ':' )
 	{
 		if( path[ 2 ] == '/' ||  path[ 2 ] == '\\'  ) return true;
 	}
 	return false;
 }
 
-void pxwFilePath_GetModuleDirectory( TCHAR* path )
+void pxwFilePath_GetModuleDirectory( uxDS& path )
 {
-	GetModuleFileName ( NULL, path, MAX_PATH );
-	PathRemoveFileSpec(       path           );
-	if( pxwFilePath_IsDrive( path ) ) path[ 2 ] = '\0';
+	GetModuleFileName ( NULL, uxTOut( path, MAX_PATH ), MAX_PATH );
+	pxPath_remove_filename( path );
+	if( pxwFilePath_IsDrive( path ) ) path.truncate( 2 );
 }
 
-bool pxwFilePath_MakeFolderPath( TCHAR **p_path_dst, const TCHAR *dir_name, bool b_create )
+bool pxwFilePath_MakeFolderPath( uxDS& out_path, const uxDS& dir_name, bool b_create )
 {
-	if( !p_path_dst ) return false;
 
-	TCHAR path_module[ MAX_PATH ] = {};
-	TCHAR path_dst   [ MAX_PATH ] = {};
+	uxSS<MAX_PATH> path_module = {};
+	uxSS<MAX_PATH> path_dst = {};
 
-	GetModuleFileName ( NULL, path_module, MAX_PATH );
-	PathRemoveFileSpec(       path_module );
-	if( dir_name ) _stprintf_s( path_dst, MAX_PATH, _T("%s\\%s"), path_module, dir_name );
-	else           _stprintf_s( path_dst, MAX_PATH, _T("%s"    ), path_module           );
+	GetModuleFileName ( NULL, uxTOut( path_module ), MAX_PATH );
+	pxPath_remove_filename( path_module );
+	if( dir_name ) ux_sprintf_s( path_dst, MAX_PATH, "%s\\%s", path_module, *dir_name );
+	else           ux_sprintf_s( path_dst, MAX_PATH, "%s", path_module           );
 
-	if( !pxStrT_copy_allocate( p_path_dst, path_dst ) ) return false;
+	if( !pxStrT_copy_allocate( out_path, path_dst ) ) return false;
 
-	if( b_create ) CreateDirectory( path_dst, NULL );
-	if( !PathIsDirectory( path_dst ) ){ pxStrT_free( p_path_dst ); return false; }
+	if( b_create ) CreateDirectory( uxT( path_dst ), NULL );
+	if( !PathIsDirectory( uxT( path_dst ) ) ){ pxStrT_free( out_path ); return false; }
 
 	return true;
 }
-

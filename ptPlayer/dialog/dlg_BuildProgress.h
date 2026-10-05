@@ -1,4 +1,5 @@
 ﻿
+#include <pxStdDef.h>
 enum enum_BuildTuneExit
 {
 	enum_BuildTuneExit_Success = 0,
@@ -14,7 +15,7 @@ enum BUILDTUNESCOPE
 
 typedef struct
 {
-	TCHAR              output_path[ MAX_PATH ];
+	uxDS                        output_path;
 	int32_t            ver          ;
 	BUILDTUNESCOPE     scope        ;
 	float              sec_playtime ;

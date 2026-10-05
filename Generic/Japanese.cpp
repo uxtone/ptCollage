@@ -1,6 +1,7 @@
 ﻿#ifndef PX_JAPANESE_INIT
 
 #include <pxStdDef.h>
+#include <uxStr.h>
 
 #include "Japanese.h"
 
@@ -57,26 +58,26 @@ void Japanese_DialogItem_Change(   HWND hWnd )
 	{
 		if( GetDlgItem( hWnd, _table_dlgitems[ i ].idc ) )
 		{
-			SetDlgItemText( hWnd, _table_dlgitems[ i ].idc, _table_dlgitems[ i ].p_text_j );
+			SetDlgItemText( hWnd, _table_dlgitems[ i ].idc, uxT( _table_dlgitems[ i ].p_text_j ) );
 		}
 	}
 }
 
 void Japanese_MenuItem_Change( HMENU hMenu )
 {
-	TCHAR str[ 32 ] = {0};
+	uxSS<32> str = {0};
 
 	if( !_bJapanese || !_table_menuitems ) return;
 
 	for( int pos = 0; pos < _menuitem_num; pos++ )
 	{
-		if( GetMenuString( hMenu, pos, str, 32, MF_BYPOSITION ) )
+		if( GetMenuString( hMenu, pos, uxTOut( str ), 32, MF_BYPOSITION ) )
 		{
 			// 該当を探す
 			int i;
 			for( i = 0; i < _menuitem_num; i++ )
 			{
-				if( !_tcscmp( str, _table_menuitems[ i ].p_text_e ) ) break;
+				if( !strcmp( str, _table_menuitems[ i ].p_text_e ) ) break;
 			}
 			// 書きかえ
 			if( i != _menuitem_num )
@@ -88,13 +89,13 @@ void Japanese_MenuItem_Change( HMENU hMenu )
 
 					if( hSub )
 					{
-						ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (uintptr_t)hSub, _table_menuitems[i].p_text_j );
+						ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (uintptr_t)hSub, uxT( _table_menuitems[i].p_text_j ) );
 						Japanese_MenuItem_Change( hSub ); // 再帰！！
 					}
 				}
 				else
 				{
-					ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id, _table_menuitems[ i ].p_text_j );
+					ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id, uxT( _table_menuitems[ i ].p_text_j ) );
 				}
 			}
 		}
@@ -102,22 +103,22 @@ void Japanese_MenuItem_Change( HMENU hMenu )
 }
 
 
-void Japanese_MessageBox( HWND hWnd, const TCHAR *message, const TCHAR *title, UINT uType )
+void Japanese_MessageBox( HWND hWnd, const uxDS& message, const uxDS& title, UINT uType )
 {
 	int32_t         i;
-	const TCHAR* p_text  = message;
-	const TCHAR* p_title = title  ;
+	const char* p_text  = *message;
+	const char* p_title = *title;
 
 	if( _bJapanese || !_table_messages )
 	{
-		for( i = 0; i < _message_num; i++ ){ if( !_tcsicmp( message, _table_messages[ i ].p_text_e ) ) break; }
+		for( i = 0; i < _message_num; i++ ){ if( !ux_stricmp( message, _table_messages[ i ].p_text_e ) ) break; }
 		if(         i < _message_num ) p_text  = _table_messages[ i ].p_text_j;
 
-		for( i = 0; i < _message_num; i++ ){ if( !_tcsicmp( title,   _table_messages[ i ].p_text_e ) ) break; }
+		for( i = 0; i < _message_num; i++ ){ if( !ux_stricmp( title,   _table_messages[ i ].p_text_e ) ) break; }
 		if(         i < _message_num ) p_title = _table_messages[ i ].p_text_j;
 	}
 
-	MessageBox( hWnd, p_text, p_title, uType );
+	MessageBox( hWnd, uxT( p_text ), uxT( p_title ), uType );
 }
 
 bool Japanese_Is(){ return _bJapanese; }

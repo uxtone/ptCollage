@@ -1,5 +1,7 @@
 ﻿#include <pxwFilePath.h>
 #include <pxwWindowRect.h>
+#include <uxStr.h>
+#include <pxPath.h>
 #include <pxwFilePath.h>
 
 #include "../Generic/Menu_History.h"
@@ -21,7 +23,7 @@ static UINT_PTR  _timer_id      = 100;
 static int32_t   _visible_flags =    0;
 static bool      _b_japanese    = false;
 
-static TCHAR*    _rect_name     = _T("heardlg.rect");
+static uxSS<13>     _rect_name     = "heardlg.rect";
 
 static pxFile2*  _ref_file_profile;
 
@@ -49,9 +51,16 @@ enum _SORTMODE
 typedef struct
 {
 	int    image ;
-	TCHAR* p_name;
+	uxDS  p_name;
 
 }_FILERECORDSTRUCT;
+
+// extension of a UTF-8 name, "" when there is none (so it can always be compared)
+static const char* _ext( const uxDS& name )
+{
+	const char* e = pxPath_find_ext( name );
+	return e ? e : "";
+}
 
 static	vector <_FILERECORDSTRUCT> _v_record;
 
@@ -65,8 +74,7 @@ enum
 
 static void _ClearRecords()
 {
-	for( uint32_t v = 0; v < _v_record.size(); v++ ) free( _v_record.at( v ).p_name );
-	_v_record.clear();
+	_v_record.clear(); // each record owns its name (uxDS)
 }
 
 static void _Resort( HWND hDlg )
@@ -74,17 +82,17 @@ static void _Resort( HWND hDlg )
 	_FILERECORDSTRUCT record;
 	LV_ITEM           item = {0};
 	int32_t           index = 0;
-	TCHAR             path[ MAX_PATH ];
+	uxDS             path;
 
 	ListView_DeleteAllItems( _hList );
 
-	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
+	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
 
-	if( PathIsDirectory( path ) )
+	if( PathIsDirectory( uxT( path ) ) )
 	{
 		item.mask     = LVIF_TEXT | LVIF_IMAGE;
 		item.iSubItem = COLUMN_NAME;
-		item.pszText  = _T("..");
+		item.pszText  = (LPTSTR)TEXT( ".." );
 		item.iItem    = 0;
 		item.iImage   = _FILETYPE_CLOSE;
 		ListView_InsertItem( _hList, &item );
@@ -100,7 +108,7 @@ static void _Resort( HWND hDlg )
 		{
 			for( unsigned int v = 0; v < top; v++ )
 			{
-				if(_tcsicmp( _v_record.at( v ).p_name, _v_record.at( v + 1 ).p_name ) > 0 )
+				if(ux_stricmp( _v_record.at( v ).p_name, _v_record.at( v + 1 ).p_name ) > 0 )
 				{
 					record               = _v_record.at( v     );
 					_v_record.at( v     ) = _v_record.at( v + 1 );
@@ -119,9 +127,7 @@ static void _Resort( HWND hDlg )
 		{
 			for( unsigned int v = 0; v < top; v++ )
 			{
-				if(_tcsicmp(
-					PathFindExtension( _v_record.at( v     ).p_name ),
-					PathFindExtension( _v_record.at( v + 1 ).p_name ) ) > 0 )
+				if( ux_stricmp( _ext( _v_record.at( v ).p_name ), _ext( _v_record.at( v + 1 ).p_name ) ) > 0 )
 				{
 					record               = _v_record.at( v     );
 					_v_record.at( v     ) = _v_record.at( v + 1 );
@@ -138,7 +144,8 @@ static void _Resort( HWND hDlg )
 	{
 		item.mask     = LVIF_TEXT | LVIF_IMAGE;
 		item.iSubItem = COLUMN_NAME;
-		item.pszText  = _v_record.at( v ).p_name;
+		uxT t_name( _v_record.at( v ).p_name );              // the list view copies the text during the call
+		item.pszText  = (LPTSTR)(const TCHAR*)t_name;
 		item.iImage   = _v_record.at( v ).image ;
 		item.iItem    = index++;
 		ListView_InsertItem( _hList, &item );
@@ -147,17 +154,17 @@ static void _Resort( HWND hDlg )
 }
 
 
-static TCHAR *_file_name_lastdirectory = _T("load_voice.lastdirectory");
-static TCHAR *_file_name_flags         = _T("load_voice.flags"        );
+static uxSS<25> _file_name_lastdirectory = "load_voice.lastdirectory";
+static uxSS<17> _file_name_flags         = "load_voice.flags";
 
-static bool _LastFolder_Load( TCHAR* path_last )
+static bool _LastFolder_Load( uxDS& path_last )
 {
 	bool          b_ret = false;
 	pxDescriptor* desc  = NULL ;
 
 	if( !_ref_file_profile->open_r( &desc, _file_name_lastdirectory, NULL, NULL ) ) goto term;
-	if( !desc->r( path_last, sizeof(TCHAR), MAX_PATH ) ) goto term;
-	if( !PathIsDirectory( path_last ) ) goto term;
+	if( !desc->r_utf8( path_last, 4 * MAX_PATH ) ) goto term; // ignores a file from before UTF-8
+	if( !PathIsDirectory( uxT( path_last ) ) ) goto term;
 
 	b_ret = true;
 term:
@@ -166,19 +173,19 @@ term:
 	return b_ret;
 }
 
-static bool _LastFolder_Save( const TCHAR* path_last )
+static bool _LastFolder_Save( const uxDS& path_last )
 {
 	bool  b_ret = false;
-	TCHAR path[ MAX_PATH ];
+	uxDS path;
 
 	pxDescriptor* desc  = NULL ;
 
-	_tcscpy( path, path_last );
+	path = path_last;
 
-	while( !PathIsDirectory( path ) ){ PathRemoveFileSpec( path ); if( !_tcslen( path ) ) goto term; }
+	while( !PathIsDirectory( uxT( path ) ) ){ pxPath_remove_filename( path ); if( path.empty() ) goto term; }
 
 	if( !_ref_file_profile->open_w( &desc, _file_name_lastdirectory, NULL, NULL ) ) goto term;
-	if( !desc->w_asfile( path, sizeof(TCHAR), MAX_PATH ) ) goto term;
+	if( !desc->w_utf8( path ) ) goto term;
 
 	b_ret = true;
 term:
@@ -222,37 +229,38 @@ static bool _RefreshList( HWND hDlg )
 	bool              b_ret = false;
 	HANDLE            hFind = INVALID_HANDLE_VALUE;
 	WIN32_FIND_DATA   ffd;
-	TCHAR             path[ MAX_PATH ];
-	TCHAR             directory_path[ MAX_PATH ];
+	uxDS             path;
+	uxDS             directory_path;
+	uxSS<MAX_PATH>    pat; // search pattern
 
-	TCHAR*            p_ext   ;
+	const char*       p_ext   = "";
 	bool              b_insert;
 	_FILERECORDSTRUCT record  ;
-	int32_t           size    ;
 
 	_ClearRecords();
 
-	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, directory_path, MAX_PATH );
-	if( PathIsDirectory( directory_path ) )
+	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( directory_path ), MAX_PATH );
+	if( PathIsDirectory( uxT( directory_path ) ) )
 	{
-		_stprintf_s( path, MAX_PATH, _T("%s\\*.*"), directory_path );
+		ux_sprintf_s( pat, MAX_PATH, "%s\\*.*", *directory_path );
 
-		hFind = FindFirstFile( path, &ffd );
+		hFind = FindFirstFile( uxT( pat ), &ffd );
 		while( hFind != INVALID_HANDLE_VALUE )
 		{
-			p_ext = PathFindExtension( ffd.cFileName );
-			if(      !_tcscmp( ffd.cFileName, _T(".") ) || !_tcscmp( ffd.cFileName, _T("..") ) ) b_insert = false;
+			uxDS name = uxDS_from_t( ffd.cFileName ); // UTF-8
+			p_ext = _ext( name );
+			if(      name == "." || name == ".." ) b_insert = false;
 			else if( ffd.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM                    ) b_insert = false;
 			else if( ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY                 ) b_insert = true ;
-			else if( _visible_flags & HEARSELECTVISIBLE_PCM  && !_tcsicmp( p_ext, _T(".wav"    ) ) ) b_insert = true ;
-			else if( _visible_flags & HEARSELECTVISIBLE_PTV  && !_tcsicmp( p_ext, _T(".ptvoice") ) ) b_insert = true ;
-			else if( _visible_flags & HEARSELECTVISIBLE_PTN  && !_tcsicmp( p_ext, _T(".ptnoise") ) ) b_insert = true ;
-			else if( _visible_flags & HEARSELECTVISIBLE_OGGV && !_tcsicmp( p_ext, _T(".ogg"    ) ) ) b_insert = true ;
-			else if( !_tcsicmp( p_ext, _T(".lnk") ) )
+			else if( _visible_flags & HEARSELECTVISIBLE_PCM  && !ux_stricmp( p_ext, ".wav" ) ) b_insert = true ;
+			else if( _visible_flags & HEARSELECTVISIBLE_PTV  && !ux_stricmp( p_ext, ".ptvoice" ) ) b_insert = true ;
+			else if( _visible_flags & HEARSELECTVISIBLE_PTN  && !ux_stricmp( p_ext, ".ptnoise" ) ) b_insert = true ;
+			else if( _visible_flags & HEARSELECTVISIBLE_OGGV && !ux_stricmp( p_ext, ".ogg" ) ) b_insert = true ;
+			else if( !ux_stricmp( p_ext, ".lnk" ) )
 			{
-				TCHAR path_dst[ MAX_PATH ];
-				_stprintf_s( path, MAX_PATH, _T("%s\\%s"), directory_path, ffd.cFileName );
-				if( pxwFilePath_GetShortcutDirectory( path, path_dst ) ) b_insert = true ;
+				uxDS path_dst, path_s;
+				path_s = directory_path; path_s += "\\"; path_s += name;
+				if( pxwFilePath_GetShortcutDirectory( path_s, path_dst ) ) b_insert = true ;
 				else                                                     b_insert = false;
 			}
 			else b_insert = false;
@@ -260,15 +268,13 @@ static bool _RefreshList( HWND hDlg )
 			if( b_insert )
 			{
 				if( ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) record.image = _FILETYPE_FOLDER;
-				else if( !_tcsicmp( p_ext, _T(".wav"    ) )         ) record.image = _FILETYPE_PCM   ;
-				else if( !_tcsicmp( p_ext, _T(".ptvoice") )         ) record.image = _FILETYPE_PTV   ;
-				else if( !_tcsicmp( p_ext, _T(".ptnoise") )         ) record.image = _FILETYPE_PTN   ;
-				else if( !_tcsicmp( p_ext, _T(".ogg"    ) )         ) record.image = _FILETYPE_OGGV  ;
-				else if( !_tcsicmp( p_ext, _T(".lnk"    ) )         ) record.image = _FILETYPE_LNK   ;
+				else if( !ux_stricmp( p_ext, ".wav" )         ) record.image = _FILETYPE_PCM   ;
+				else if( !ux_stricmp( p_ext, ".ptvoice" )         ) record.image = _FILETYPE_PTV   ;
+				else if( !ux_stricmp( p_ext, ".ptnoise" )         ) record.image = _FILETYPE_PTN   ;
+				else if( !ux_stricmp( p_ext, ".ogg" )         ) record.image = _FILETYPE_OGGV  ;
+				else if( !ux_stricmp( p_ext, ".lnk" )         ) record.image = _FILETYPE_LNK   ;
 
-				size = (int32_t)_tcslen( ffd.cFileName ) + 1;
-				if( !( record.p_name = (TCHAR*)malloc( size * sizeof(TCHAR) ) ) ) goto End;
-				_tcscpy( record.p_name, ffd.cFileName );
+				record.p_name = name;
 				_v_record.push_back( record );
 			}
 
@@ -281,10 +287,9 @@ static bool _RefreshList( HWND hDlg )
 	{
 
 		int i;
-		TCHAR buf[ DRIVEBUFFERSIZE ];
+		TCHAR buf[ DRIVEBUFFERSIZE ] = {0}; // OS text: a list of NUL-terminated names, ended by a second NUL
 		UINT drive;
 
-		memset( buf, 0, DRIVEBUFFERSIZE );
 		GetLogicalDriveStrings( DRIVEBUFFERSIZE, buf );
 
 
@@ -302,9 +307,7 @@ static bool _RefreshList( HWND hDlg )
 				case DRIVE_REMOVABLE: record.image = _FILETYPE_DRIVE_REMOVE; break;
 				case DRIVE_RAMDISK  : record.image = _FILETYPE_DRIVE_X     ; break;
 				}
-				size = (int32_t)_tcslen(  &buf[ i ] ) + 1;
-				if( !( record.p_name = (TCHAR*)malloc( size * sizeof(TCHAR) ) ) ) goto End;
-				_tcscpy( record.p_name,  &buf[ i ] );
+				record.p_name = uxDS_from_t( &buf[ i ] );
 				_v_record.push_back( record );
 			}
 		}
@@ -465,7 +468,7 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	LV_COLUMN column;
 	HEARSELECTDIALOGSTRUCT* p_hear = (HEARSELECTDIALOGSTRUCT*)l;
 	bool b_crnt_path = false;
-	TCHAR dir_crnt[ MAX_PATH ] = {0};
+	uxDS dir_crnt;
 
 	memset( &column, 0, sizeof(LV_COLUMN) );
 
@@ -476,24 +479,24 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	column.fmt      = LVCFMT_LEFT;
 
 	column.cx       = 192;
-	column.pszText  = _T("name");
+	column.pszText  = (LPTSTR)TEXT( "name" );
 	column.iSubItem = COLUMN_NAME;
 	ListView_InsertColumn( _hList, COLUMN_NAME, &column );
 
 	//アイコンのロード
 	HIMAGELIST hImage = ImageList_Create( 16, 16, ILC_COLOR8|ILC_MASK, 11, 1 );
 	ListView_SetImageList( _hList, hImage, LVSIL_SMALL );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_DRIVE_FIXED" ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_DRIVE_CDROM" ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_DRIVE_REMOVE") ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_DRIVE_X"     ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_CLOSE"       ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_FOLDER"      ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_PCM"         ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_PTV"         ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_PTN"         ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_OGGV"        ) ) );
-	ImageList_AddIcon( hImage, LoadIcon( g_hInst, _T("ICON_FILE_LNK"         ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_DRIVE_FIXED" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_DRIVE_CDROM" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_DRIVE_REMOVE" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_DRIVE_X" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_CLOSE" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_FOLDER" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_PCM" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_PTV" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_PTN" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_OGGV" ) ) );
+	ImageList_AddIcon( hImage, LoadIcon( g_hInst, uxT( "ICON_FILE_LNK" ) ) );
 
 	EnableWindow( GetDlgItem( hDlg, IDOK ), false );
 
@@ -502,27 +505,27 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	if( !_StatusFlag_Load( &status_flags ) ) status_flags = 0;
 
 	// current directory path
-	if( _tcslen( p_hear->path_selected ) )
+	if( !p_hear->path_selected.empty() )
 	{
-		_tcscpy( dir_crnt, p_hear->path_selected );
-		PathRemoveFileSpec( dir_crnt );
+		dir_crnt = p_hear->path_selected;
+		pxPath_remove_filename( dir_crnt );
 	}
-	if( !PathIsDirectory( dir_crnt ) )
+	if( !PathIsDirectory( uxT( dir_crnt ) ) )
 	{
-		if( PathIsDirectory( p_hear->dir_default ) ) _tcscpy( dir_crnt, p_hear->dir_default );
+		if( PathIsDirectory( uxT( p_hear->dir_default ) ) ) dir_crnt = p_hear->dir_default;
 		else
 		{
 			_LastFolder_Load( dir_crnt );
-			if( !PathIsDirectory( dir_crnt ) ) pxwFilePath_GetDesktop( dir_crnt );
+			if( !PathIsDirectory( uxT( dir_crnt ) ) ) pxwFilePath_GetDesktop( dir_crnt );
 		}
 	}
 
-	const TCHAR* _sort_table_en[] = { _T("Name"), _T("Type") };
-	const TCHAR* _sort_table_jp[] = { _T("名前"), _T("種類") };
+	const char*  _sort_table_en[] = { "Name", "Type" };
+	const char*  _sort_table_jp[] = { "名前", "種類" };
 	int i;
 
-	if( p_hear->b_japanese ) for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_ADDSTRING, 0, (LPARAM)_sort_table_jp[ i ] );
-	else                     for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_ADDSTRING, 0, (LPARAM)_sort_table_en[ i ] );
+	if( p_hear->b_japanese ) for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_ADDSTRING, 0, uxLP( _sort_table_jp[ i ] ) );
+	else                     for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_ADDSTRING, 0, uxLP( _sort_table_en[ i ] ) );
 
 	if( status_flags & HEARSELECTSTATUS_SORT_TYPE ) SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_SETCURSEL, 1, 0 );
 	else                                            SendDlgItemMessage( hDlg, IDC_COMBO_SORT, CB_SETCURSEL, 0, 0 );
@@ -534,7 +537,7 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 
 	if( !( _visible_flags & HEARSELECTVISIBLE_ADDUNIT ) ) ShowWindow( GetDlgItem( hDlg, IDC_CHECK_ADDUNIT ), SW_HIDE );
 
-	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, dir_crnt );
+	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( dir_crnt ) );
 
 	_RefreshList  ( hDlg );
 
@@ -552,7 +555,7 @@ static void _InitDialog( HWND hDlg, LPARAM l )
 	Case DRIVE_RAMDISK                szDriveType = "ＲＡＭ－ＤＩＳＫ"
 */
 
-static bool _GetSelected( TCHAR *p_name, _FILETYPE* p_image_index )
+static bool _GetSelected( uxDS& p_name, _FILETYPE* p_image_index )
 {
 	int32_t     index;
 	LV_ITEM item ;
@@ -565,9 +568,11 @@ static bool _GetSelected( TCHAR *p_name, _FILETYPE* p_image_index )
 	item.mask       = LVIF_TEXT | LVIF_IMAGE;
 	item.iItem      = index;
 	item.iSubItem   = COLUMN_NAME;
-	item.pszText    = p_name;
+	TCHAR text[ MAX_PATH ] = {0};               // OS text
+	item.pszText    = text;
 	item.cchTextMax = MAX_PATH;
 	ListView_GetItem( _hList, &item );
+	p_name = uxDS_from_t( text );
 
 	*p_image_index  = (_FILETYPE)item.iImage;
 	return true;
@@ -577,13 +582,13 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 {
 	if( bApply )
 	{
-		TCHAR     name[ MAX_PATH ];
-		TCHAR     path[ MAX_PATH ];
+		uxDS     name;
+		uxDS     path;
 		_FILETYPE image_index;
 
 		if( !_GetSelected( name, &image_index ) ) return;
 
-		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
+		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
 
 		if( image_index != _FILETYPE_PCM  &&
 			image_index != _FILETYPE_PTV  &&
@@ -591,12 +596,13 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 			image_index != _FILETYPE_OGGV ) return;
 
 		Menu_History_Add( path );
-		_stprintf_s( p_hear->path_selected, MAX_PATH, _T("%s%s%s"), path,
-					 pxwFilePath_IsDrive( path ) ? _T("") : _T("\\"), name );
+		p_hear->path_selected  = path;
+		if( !pxwFilePath_IsDrive( path ) ) p_hear->path_selected += "\\";
+		p_hear->path_selected += name;
 	}
 	else
 	{
-		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, p_hear->path_selected, MAX_PATH );
+		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( p_hear->path_selected, MAX_PATH ), MAX_PATH );
 	}
 
 	int32_t status_flags = 0;
@@ -619,12 +625,12 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 
 static void _Proc_NM_DBLCLK( HWND hDlg )
 {
-	TCHAR     name[ MAX_PATH ];
-	TCHAR     path[ MAX_PATH ];
+	uxDS     name;
+	uxDS     path;
 	_FILETYPE image_index;
 
 	if( !_GetSelected( name, &image_index ) ) return;
-	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
+	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
 
 	SetCursor( LoadCursor( NULL, IDC_WAIT ) );
 
@@ -635,21 +641,21 @@ static void _Proc_NM_DBLCLK( HWND hDlg )
 	case _FILETYPE_DRIVE_CDROM :
 	case _FILETYPE_DRIVE_REMOVE:
 	case _FILETYPE_DRIVE_X     :
-		_tcscpy( path, name );
+		path = name;
 		break;
 
 	// close directory.
 	case _FILETYPE_CLOSE:
-		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
-		if( _tcslen( path ) < 4 ) _tcscpy( path, _T("") );
-		else                     PathRemoveFileSpec( path );
+		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
+		if( path.size() < 4 ) path = "";
+		else                     pxPath_remove_filename( path );
 		break;
 
 	// open directory.
 	case _FILETYPE_FOLDER:
-		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
-		if( _tcslen( path ) > 3 ) _tcscat( path, _T("\\") );
-		_tcscat( path, name );
+		GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
+		if( path.size() > 3 ) path += "\\";
+		path += name;
 		break;
 
 	case _FILETYPE_PCM :
@@ -661,17 +667,17 @@ static void _Proc_NM_DBLCLK( HWND hDlg )
 		return;
 
 	case _FILETYPE_LNK:
-		_tcscat( path, _T("\\") ); _tcscat( path, name );
+		path += "\\"; path += name;
 		if( !pxwFilePath_GetShortcutDirectory( path, name ) )
 		{
 			SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 			return;
 		}
-		_tcscpy( path, name );
+		path = name;
 		break;
 	}
 
-	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( path ) );
 	_RefreshList( hDlg );
 	SetCursor( LoadCursor( NULL, IDC_ARROW ) );
 }
@@ -679,12 +685,12 @@ static void _Proc_NM_DBLCLK( HWND hDlg )
 // change selected item.
 static void _Proc_LVN_ITEMCHANGED( HWND hDlg )
 {
-	TCHAR     path[MAX_PATH];
-	TCHAR     name[MAX_PATH];
+	uxDS     path;
+	uxDS     name;
 	_FILETYPE image_index;
 
 	EnableWindow( GetDlgItem( hDlg, IDOK), false );
-	SetDlgItemText( hDlg, IDC_INFORMATION, _T("") );
+	SetDlgItemText( hDlg, IDC_INFORMATION, uxT( "" ) );
 
 	if( !_GetSelected( name, &image_index ) ) return;
 	if( image_index != _FILETYPE_PCM  &&
@@ -697,9 +703,9 @@ static void _Proc_LVN_ITEMCHANGED( HWND hDlg )
 
 	_woi->stop( true );
 
-	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, path, MAX_PATH );
-	if(     path[ _tcslen( path ) - 1 ] != '\\' ) _tcscat( path, _T("\\") );
-	_tcscat( path, name );
+	GetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxTOut( path ), MAX_PATH );
+	if( path.empty() || ( *path )[ path.size() - 1 ] != '\\' ) path += "\\";
+	path += name;
 
 	// PTVを再生する
 
@@ -717,9 +723,9 @@ static void _Proc_LVN_ITEMCHANGED( HWND hDlg )
 		if( _woi->load_and_play( path, b_loop, key, &b_timer ) )
 		{
 			if( b_timer ) _timer_id = SetTimer( hDlg, _timer_id, 500, NULL );
-			TCHAR status_text[ MAX_PATH ] = {0};
+			uxDS status_text;
 			_woi->get_text( status_text, _b_japanese );
-			SetDlgItemText( hDlg, IDC_INFORMATION, status_text );
+			SetDlgItemText( hDlg, IDC_INFORMATION, uxT( status_text ) );
 			EnableWindow( GetDlgItem( hDlg, IDOK), true );
 		}
 		SetCursor( LoadCursor( NULL, IDC_ARROW ) );
@@ -730,26 +736,26 @@ static void _Proc_LVN_ITEMCHANGED( HWND hDlg )
 
 static bool _IDM_HISTORY( HWND hDlg, UINT idm )
 {
-	TCHAR path[ MAX_PATH ];
+	uxDS path;
 
 	if( !Menu_History_GetPath( idm, path ) ) return false;
-	if( !PathIsDirectory( path ) )
+	if( !PathIsDirectory( uxT( path ) ) )
 	{
-		const TCHAR* p_msg   = _T("Not found.");
-		const TCHAR* p_title = _T("error"     );
+		const char* p_msg   = "Not found.";
+		const char* p_title = "error";
 
 		if( _b_japanese )
 		{
-			p_msg   = _T("見つかりません");
-			p_title = _T("エラー"        );
+			p_msg   = "見つかりません";
+			p_title = "エラー";
 		}
 
-		MessageBox( hDlg, p_msg, p_title, MB_OK );
+		MessageBox( hDlg, uxT( p_msg ), uxT( p_title ), MB_OK );
 		Menu_History_Delete( idm );
 		return false;
 	}
 
-	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+	SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( path ) );
 	_RefreshList( hDlg );
 
 	return true;
@@ -792,7 +798,7 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		_b_japanese    = _p_hear->b_japanese   ;
 		pxwWindowRect_load( hDlg, _rect_name, true, true );
 		Japanese_Change_DialogItem( hDlg, _p_hear->b_japanese );
-		if( _b_japanese ) SetWindowText( hDlg, _T("音源ファイルの選択") );
+		if( _b_japanese ) SetWindowText( hDlg, uxT( "音源ファイルの選択" ) );
 
 		_InitDialog( hDlg, l );
 		_set_min_window_size( hDlg );
@@ -822,27 +828,27 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 		case IDM_DIR_DESKTOP:
 		{
-			TCHAR path[ MAX_PATH ] = {0};
+			uxDS path;
 			pxwFilePath_GetSpecial( path, SPECIALPATH_DESKTOP );
-			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( path ) );
 			_RefreshList( hDlg );
 		}
 		break;
 
 		case IDM_DIR_MYCOMPUTER:
 		{
-			TCHAR path[ MAX_PATH ] = {0};
+			uxDS path;
 			pxwFilePath_GetSpecial( path, SPECIALPATH_MYCOMPUTER );
-			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( path ) );
 			_RefreshList( hDlg );
 		}
 		break;
 
 		case IDM_DIR_MYDOCUMENT:
 		{
-			TCHAR path[ MAX_PATH ] = {0};
+			uxDS path;
 			pxwFilePath_GetSpecial( path, SPECIALPATH_MYDOCUMENT );
-			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, uxT( path ) );
 			_RefreshList( hDlg );
 		}
 		break;
@@ -890,7 +896,7 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		if( pt.x >= rc.left && pt.x < rc.right && pt.y >= rc.top  && pt.y < rc.bottom )
 		{
 			_bCapture = true;
-			SetDlgItemText( hDlg, IDC_KEY_DRAG, _T("<->") );
+			SetDlgItemText( hDlg, IDC_KEY_DRAG, uxT( "<->" ) );
 			SetDlgItemInt(  hDlg, IDC_KEY, 0, true );
 			SetCapture( hDlg );
 			_old_x = pt.x;
@@ -914,7 +920,7 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		if( _bCapture )
 		{
 			ReleaseCapture();
-			SetDlgItemText( hDlg, IDC_KEY_DRAG, _T("---") );
+			SetDlgItemText( hDlg, IDC_KEY_DRAG, uxT( "---" ) );
 			_Proc_LVN_ITEMCHANGED( hDlg );
 			_bCapture = false;
 		}
@@ -971,7 +977,7 @@ bool DLLAPI pxtoneTool_HearSelect_Dialog( HWND hWnd, HEARSELECTDIALOGSTRUCT* p_h
 {
 	static HEARSELECTDIALOGSTRUCT hear = {0};
 	hear = *p_hear;
-	bool b = DialogBoxParam( g_hInst, _T("DLG_HEARSELECT"), hWnd, _Procedure, (LPARAM)&hear ) ? true : false;
+	bool b = DialogBoxParam( g_hInst, uxT( "DLG_HEARSELECT" ), hWnd, _Procedure, (LPARAM)&hear ) ? true : false;
 	if( b ) *p_hear = hear;
 	return b ? true : false;
 }

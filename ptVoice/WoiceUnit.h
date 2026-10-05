@@ -103,8 +103,8 @@ void     strm_OFF    ( int32_t id, bool bForce );
 void     strm_Off_All();
 void     strm_CHANGE ( int32_t id, float freq_rate );
 
-bool     csv_attach( const TCHAR* path_csv );
-bool     csv_output( const TCHAR* path_csv ) const;
+bool     csv_attach( const uxDS& path_csv );
+bool     csv_output( const uxDS& path_csv ) const;
 };
 
 #endif

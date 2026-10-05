@@ -44,7 +44,13 @@ set(BUNDLE_BUILD_DIR "" CACHE STRING "Copy build into a pxtone-compatible struct
 #     set(CMAKE_LINKER_TYPE LLD)
 # endif()
 
-project(pxtone LANGUAGES CXX)
+project(pxtone LANGUAGES C CXX)
+
+if(WINELIB)
+    # winegcc only understands the glued "-xLANG" spelling; the spaced "-x c++-header" CMake emits
+    # for precompiled headers makes it drop the input file ("g++: no input files").
+    set(CMAKE_CXX_COMPILE_OPTIONS_CREATE_PCH -xc++-header -include <PCH_HEADER>)
+endif()
 
 if(WIN32 OR WINELIB)
     if(WINELIB)

@@ -1,6 +1,9 @@
 ﻿#ifndef HearSelect_H
 #define HearSelect_H
 
+
+#include <pxStdDef.h>
+
 #include <stddef.h>
 
 #define HEARSELECTVISIBLE_PCM      0x01
@@ -16,8 +19,8 @@
 typedef struct
 {
 	int   visible_flags;
-	TCHAR path_selected[ MAX_PATH ];
-	TCHAR dir_default  [ MAX_PATH ];
+	uxDS  path_selected;
+	uxDS  dir_default  ;
 	bool  b_add_unit   ;
 	bool  b_japanese   ;
 	bool  b_loop       ;

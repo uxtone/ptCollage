@@ -1,5 +1,7 @@
 ﻿
 #include <pxwDx09Draw.h>
+#include <uxStr.h>
+#include <pxPath.h>
 extern pxwDx09Draw*      g_dxdraw;
 
 #include <pxtnService.h>
@@ -36,11 +38,11 @@ extern pxwPathDialog*    g_path_dlg_wav;
 
 extern HINSTANCE g_hInst       ;
 extern HWND      g_hWnd_Main   ;
-extern TCHAR     g_app_name  [];
-extern TCHAR     g_dir_temp  [];
-extern TCHAR     g_dir_module[];
-extern TCHAR*    g_main_rect_name;
-extern TCHAR*    g_default_material_folder;
+extern uxSS<32>     g_app_name;
+extern uxSS<MAX_PATH>     g_dir_temp;
+extern uxSS<MAX_PATH>     g_dir_module;
+extern uxDS     g_main_rect_name;
+extern uxDS     g_default_material_folder;
 
 extern const char* g_strm_config_name;
 
@@ -50,7 +52,7 @@ static bool      _bInterfaceActive = false;
 ///////////// loop /////////////////////////////
 #define _DEFAULT_LOOP false
 static bool         _b_loop        = _DEFAULT_LOOP;
-static const TCHAR* _filename_loop = _T("loop.bin");
+static const uxSS<9>  _filename_loop = "loop.bin";
 static const pxFile2* _ref_file_profile = NULL;
 
 void MainProc_set_file_profile( const pxFile2* file_profile )
@@ -103,21 +105,21 @@ dlg_PCM_Volume      (   HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
 
 // タイトルバー表記
-void MainWindow_SetTitle( const TCHAR *path )
+void MainWindow_SetTitle( const uxDS& path )
 {
-	TCHAR str[MAX_PATH];
-	TCHAR *p_name;
-	TCHAR *empty = _T("-");
+	uxSS<MAX_PATH> str;
+	uxDS p_name;
+	uxDS empty = "-";
 
 	if( !path || path[0] == '\0' ) p_name = empty;
-	else                           p_name = PathFindFileName( path );
+	else                           p_name = pxPath_name( path );
 
 #ifdef NDEBUG
-	_stprintf_s( str, MAX_PATH, _T("%s [%s]"      ), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s [%s]", g_app_name, *p_name );
 #else
-	_stprintf_s( str, MAX_PATH, _T("%s Debug [%s]"), g_app_name, p_name );
+	ux_sprintf_s( str, MAX_PATH, "%s Debug [%s]", g_app_name, *p_name );
 #endif
-	SetWindowText( g_hWnd_Main, str );
+	SetWindowText( g_hWnd_Main, uxT( str ) );
 }
 
 static void _MinimizedWindow()
@@ -167,13 +169,13 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	PcmTable_Woice_Stop( true );
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return true;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_CONFIG" ), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return true;
 
-	if( !_cfg.save() ) MessageBox( hwnd, _T("Save Config."), _T("Error"), MB_ICONERROR );
+	if( !_cfg.save() ) MessageBox( hwnd, uxT( "Save Config." ), uxT( "Error" ), MB_ICONERROR );
 
 	if( !g_strm_xa2->stream_finalize( 0.1f, 10, 3 ) )
 	{
-		MessageBox( hwnd, _T("stream stop timeout."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream stop timeout." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -181,7 +183,7 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
 	{
-		MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		MessageBox( hwnd, uxT( "stream start." ), uxT( "error" ), MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	return true;
@@ -193,7 +195,7 @@ static bool _Function_IDM_CONVERTVOLUME( HWND hWnd )
 
 	PcmTable_Woice_Stop( true );
 
-	if( DialogBoxParam( g_hInst, _T("DLG_PCM_VOLUME"), hWnd, dlg_PCM_Volume, (LPARAM)&v ) )
+	if( DialogBoxParam( g_hInst, uxT( "DLG_PCM_VOLUME" ), hWnd, dlg_PCM_Volume, (LPARAM)&v ) )
 	{
 		PcmTable_Woice_PCM_ConvertVolume( v );
 		PcmTable_Woice_Update();
@@ -201,14 +203,14 @@ static bool _Function_IDM_CONVERTVOLUME( HWND hWnd )
 	return true;
 }
 
-static bool _Load_PCM( HWND hWnd, const TCHAR* path )
+static bool _Load_PCM( HWND hWnd, const uxDS& path )
 {
 	if( !PcmTable_Wave_Load( path ) )
 	{
-		TCHAR str[ 100 ] = {0};
-		if( Japanese_Is() ) _stprintf_s( str, 100, _T("音源の読み込みに失敗しました") );
-		else                _stprintf_s( str, 100, _T("load *.wav"                  ) );
-		Japanese_MessageBox( hWnd, str, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		uxSS<100> str = {0};
+		if( Japanese_Is() ) ux_sprintf_s( str, 100, "音源の読み込みに失敗しました" );
+		else                ux_sprintf_s( str, 100, "load *.wav" );
+		Japanese_MessageBox( hWnd, str, "error", MB_OK|MB_ICONEXCLAMATION );
 		MainWindow_SetTitle( NULL );
 		return false;
 	}
@@ -226,13 +228,13 @@ static bool _Function_IDM_LOAD_PCM( HWND hWnd )
 
 	hear.visible_flags = HEARSELECTVISIBLE_PCM;
 
-	if( g_path_dlg_wav->get_last_path( hear.dir_default, MAX_PATH ) )
+	if( g_path_dlg_wav->get_last_path( hear.dir_default ) )
 	{
-		PathRemoveFileSpec( hear.dir_default );
+		pxPath_remove_filename( hear.dir_default );
 	}
 	else
 	{
-		_stprintf_s( hear.dir_default, MAX_PATH, _T("%s\\%s"), g_dir_module, g_default_material_folder );
+		ux_sprintf_s( hear.dir_default, MAX_PATH, "%s\\%s", g_dir_module, *g_default_material_folder );
 	}
 
 	PcmTable_Woice_Stop( true );
@@ -249,16 +251,13 @@ static bool _Function_IDM_LOAD_PCM( HWND hWnd )
 // save pcm..
 static bool _Function_IDM_SAVE_PCM( HWND hWnd, bool b_as )
 {
-	TCHAR path_dst[ MAX_PATH ] = {0};
-	TCHAR title   [    32    ] = {0};
-
-	if( !g_path_dlg_wav->entrust_save_path( hWnd, b_as, path_dst, _T("no name") ) ) return true;
+	uxDS path_dst;
+	if( !g_path_dlg_wav->entrust_save_path( hWnd, b_as, path_dst, "no name" ) ) return true;
 
 	if( !PcmTable_Wave_Save( path_dst ) )
 	{
-		if( Japanese_Is() ) _stprintf_s( title, 32, _T("音源の保存に失敗しました") );
-		else                _stprintf_s( title, 32, _T("Save *.wav"              ) );
-		Japanese_MessageBox( hWnd,   title, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		const char* title = Japanese_Is() ? "音源の保存に失敗しました" : "Save *.wav"; // a static message, not a copy
+		Japanese_MessageBox( hWnd,   title, "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	MainWindow_SetTitle( path_dst );
@@ -269,14 +268,14 @@ static bool _Function_IDM_SAVE_PCM( HWND hWnd, bool b_as )
 // ファイルドロップ(ウインドウ)
 static bool _Function_WM_DROPFILES( HWND hWnd, WPARAM wParam )
 {
-	TCHAR path[ MAX_PATH ] = {0};
+	uxSS<MAX_PATH>  path = {0};
 	HDROP hDrop = (HDROP)wParam;
 
 	if( DragQueryFile( hDrop, -1, NULL, 0 ) != 0 )
 	{
-		DragQueryFile( hDrop,  0, path, MAX_PATH );
+		DragQueryFile( hDrop,  0, uxTOut( path ), MAX_PATH );
 
-		if( !_tcsicmp( PathFindExtension( path ), _T(".wav") ) )
+		if( !ux_stricmp( pxPath_ext( path ), ".wav" ) )
 		{
 			if( _Load_PCM( hWnd, path ) ) g_path_dlg_wav->set_loaded_path( path );
 		}
@@ -362,7 +361,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_SAVE         : _Function_IDM_SAVE_PCM     ( hWnd, false ); break;
 		case IDM_LOAD_PCM     : _Function_IDM_LOAD_PCM     ( hWnd        ); break;
 		case IDM_VOLUMEDIALOG : OpenVolumeControl(           hWnd        ); break;
-		case IDM_ABOUT        : DialogBox( g_hInst, _T("DLG_ABOUT"), hWnd, dlg_About ); break;
+		case IDM_ABOUT        : DialogBox( g_hInst, uxT( "DLG_ABOUT" ), hWnd, dlg_About ); break;
 		case IDM_LOOP         : _Function_IDM_LOOP(         hWnd        ); break;
 
 		default: break;

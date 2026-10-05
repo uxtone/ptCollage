@@ -1,5 +1,7 @@
 ﻿
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
+#include <uxStr.h>
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -21,13 +23,13 @@ bool IsShiftJIS( unsigned char c );
 
 static void _InitDialog( HWND hDlg )
 {
-	TCHAR *mode_beat[]      = {  _T("2"),_T("3"),_T("4"),_T("5"),_T("6"),_T("7"),_T("8"),_T("9"),_T("15") };
-	for( int i = 0; i < 9; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_BEAT,CB_ADDSTRING, 0, (LPARAM)mode_beat[i] );
+	const char* mode_beat[]      = {  "2","3","4","5","6","7","8","9","15" };
+	for( int i = 0; i < 9; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_BEAT,CB_ADDSTRING, 0, uxLP( mode_beat[i] ) );
 }
 
 static bool _SetParameter( HWND hDlg )
 {
-	TCHAR   str[10];
+	uxSS<10>   str;
 	int32_t i;
 	int32_t beat_num, beat_clock, meas_num;
 	float   beat_tempo;
@@ -35,8 +37,10 @@ static bool _SetParameter( HWND hDlg )
 	const char* name_c = NULL;
 	if( name_c = g_pxtn->text->get_name_buf( NULL ) )
 	{
-		pxTText tt; if( !tt.set_sjis_to_t( name_c ) ) return false;
-		SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		// pxTText tt; if( !tt.set_sjis_to_t( name_c ) ) return false;
+		uxDS tt; if( !( tt = uxDS_from_sjis( name_c ) ) ) return false;
+		// SetDlgItemText( hDlg, IDC_NAME, tt.tchr() );
+		SetDlgItemText( hDlg, IDC_NAME, uxT( tt ) );
 	}
 
 	g_pxtn->master->Get( &beat_num, &beat_tempo, &beat_clock, &meas_num );
@@ -46,8 +50,8 @@ static bool _SetParameter( HWND hDlg )
 	SetDlgItemInt(  hDlg, IDC_MEASNUM,   meas_num,       true );
 	SetDlgItemInt(  hDlg, IDC_BEATCLOCK, beat_clock,     true );
 
-	_stprintf_s( str, 10, _T("%0.0f"), beat_tempo );
-	SetDlgItemText( hDlg, IDC_TEMPO, str );
+	ux_sprintf_s( str, 10, "%0.0f", beat_tempo );
+	SetDlgItemText( hDlg, IDC_TEMPO, uxT( str ) );
 
 	switch( beat_num )
 	{
@@ -68,19 +72,19 @@ static bool _SetParameter( HWND hDlg )
 }
 
 static void _GetParameter( HWND hDlg,
-						   TCHAR*   p_name      ,
+						   uxDS& p_name      ,
 						   int32_t* p_beat_num  ,
 						   float*   p_beat_tempo,
 						   int32_t* p_beat_clock,
 						   int32_t* p_meas_num )
 {
-	TCHAR str[10];
+	uxSS<10> str;
 
-	if( p_name ) GetDlgItemText( hDlg, IDC_NAME, p_name, MAX_PROJECTNAME + 1 );
+	if( p_name ) GetDlgItemText( hDlg, IDC_NAME, uxTOut( p_name ), MAX_PROJECTNAME + 1 );
 
-	GetDlgItemText( hDlg, IDC_TEMPO,  str, 10 );
+	GetDlgItemText( hDlg, IDC_TEMPO,  uxTOut( str ), 10 );
 
-	*p_beat_tempo = (float)_ttof( str );
+	*p_beat_tempo = (float)_ttof( uxT( str ) );
 	*p_meas_num   = GetDlgItemInt( hDlg, IDC_MEASNUM  , NULL, true );
 	*p_beat_clock = GetDlgItemInt( hDlg, IDC_BEATCLOCK, NULL, true );
 
@@ -103,13 +107,13 @@ bool _CheckParameter( HWND hDlg, float beat_tempo, int32_t meas_num )
 {
 	if( !meas_num )
 	{
-		Japanese_MessageBox( hDlg, _T("meas"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hDlg, "meas", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	if( beat_tempo < 20 || beat_tempo > 600 )
 	{
-		Japanese_MessageBox( hDlg, _T("tempo (20 - 600)"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hDlg, "tempo (20 - 600)", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 	return true;
@@ -119,7 +123,7 @@ static void _TotalSampleSize( HWND hDlg )
 {
 	int32_t  beat_num, beat_clock, meas_num;
 	float beat_tempo;
-	TCHAR str[ 100 ];
+	uxSS<100> str;
 
 	double size;
 
@@ -127,7 +131,8 @@ static void _TotalSampleSize( HWND hDlg )
 	int32_t sps = 44100;
 	int32_t ch  =     2;
 
-	_GetParameter( hDlg, NULL, &beat_num, &beat_tempo, &beat_clock, &meas_num );
+	uxDS name_unused; // the name is not needed here
+	_GetParameter( hDlg, name_unused, &beat_num, &beat_tempo, &beat_clock, &meas_num );
 
 	if( beat_tempo )
 	{
@@ -138,7 +143,7 @@ static void _TotalSampleSize( HWND hDlg )
 		size = 0;
 	}
 
-	_stprintf_s( str, 100, _T("%0.2f"), (float)(size/1000) ); SetDlgItemText( hDlg, IDC_SAMPLESIZE, str );
+	ux_sprintf_s( str, 100, "%0.2f", (float)(size/1000) ); SetDlgItemText( hDlg, IDC_SAMPLESIZE, uxT( str ) );
 
 	if( beat_tempo )
 	{
@@ -148,7 +153,7 @@ static void _TotalSampleSize( HWND hDlg )
 	{
 		size = 0;
 	}
-	_stprintf_s( str, 100, _T("%0.2f"), (float)size ); SetDlgItemText( hDlg, IDC_SAMPLESEC , str );
+	ux_sprintf_s( str, 100, "%0.2f", (float)size ); SetDlgItemText( hDlg, IDC_SAMPLESEC , uxT( str ) );
 
 }
 
@@ -197,18 +202,21 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		{
 		case IDOK:
 		{
-			TCHAR   name_t[ MAX_PROJECTNAME + 1 ] = {0};
+			uxDS   name_t;
 			int32_t b_num, q_clock, m_num;
 			float   b_tempo;
 			_GetParameter(   hDlg, name_t, &b_num, &b_tempo, &q_clock, &m_num );
 
 			if( _CheckParameter( hDlg, b_tempo, m_num ) )
 			{
-				pxTText tt; if( tt.set_TCHAR_to_sjis( name_t ) )
+				    // pxTText tt; if( tt.set_TCHAR_to_sjis( name_t ) )
+				uxDS tt; if( ( tt = uxDS_to_sjis( name_t ) ) )
 				{
 					int32_t size = 0;
-					pxShiftJIS_check_size( tt.sjis(), &size, true );
-					g_pxtn->text->set_name_buf( tt.sjis(), size );
+					    // pxShiftJIS_check_size( tt.sjis(), &size, true );
+					pxShiftJIS_check_size( *tt, &size, true );
+					    // g_pxtn->text->set_name_buf( tt.sjis(), size );
+					g_pxtn->text->set_name_buf( *tt, size );
 				}
 				g_pxtn->master->Set( b_num, b_tempo, q_clock );
 				g_pxtn->master->set_meas_num( m_num );

@@ -20,7 +20,7 @@ pxFontParam();
 ~pxFontParam();
 
 char*    font_name ;
-TCHAR*   table_file;
+uxDS    table_file;
 uint32_t flags     ;
 
 int32_t  height    ;
@@ -42,7 +42,7 @@ bool copy_from     ( const pxFontParam* src );
 bool is_different  ( const pxFontParam* src ) const;
 
 bool set_font_name ( const char*  name );
-bool set_table_file( const TCHAR* name );
+bool set_table_file( const uxDS& name );
 };
 
 #endif

@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxMem.h>
 
 #include <pxwDx09Draw.h>
@@ -177,16 +178,16 @@ bool ptuiWaveHead::_set_wave_tool( pxtnVOICETYPE type )
 	pxtnVOICEUNIT* p_vc = _woice->get_voice();
 	if( type == p_vc->type ) return false;
 
-	const TCHAR* p_msg   = _T("Change edit mode");
-	const TCHAR* p_title = _T("are you sure?"   );
+	const char* p_msg   = "Change edit mode";
+	const char* p_title = "are you sure?";
 
 	if( Japanese_Is() )
 	{
-		p_msg   = _T("編集モードを変更します");
-		p_title = _T("いいですか？"          );
+		p_msg   = "編集モードを変更します";
+		p_title = "いいですか？";
 	}
 
-	if( MessageBox( g_hWnd_Main, p_msg, p_title, MB_OKCANCEL|MB_ICONQUESTION ) != IDOK ) return false;
+	if( MessageBox( g_hWnd_Main, uxT( p_msg ), uxT( p_title ), MB_OKCANCEL|MB_ICONQUESTION ) != IDOK ) return false;
 
 	switch( type )
 	{

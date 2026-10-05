@@ -16,6 +16,6 @@ bool    pxUTF8_count_codes    ( const char* str_src, int32_t* p_count, int32_t d
 bool    pxUTF8_free           ( char** pp );
 bool    pxUTF8_copy_allocate  ( char** pp, const char* str_src );
 
-bool    pxUTF8_test_reverse   ( const TCHAR* path_src, const TCHAR* path_dst );
+bool    pxUTF8_test_reverse   ( const uxDS& path_src, const uxDS& path_dst );
 
 #endif

@@ -1,11 +1,13 @@
 ﻿
 #include <pxMem.h>
+#include <uxStr.h>
 #include <pxDebugLog.h>
 #include <pxCSV2.h>
 
 #include <pxwUTF8.h>
 
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include <pxFile2.h>
 
@@ -28,9 +30,9 @@ static const pxFile2* _ref_file_profile = NULL;
 static const char*  _code      = "path-his160916a";
 */
 
-static const char*  _code      = "path-his170121a";
-static const TCHAR* _file_name = _T("path.history");
-static const TCHAR* _dir_name  = _T("path_history");
+static const uxSS<16>  _code      = "path-his170121a";
+static const uxSS<13>  _file_name = "path.history";
+static const uxSS<13>  _dir_name  = "path_history";
 
 
 bool Menu_History_init( HMENU hMenu, int32_t max_history, const UINT* idms, uint32_t idm_dummy, const pxFile2* file_profile )
@@ -68,7 +70,7 @@ static void _ClearHistory()
 
 	for( int32_t i = 0; i < _max_history; i++ )
 	{
-		if( !i ) ModifyMenu ( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, _T("=") );
+		if( !i ) ModifyMenu ( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, uxT( "=" ) );
 		else     DeleteMenu ( _hMenu, 1, MF_BYPOSITION );
 	}
 }
@@ -83,7 +85,8 @@ bool Menu_History_Load()
 	pxCSV2      csv;
 	int32_t     row =    0;
 	const char* p_v = NULL;
-	pxTText     tt;
+	// pxTText     tt;
+	uxDS     tt;
 
 	pxDescriptor* desc = NULL;
 
@@ -100,9 +103,12 @@ bool Menu_History_Load()
 	{
 		if( !csv.get_value( &p_v, row, 0 ) ) break;
 		if( !p_v[0] ) break;
-		if( !tt.set_UTF8_to_t( p_v ) ) goto term;
-		if( !i ) ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _p_idms[ i ], tt.tchr() );
-		else     AppendMenu( _hMenu,                  MFT_STRING, _p_idms[ i ], tt.tchr() );
+		// if( !tt.set_UTF8_to_t( p_v ) ) goto term;
+		if( !( tt = uxDS( p_v ) ) ) goto term;
+		// if( !i ) ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _p_idms[ i ], tt.str() );
+		if( !i ) ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _p_idms[ i ], uxT( tt ) );
+		// else     AppendMenu( _hMenu,                  MFT_STRING, _p_idms[ i ], tt.str() );
+		else     AppendMenu( _hMenu,                  MFT_STRING, _p_idms[ i ], uxT( tt ) );
 	}
 
 	b_ret = true;
@@ -129,11 +135,11 @@ bool Menu_History_Save()
 
 	for( int32_t i = 0; i < _max_history; i++ )
 	{
-		TCHAR path[ MAX_PATH ] = {0};
-		if( !GetMenuString( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) ) break;
+		uxSS<MAX_PATH> path = {0};
+		if( !GetMenuString( _hMenu, i, uxTOut( path ), MAX_PATH, MF_BYPOSITION ) ) break;
 		pxMem_free( (void**)&p_dst );
 		#ifdef UNICODE
-		if( !pxwUTF8_wide_to_utf8( path, &p_dst, NULL ) ) goto term;
+		if( !pxwUTF8_wide_to_utf8( uxT( path ), &p_dst, NULL ) ) goto term;
 		#else
 		if( !pxwUTF8_sjis_to_utf8( path, &p_dst, NULL ) ) goto term;
 		#endif
@@ -150,26 +156,26 @@ term:
 }
 
 // ヒストリーを追加
-void Menu_History_Add( const TCHAR* path_new )
+void Menu_History_Add( const uxDS& path_new )
 {
-	TCHAR path[ MAX_PATH ];
+	uxSS<MAX_PATH> path;
 	int32_t i;
 
 	dlog_c( "pxhis: add" );
 
 
 	if( !_hMenu ) return;
-	if( !lstrlen( path_new ) ) return;
+	if( path_new.empty() ) return;
 
 	// 一番上に挿入
-	InsertMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _idm_dummy, path_new );
+	InsertMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING, _idm_dummy, uxT( path_new ) );
 
 	for( i = _max_history + 1; i > 0 ; i-- )
 	{
-		if( GetMenuString( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) )
+		if( GetMenuString( _hMenu, i, uxTOut( path ), MAX_PATH, MF_BYPOSITION ) )
 		{
 			// 同じパスもしくは "=" なら削除
-			if( !lstrcmpi( path, path_new ) || !lstrcmpi( path, _T("=") ) )
+			if( !ux_stricmp( path, path_new ) || !ux_stricmp( path, "=" ) )
 			{
 				DeleteMenu( _hMenu, i, MF_BYPOSITION );
 			}
@@ -212,7 +218,7 @@ void Menu_History_Delete( UINT idm )
 
 	if( GetMenuItemID( _hMenu, 1 ) == -1 )
 	{
-		ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, _T("=") );
+		ModifyMenu( _hMenu, 0, MF_BYPOSITION|MFT_STRING|MFS_GRAYED, _idm_dummy, uxT( "=" ) );
 		return;
 	}
 	DeleteMenu( _hMenu, i, MF_BYPOSITION );
@@ -232,11 +238,11 @@ void Menu_History_Delete( UINT idm )
 	}
 }
 
-bool Menu_History_GetPath( UINT idm, TCHAR* path )
+bool Menu_History_GetPath( UINT idm, uxDS& path )
 {
 	dlog_c( "pxhis: get path" );
 
 	if( !_hMenu ) return false;
 
-	return GetMenuString( _hMenu, idm, path, MAX_PATH, MF_BYCOMMAND ) ? true : false;
+	return GetMenuString( _hMenu, idm, uxTOut( path ), MAX_PATH, MF_BYCOMMAND ) ? true : false;
 }

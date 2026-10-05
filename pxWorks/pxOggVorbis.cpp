@@ -141,7 +141,7 @@ void pxOggVorbis::vb_close()
 #endif
 }
 
-bool pxOggVorbis::sttc_save ( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src )
+bool pxOggVorbis::sttc_save ( const uxDS& path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src )
 {
 	return false;
 }

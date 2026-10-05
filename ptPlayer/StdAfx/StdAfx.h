@@ -23,3 +23,5 @@ enum PTP_SIGN
 };
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
 extern pxtnService *g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -19,20 +20,20 @@ static void _InitDialog( HWND hDlg )
 	int32_t i;
 
 	// delay
-	TCHAR *mode_delay_scale_e[] = { _T("beat"), _T("meas"), _T("second") };
-	TCHAR *mode_delay_scale_j[] = { _T("拍"  ), _T("小節"), _T("秒"    ) };
+	const char* mode_delay_scale_e[] = { "beat", "meas", "second" };
+	const char* mode_delay_scale_j[] = { "拍", "小節", "秒" };
 
 	if( Japanese_Is() ){
-		for( i = 0; i < 3; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_DELAYUNIT,    CB_ADDSTRING, 0, (LPARAM)mode_delay_scale_j[i]     );
+		for( i = 0; i < 3; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_DELAYUNIT,    CB_ADDSTRING, 0, uxLP( mode_delay_scale_j[i] )     );
 	}else{
-		for( i = 0; i < 3; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_DELAYUNIT,    CB_ADDSTRING, 0, (LPARAM)mode_delay_scale_e[i]     );
+		for( i = 0; i < 3; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_DELAYUNIT,    CB_ADDSTRING, 0, uxLP( mode_delay_scale_e[i] )     );
 	}
 
 }
 
 static void _SetParameter( HWND hDlg, const EFFECTSTRUCT_DELAY* p_delay )
 {
-	TCHAR str[10];
+	uxSS<10> str;
 
 	switch( p_delay->unit )
 	{
@@ -44,18 +45,18 @@ static void _SetParameter( HWND hDlg, const EFFECTSTRUCT_DELAY* p_delay )
 
 	SetDlgItemInt( hDlg, IDC_GROUP, p_delay->group, true );
 
-	_stprintf_s( str, 10, _T("%0.1f"), p_delay->freq ); SetDlgItemText( hDlg, IDC_DELAYFREQ, str );
-	_stprintf_s( str, 10, _T("%0.0f"), p_delay->rate ); SetDlgItemText( hDlg, IDC_DELAYRATE, str );
+	ux_sprintf_s( str, 10, "%0.1f", p_delay->freq ); SetDlgItemText( hDlg, IDC_DELAYFREQ, uxT( str ) );
+	ux_sprintf_s( str, 10, "%0.0f", p_delay->rate ); SetDlgItemText( hDlg, IDC_DELAYRATE, uxT( str ) );
 
 }
 
 static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_DELAY* p_delay )
 {
-	TCHAR str[10];
+	uxSS<10> str;
 
 	// delay
-	GetDlgItemText( hDlg, IDC_DELAYRATE, str, 10 ); p_delay->rate = (float)_ttof( str );
-	GetDlgItemText( hDlg, IDC_DELAYFREQ, str, 10 ); p_delay->freq = (float)_ttof( str );
+	GetDlgItemText( hDlg, IDC_DELAYRATE, uxTOut( str ), 10 ); p_delay->rate = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_DELAYFREQ, uxTOut( str ), 10 ); p_delay->freq = (float)_ttof( uxT( str ) );
 
 	if( p_delay->rate < 0 ) p_delay->rate *= -1;
 	if( p_delay->freq < 0 ) p_delay->freq *= -1;
@@ -75,9 +76,9 @@ static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_DELAY* p_delay )
 
 static bool _CheckParameter( HWND hDlg, const EFFECTSTRUCT_DELAY* p_delay )
 {
-	if( p_delay->freq  > 100                  ){ Japanese_MessageBox( hDlg, _T("Delay Frequency (0 - 100)"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
-	if( p_delay->rate  > 100                  ){ Japanese_MessageBox( hDlg, _T("Delay Rate (0 - 100)"     ), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
-	if( p_delay->group >= g_pxtn->Group_Num() ){ Japanese_MessageBox( hDlg, _T("group"                    ), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_delay->freq  > 100                  ){ Japanese_MessageBox( hDlg, "Delay Frequency (0 - 100)", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_delay->rate  > 100                  ){ Japanese_MessageBox( hDlg, "Delay Rate (0 - 100)", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( p_delay->group >= g_pxtn->Group_Num() ){ Japanese_MessageBox( hDlg, "group", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
 
 	return true;
 }

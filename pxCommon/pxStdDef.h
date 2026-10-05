@@ -5,8 +5,6 @@
 
 #ifndef _TCHAR_DEFINED
 typedef char TCHAR;
-#define _T(x) x
-#define _tfopen fopen
 #endif
 
 #define pxINCLUDE_OGGVORBIS 1
@@ -25,6 +23,26 @@ typedef char TCHAR;
 
 #define pxMOUSEBIT_L 0x01
 #define pxMOUSEBIT_R 0x02
+
+#include <sys/types.h>
+#include <stdarg.h>
+#include <stdint.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <sds/sds.h>
+#include <sds/sdsalloc.h>
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+// UTF-8 strings. The code base keeps all text as UTF-8 and only converts at an OS boundary (see uxStr.h).
+// Dynamic string: an owning UTF-8 string (RAII over an sds). Pass it by reference; see uxDS.h.
+#include "uxDS.h"
+// Static string of N bytes (including the terminator): uxSS<MAX_PATH> path; uxSS<15> name = "Save Project..";
+template <size_t N> using uxSS = char[N];
+#endif
 
 #include <stdio.h>
 
@@ -120,7 +138,7 @@ typedef struct
 fCOLOR;
 
 typedef bool ( *pxfunc_sample_pcm )( void *user, void *buf, int *p_res_size, int *p_req_size );
-typedef bool ( *pxfunc_find_path  )( void *user, const TCHAR *path_find );
+typedef bool ( *pxfunc_find_path  )( void *user, const uxDS& path_find );
 
 enum pxGLYPH_TYPE
 {
@@ -135,7 +153,7 @@ typedef struct
 	uint32_t     grid_x         ;
 	uint32_t     grid_y         ;
 	pxGLYPH_TYPE type           ;
-	TCHAR        font_name[ 64 ];
+	uxSS<64>     font_name      ;
 	int32_t      font_h         ;
 	uint32_t     font_argb      ;
 	bool         b_font_bold    ;

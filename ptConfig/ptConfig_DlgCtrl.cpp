@@ -1,20 +1,21 @@
-﻿
+﻿#include <uxStr.h>
+
 void ptConfig_cmb_quality_init( HWND hdlg, int id_ch, int id_sps, bool b_jp )
 {
-	static TCHAR *mode_channel_e[] = { _T("mono"    ), _T("stereo"  ) };
-	static TCHAR *mode_channel_j[] = { _T("モノラル"), _T("ステレオ") };
-	static TCHAR *mode_sps      [] = { _T("11025Hz" ), _T("22050Hz" ), _T("44100Hz"), _T("48000Hz") };
+	static const char* mode_channel_e[] = { "mono", "stereo" };
+	static const char* mode_channel_j[] = { "モノラル", "ステレオ" };
+	static const char* mode_sps      [] = { "11025Hz", "22050Hz", "44100Hz", "48000Hz" };
 
 	if( b_jp )
 	{
-		for( int i = 0; i < 2; i++ ) SendDlgItemMessage( hdlg, id_ch , CB_ADDSTRING, 0, (LPARAM)mode_channel_j[i] );
+		for( int i = 0; i < 2; i++ ) SendDlgItemMessage( hdlg, id_ch , CB_ADDSTRING, 0, uxLP( mode_channel_j[i] ) );
 	}
 	else
 	{
-		for( int i = 0; i < 2; i++ ) SendDlgItemMessage( hdlg, id_ch , CB_ADDSTRING, 0, (LPARAM)mode_channel_e[i] );
+		for( int i = 0; i < 2; i++ ) SendDlgItemMessage( hdlg, id_ch , CB_ADDSTRING, 0, uxLP( mode_channel_e[i] ) );
 	}
 
-	for( int i = 0; i < 4; i++ ) SendDlgItemMessage( hdlg, id_sps,    CB_ADDSTRING, 0, (LPARAM)mode_sps[ i] );
+	for( int i = 0; i < 4; i++ ) SendDlgItemMessage( hdlg, id_sps,    CB_ADDSTRING, 0, uxLP( mode_sps[ i] ) );
 }
 
 void ptConfig_cmb_quality_set(

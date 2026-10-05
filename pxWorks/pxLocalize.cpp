@@ -3,6 +3,7 @@
 #else
 #include <stdio.h>
 #endif
+#include <uxStr.h>
 
 #include <pxwrAppEtc.h>
 
@@ -14,7 +15,7 @@
 typedef struct
 {
 	const char*  _region_name;
-	const TCHAR* _dir_sub    ;
+	const uxDS  _dir_sub    ;
 }
 _REGION_LANGUAGE;
 
@@ -22,32 +23,32 @@ _REGION_LANGUAGE;
 
 static const _REGION_LANGUAGE _region_tbl[ pxLOCALREGION_num ] =
 {
-	{"ENGLISH"  , _T("en"     )}, // pxLOCALREGION_en
-	{"JAPANESE" , _T("ja"     )}, // pxLOCALREGION_ja
-	{"CHINESE"  , _T("zh-Hans")}, // pxLOCALREGION_cn
-	{"FRENCH"   , _T("fr"     )}, // pxLOCALREGION_fr
-	{"ITALIAN"  , _T("it"     )}, // pxLOCALREGION_it
-	{"GERMAN"   , _T("de"     )}, // pxLOCALREGION_de
-	{"SPANISH"  , _T("es"     )}, // pxLOCALREGION_es
-	{"PORTUGUES", _T("pt"     )}, // pxLOCALREGION_po
-	{"RUSSIAN"  , _T("ru"     )}, // pxLOCALREGION_ru
+	{"ENGLISH"  , "en"}, // pxLOCALREGION_en
+	{"JAPANESE" , "ja"}, // pxLOCALREGION_ja
+	{"CHINESE"  , "zh-Hans"}, // pxLOCALREGION_cn
+	{"FRENCH"   , "fr"}, // pxLOCALREGION_fr
+	{"ITALIAN"  , "it"}, // pxLOCALREGION_it
+	{"GERMAN"   , "de"}, // pxLOCALREGION_de
+	{"SPANISH"  , "es"}, // pxLOCALREGION_es
+	{"PORTUGUES", "pt"}, // pxLOCALREGION_po
+	{"RUSSIAN"  , "ru"}, // pxLOCALREGION_ru
 };
 
 
 void pxLocalize::_release()
 {
 	_b_init = false;
-	pxStrT_free( &_dir_localize );
-	pxStrT_free( &_dir_region   );
+	pxStrT_free( _dir_localize );
+	pxStrT_free( _dir_region   );
 }
 
 void pxLocalize::_update_dir_region()
 {
 	if( !_b_init ) return;
-	TCHAR dir[ pxBUFSIZE_PATH ] = {};
-	_stprintf_s( dir, _T("%s/%s.lproj"), _dir_localize, _region_tbl[ _region ]._dir_sub );
-	pxStrT_free         ( &_dir_region      );
-	pxStrT_copy_allocate( &_dir_region, dir );
+	uxSS<pxBUFSIZE_PATH> dir = {};
+	ux_sprintf_s( dir, "%s/%s.lproj", *_dir_localize, *_region_tbl[ _region ]._dir_sub );
+	pxStrT_free         ( _dir_region      );
+	pxStrT_copy_allocate( _dir_region, dir );
 }
 
 pxLocalize::pxLocalize()
@@ -63,13 +64,13 @@ pxLocalize::~pxLocalize()
 	_release();
 }
 
-bool pxLocalize::init( const TCHAR* dir_localize )
+bool pxLocalize::init( const uxDS& dir_localize )
 {
 	if( _b_init || !dir_localize ) return false;
 
-	if( !pxStrT_copy_allocate( &_dir_localize    , dir_localize     ) ) goto term;
+	if( !pxStrT_copy_allocate( _dir_localize    , dir_localize     ) ) goto term;
 
-//	if( !pxMem_zero_alloc( (void**)&_dir_region, _DIR_REGION_SIZE * sizeof(TCHAR) ) ) goto term;
+//	if( !pxMem_zero_alloc( (void**)&_dir_region, _DIR_REGION_SIZE * sizeof(char) ) ) goto term;
 
 	switch( pxwrAppEtc_Local() )
 	{
@@ -153,7 +154,7 @@ term:
 
 pxLOCALREGION pxLocalize::get() const{ return _region; }
 
-const TCHAR* pxLocalize::get_region_dir() const
+const uxDS  pxLocalize::get_region_dir() const
 {
 	if( !_b_init ) return NULL;
 	return _dir_region;

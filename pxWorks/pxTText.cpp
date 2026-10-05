@@ -1,3 +1,4 @@
+#include <uxStr.h>
 
 #include "./pxError.h"
 #include "./pxMem.h"
@@ -63,21 +64,21 @@ bool pxTText::set_UTF8_to_t( const char* p_text )
 	return true;
 }
 
-bool pxTText::set_TCHAR_to_sjis( const TCHAR* text_t )
+bool pxTText::set_TCHAR_to_sjis( const uxDS& text_t )
 {
 	if( !text_t ) return false;
 
 	_clear();
 
 #ifdef UNICODE
-	if( !pxwUTF8_wide_to_sjis( text_t, &_p_sjis, NULL ) ) return false;
+	if( !pxwUTF8_wide_to_sjis( uxT( text_t ), &_p_sjis, NULL ) ) return false;
 #else
 	if( !pxStr_copy_allocate( &_p_sjis, text_t ) ) return false;
 #endif
 	return true;
 }
 
-const TCHAR* pxTText::tchr() const
+const uxDS  pxTText::str() const
 {
 	return _p_text_t;
 }

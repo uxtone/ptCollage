@@ -1,4 +1,5 @@
-﻿#pragma once
+﻿#include <pxStdDef.h>
+#pragma once
 typedef class cls_EXISTINGWINDOW
 {
 	private:
@@ -16,8 +17,8 @@ typedef class cls_EXISTINGWINDOW
 	cls_EXISTINGWINDOW();
 	~cls_EXISTINGWINDOW();
 
-	bool Check  ( const TCHAR* mutex_name, const TCHAR* mapping_name, UINT msg  );
-	bool Mapping( const TCHAR* mutex_name, const TCHAR* mapping_name, HWND hWnd );
+	bool Check  ( const uxDS& mutex_name, const uxDS& mapping_name, UINT msg  );
+	bool Mapping( const uxDS& mutex_name, const uxDS& mapping_name, HWND hWnd );
 
 }
 cls_EXISTINGWINDOW;

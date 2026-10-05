@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxwWindowRect.h>
 #include <pxwFilePath.h>
 
@@ -23,15 +24,15 @@ dlg_NoiseDesign_Copy( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		pxwWindowRect_center( hDlg );
 		{
 			int32_t i;
-			TCHAR *unit_name[MAX_NOISETABLEUNIT] = { _T("1"), _T("2"), _T("3"), _T("4") };
+			const char* unit_name[MAX_NOISETABLEUNIT] = { "1", "2", "3", "4" };
 
-			for( i = 0; i < MAX_NOISETABLEUNIT; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_FROM, CB_ADDSTRING, 0, (LPARAM)unit_name[i] );
-			for( i = 0; i < MAX_NOISETABLEUNIT; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_TO  , CB_ADDSTRING, 0, (LPARAM)unit_name[i] );
+			for( i = 0; i < MAX_NOISETABLEUNIT; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_FROM, CB_ADDSTRING, 0, uxLP( unit_name[i] ) );
+			for( i = 0; i < MAX_NOISETABLEUNIT; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_TO  , CB_ADDSTRING, 0, uxLP( unit_name[i] ) );
 			SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_FROM, CB_SETCURSEL, (WPARAM)l, 0 );
 			SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_TO  , CB_SETCURSEL, (WPARAM)l, 0 );
 
 			Japanese_DialogItem_Change( hDlg );
-			if( Japanese_Is() ) SetWindowText( hDlg, _T("レイヤーのコピー") );
+			if( Japanese_Is() ) SetWindowText( hDlg, uxT( "レイヤーのコピー" ) );
 		}
 		break;
 

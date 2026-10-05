@@ -1,8 +1,9 @@
+#include <uxStr.h>
 #include <commctrl.h>
 #include <pxStdDef.h>
 #include "pxwRuntime.h"
 
-bool pxwRuntime::init( const TCHAR* app_name, int* p_exit_code )
+bool pxwRuntime::init( const uxDS& app_name, int* p_exit_code )
 {
 	// we magnify by an integer factor ourselves (pxwDx09Draw_system_mag);
 	// without this the system bitmap-stretches the whole window instead.
@@ -22,7 +23,7 @@ bool pxwRuntime::init( const TCHAR* app_name, int* p_exit_code )
 #endif
 	if( !_xa2_keep->invoke( b_debug ) )
 	{
-		MessageBox( NULL, _T("keep XAudio2 Error"), app_name, MB_OK | MB_ICONERROR );
+		MessageBox( NULL, uxT( "keep XAudio2 Error" ), uxT( app_name ), MB_OK | MB_ICONERROR );
 		*p_exit_code = -1;
 		return false;
 	}

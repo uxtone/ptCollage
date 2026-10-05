@@ -1,11 +1,12 @@
 ﻿
+#include <pxStdDef.h>
 #include <pxtnPulse_PCM.h>
 #include "./NoiseTable.h"
 
 bool PcmTable_Initialize();
 void PcmTable_Release   ();
-bool PcmTable_Wave_Load ( const TCHAR *path );
-bool PcmTable_Wave_Save ( const TCHAR *path );
+bool PcmTable_Wave_Load ( const uxDS& path );
+bool PcmTable_Wave_Save ( const uxDS& path );
 
 bool           PcmTable_Woice_Update();
 void           PcmTable_Woice_Play  ( bool b_loop );

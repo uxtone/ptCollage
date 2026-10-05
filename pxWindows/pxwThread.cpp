@@ -1,4 +1,5 @@
-﻿// '16/01/28 pxwThread.
+﻿#include <uxStr.h>
+// '16/01/28 pxwThread.
 
 #include "./pxwThread.h"
 
@@ -50,9 +51,9 @@ void pxwThread::_thrd_func()
 	if( !_b_init ) return;
 	if( FAILED( CoInitializeEx( NULL, COINIT_MULTITHREADED ) ) ) return;
 	_b_success = _proc( _user );
-	OutputDebugString( _T("pxw end01\n") );
+	OutputDebugString( uxT( "pxw end01\n" ) );
 //	CoUninitialize();
-	OutputDebugString( _T("pxw end02\n") );
+	OutputDebugString( uxT( "pxw end02\n" ) );
 	EnterCriticalSection( _cs_working );
 	_b_working = false;
 	LeaveCriticalSection( _cs_working );

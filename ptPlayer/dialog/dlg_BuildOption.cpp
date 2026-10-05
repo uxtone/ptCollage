@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
 extern pxtnService* g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -20,22 +21,22 @@ static void _InitDialog( HWND hDlg )
 {
 	int32_t  i;
 
-	TCHAR* mode_scope_e[] = { _T("top - last"      ), _T("appoint by time"   ) };
-	TCHAR* mode_scope_j[] = { _T("最初から最後まで"), _T("演奏時間で指定する") };
+	const char*  mode_scope_e[] = { "top - last", "appoint by time" };
+	const char*  mode_scope_j[] = { "最初から最後まで", "演奏時間で指定する" };
 
 	if( Japanese_Is() )
 	{
-		for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_ADDSTRING, 0, (LPARAM)mode_scope_j[  i] );
+		for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_ADDSTRING, 0, uxLP( mode_scope_j[  i] ) );
 	}
 	else
 	{
-		for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_ADDSTRING, 0, (LPARAM)mode_scope_e[  i] );
+		for( i = 0; i < 2; i++ ) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_ADDSTRING, 0, uxLP( mode_scope_e[  i] ) );
 	}
 
 	ptConfig_cmb_quality_init( hDlg, IDC_COMBO_CHANNEL, IDC_COMBO_SPS, Japanese_Is() );
 
 	{
-		TCHAR   str[ 10 ];
+		uxSS<10>   str;
 		int32_t beat_num, beat_clock;
 		float   beat_tempo;
 		double  total_sec = 0;
@@ -53,9 +54,9 @@ static void _InitDialog( HWND hDlg )
 			head_sec  = total_sec - loop_sec;
 		}
 
-		_stprintf_s( str, 10, _T("%0.2f"), (float)total_sec ); SetDlgItemText( hDlg, IDC_TOTALTIME, str );
-		_stprintf_s( str, 10, _T("%0.2f"), (float)loop_sec  ); SetDlgItemText( hDlg, IDC_LOOPTIME , str );
-		_stprintf_s( str, 10, _T("%0.2f"), (float)head_sec  ); SetDlgItemText( hDlg, IDC_HEADTIME , str );
+		ux_sprintf_s( str, 10, "%0.2f", (float)total_sec ); SetDlgItemText( hDlg, IDC_TOTALTIME, uxT( str ) );
+		ux_sprintf_s( str, 10, "%0.2f", (float)loop_sec  ); SetDlgItemText( hDlg, IDC_LOOPTIME , uxT( str ) );
+		ux_sprintf_s( str, 10, "%0.2f", (float)head_sec  ); SetDlgItemText( hDlg, IDC_HEADTIME , uxT( str ) );
 	}
 }
 
@@ -84,10 +85,10 @@ static void _SetParameter( HWND hDlg, const ptConfig_Build *p_bld )
 
 	SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_SETCURSEL, (WPARAM)p_bld->scope_mode, 0 );
 
-	TCHAR str[ 10 ];
-	_stprintf_s( str, 10, _T("%0.2f"), p_bld->sec_playtime  ); SetDlgItemText( hDlg, IDC_PLAYTIME , str );
-	_stprintf_s( str, 10, _T("%0.2f"), p_bld->sec_extrafade ); SetDlgItemText( hDlg, IDC_EXTRAFADE, str );
-	_stprintf_s( str, 10, _T("%0.2f"), p_bld->volume        ); SetDlgItemText( hDlg, IDC_VOLUME   , str );
+	uxSS<10> str;
+	ux_sprintf_s( str, 10, "%0.2f", p_bld->sec_playtime  ); SetDlgItemText( hDlg, IDC_PLAYTIME , uxT( str ) );
+	ux_sprintf_s( str, 10, "%0.2f", p_bld->sec_extrafade ); SetDlgItemText( hDlg, IDC_EXTRAFADE, uxT( str ) );
+	ux_sprintf_s( str, 10, "%0.2f", p_bld->volume        ); SetDlgItemText( hDlg, IDC_VOLUME   , uxT( str ) );
 
 	_Enable_Scope( hDlg );
 }
@@ -101,36 +102,36 @@ static bool _GetInputParameter( HWND hDlg, ptConfig_Build *p_c )
 	p_c->b_mute     = IsDlgButtonChecked( hDlg, IDC_CHECK_UNITMUTE ) ? true : false;
 	p_c->scope_mode = (BUILDSCOPEMODE) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_GETCURSEL, 0, 0 );
 
-	TCHAR str[ 10 ];
-	GetDlgItemText( hDlg, IDC_PLAYTIME , str, 10 ); p_c->sec_playtime  = (float)_ttof( str );
-	GetDlgItemText( hDlg, IDC_EXTRAFADE, str, 10 ); p_c->sec_extrafade = (float)_ttof( str );
-	GetDlgItemText( hDlg, IDC_VOLUME   , str, 10 ); p_c->volume        = (float)_ttof( str );
+	uxSS<10> str;
+	GetDlgItemText( hDlg, IDC_PLAYTIME , uxTOut( str ), 10 ); p_c->sec_playtime  = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_EXTRAFADE, uxTOut( str ), 10 ); p_c->sec_extrafade = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_VOLUME   , uxTOut( str ), 10 ); p_c->volume        = (float)_ttof( uxT( str ) );
 
 	return true;
 }
 
 static bool _AlarmParameter( HWND hDlg, const ptConfig_Build *p_bld )
 {
-	TCHAR err_msg[ 100 ] = {0};
+	uxSS<100> err_msg = {0};
 	if( p_bld->sec_extrafade < 0 )
 	{
-		if( Japanese_Is() ) _tcscpy( err_msg, _T("追加フェードアウトが異常です") );
-		else                _tcscpy( err_msg, _T("Illegal Extra Fade Out"      ) );
+		if( Japanese_Is() ) strcpy( err_msg, "追加フェードアウトが異常です" );
+		else                strcpy( err_msg, "Illegal Extra Fade Out" );
 	}
 	if( p_bld->scope_mode == BUILDSCOPEMODE_BYTIME && p_bld->sec_playtime <= 0 )
 	{
-		if( Japanese_Is() ) _tcscpy( err_msg, _T("演奏時間が異常です"          ) );
-		else                _tcscpy( err_msg, _T("Illegal Play Time"           ) );
+		if( Japanese_Is() ) strcpy( err_msg, "演奏時間が異常です" );
+		else                strcpy( err_msg, "Illegal Play Time" );
 	}
 	if( p_bld->volume > 1 || p_bld->volume < 0.01 )
 	{
-		if( Japanese_Is() ) _tcscpy( err_msg, _T("ボリュームの範囲(0.01 - 1.00)") );
-		else                _tcscpy( err_msg, _T("Volume: 0.01 - 1.00"          ) );
+		if( Japanese_Is() ) strcpy( err_msg, "ボリュームの範囲(0.01 - 1.00)" );
+		else                strcpy( err_msg, "Volume: 0.01 - 1.00" );
 	}
 
-	if( _tcslen( err_msg ) )
+	if( strlen( err_msg ) )
 	{
-		Japanese_MessageBox( hDlg, err_msg, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hDlg, err_msg, "error", MB_OK|MB_ICONEXCLAMATION );
 		return true;
 	}
 	return false;

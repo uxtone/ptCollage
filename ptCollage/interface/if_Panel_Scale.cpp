@@ -18,7 +18,7 @@ extern pxwDx09Draw *g_dxdraw;
 #define _BUTTON_W       16
 #define _BUTTON_H       16
 
-static const TCHAR* _file_name = _T("scales.bin");
+static const uxSS<11>  _file_name = "scales.bin";
 static fRECT        _rcPanel   = {0};
 
 #define _DIVI_NUM 10

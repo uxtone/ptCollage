@@ -69,7 +69,7 @@ _EFFECTORSTRUCT;
 static _EFFECTORSTRUCT _effector    = {0};
 static fRECT           _rcPanel     = {0};
 static fRECT           _rc_view     = {0};
-static const TCHAR*    _status_name = _T("effector.status");
+static const uxSS<16>     _status_name = "effector.status";
 static _CURSOR         _cur         = _CURSOR_NONE;
 
 static const pxFile2* _ref_file_profile = NULL;

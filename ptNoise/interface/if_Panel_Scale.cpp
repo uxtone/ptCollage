@@ -31,7 +31,7 @@ static const int32_t _zoom_table[ _ZOOM_NUM ] =
 
 #define _DEFAULT_ZOOM_INDEX 4
 static int32_t        _zoom_index    = _DEFAULT_ZOOM_INDEX;
-static const TCHAR*   _filename_zoom = _T("zoom.bin");
+static const uxSS<9>    _filename_zoom = "zoom.bin";
 static const pxFile2* _ref_file_profile = NULL;
 
 static bool _zoom_save()

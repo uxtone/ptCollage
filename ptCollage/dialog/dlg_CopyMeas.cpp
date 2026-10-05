@@ -1,4 +1,5 @@
-﻿
+﻿#include <uxStr.h>
+
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
 
@@ -55,14 +56,9 @@ static bool _SetOparatedUnitName( HWND hDlg )
 	}
 
 	{
-		TCHAR*   p      = NULL;
-#ifdef UNICODE
-		if( !pxwUTF8_sjis_to_wide( p_unit_names, &p_wide, NULL ) ) goto term;
-		p = p_wide;
-#else
-		p = p_unit_names;
-#endif
-		SetDlgItemText( hDlg, IDC_UNITS, p );
+		uxDS    p;
+		if( !( p = uxDS_from_sjis( p_unit_names ) ) ) goto term; // SJIS -> UTF-8
+		SetDlgItemText( hDlg, IDC_UNITS, uxT( p ) );
 	}
 
 	b_ret = true;

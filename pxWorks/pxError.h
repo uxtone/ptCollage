@@ -15,6 +15,6 @@ const char* pxError_get_date   ();
 
 bool pxerr  (); // fatal error.
 bool pxerr  ( const char *fmt, ... );
-bool pxerr_t( const char* text1, const TCHAR* text_t );
+bool pxerr_t( const char* text1, const uxDS& text_t );
 
 #endif

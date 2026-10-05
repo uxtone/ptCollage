@@ -1,6 +1,7 @@
 ﻿
 #include <pxMem.h>
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -26,7 +27,8 @@ static bool _SetOparatedUnitName( HWND hDlg )
 	bool     b_ret        = false;
 	int32_t  unit_num     =     0;
 	char*    p_unit_names = NULL ;
-	pxTText tt;
+	// pxTText tt;
+	uxDS tt;
 
 	// 対象ユニットなし
 	if( !UnitFocus_CountFocusedOrOperated() ) return false;
@@ -60,8 +62,10 @@ static bool _SetOparatedUnitName( HWND hDlg )
 		}
 	}
 
-	if( !tt.set_sjis_to_t( p_unit_names ) ) goto term;
-	SetDlgItemText( hDlg, IDC_UNITS, tt.tchr() );
+	// if( !tt.set_sjis_to_t( p_unit_names ) ) goto term;
+	if( !( tt = uxDS_from_sjis( p_unit_names ) ) ) goto term;
+	// SetDlgItemText( hDlg, IDC_UNITS, tt.tchr() );
+	SetDlgItemText( hDlg, IDC_UNITS, uxT( tt ) );
 
 	b_ret = true;
 term:
@@ -87,11 +91,11 @@ static bool _InitDialog( HWND hDlg, enum_EventKind mode )
 	int32_t meas1, beat1, clock1;
 	int32_t meas2, beat2, clock2;
 
-	TCHAR *title_table_j[] = { _T("≪トランスポーズ≫"), _T("≪ベロシティ≫"), _T("≪時間パン≫"    ), _T("≪音量パン≫"      ), _T("≪ボリューム≫") };
-	TCHAR *title_table_e[] = { _T("== Transpose =="   ), _T("== Velocity =="), _T("== Pan (time) =="), _T("== Pan (Volume) =="), _T("== Volume =="  ) };
+	const char* title_table_j[] = { "≪トランスポーズ≫", "≪ベロシティ≫", "≪時間パン≫", "≪音量パン≫", "≪ボリューム≫" };
+	const char* title_table_e[] = { "== Transpose ==", "== Velocity ==", "== Pan (time) ==", "== Pan (Volume) ==", "== Volume ==" };
 
-	if( Japanese_Is() ) SetDlgItemText( hDlg, IDC_TEXT_EVENTVOLUMETITLE, title_table_j[ mode ] );
-	else                SetDlgItemText( hDlg, IDC_TEXT_EVENTVOLUMETITLE, title_table_e[ mode ] );
+	if( Japanese_Is() ) SetDlgItemText( hDlg, IDC_TEXT_EVENTVOLUMETITLE, uxT( title_table_j[ mode ] ) );
+	else                SetDlgItemText( hDlg, IDC_TEXT_EVENTVOLUMETITLE, uxT( title_table_e[ mode ] ) );
 
 	if( !_SetOparatedUnitName( hDlg ) ) return false;
 

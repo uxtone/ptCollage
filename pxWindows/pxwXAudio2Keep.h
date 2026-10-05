@@ -7,8 +7,6 @@
 #include <XAudio2.h>
 #include <pxStdDef.h>
 
-#include <string>
-
 class pxwXAudio2Keep_loadlib // LoadLibraryVersion
 {
 public:
@@ -22,8 +20,8 @@ private:
     // Handle to loaded XAudio2 DLL.
 HMODULE _h_lib;
 
-    // Full path to theXAudio2 DLL.
-std::basic_string<TCHAR> _path_dll;
+    // Full path to theXAudio2 DLL (UTF-8; converted to OS text where it is used).
+uxDS _path_dll;
 
 bool _registry_find_dll_path( REFCLSID clsidXaudio2Dll );
 bool _explicit_load  ();

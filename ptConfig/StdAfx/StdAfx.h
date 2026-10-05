@@ -4,3 +4,5 @@
 #include <cstdint>
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

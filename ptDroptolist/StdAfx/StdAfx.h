@@ -13,3 +13,5 @@
 using namespace std;
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

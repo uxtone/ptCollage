@@ -6,7 +6,7 @@
 
 #include "./pxwFilePath.h"
 
-static TCHAR*         _dir_name         = _T("window-rect");
+static uxSS<12>          _dir_name         = "window-rect";
 static const pxFile2* _ref_file_profile = NULL;
 
 void pxwWindowRect_init( const pxFile2* ref_file_profile )
@@ -56,7 +56,7 @@ void pxwWindowRect_center( HWND hWnd )
 	PostMessage( hWnd, WM_SIZE, SIZE_RESTORED, 0 );
 }
 
-bool pxwWindowRect_load( HWND hWnd, const TCHAR* name, BOOL bSize, bool b_default_center )
+bool pxwWindowRect_load( HWND hWnd, const uxDS& name, BOOL bSize, bool b_default_center )
 {
 	bool b_ret   = false;
 	RECT rect    = {   };
@@ -123,7 +123,7 @@ term:
 	return TRUE;
 }
 
-bool pxwWindowRect_save( HWND hWnd, const TCHAR* name )
+bool pxwWindowRect_save( HWND hWnd, const uxDS& name )
 {
 	WINDOWPLACEMENT place = {   };
 	RECT            rc    = {   };

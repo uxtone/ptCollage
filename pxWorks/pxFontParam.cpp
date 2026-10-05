@@ -7,7 +7,7 @@
 pxFontParam::~pxFontParam()
 {
 	pxStr_free ( &font_name  );
-	pxStrT_free( &table_file );
+	pxStrT_free( table_file );
 }
 
 pxFontParam::pxFontParam()
@@ -44,21 +44,21 @@ bool pxFontParam::set_font_name( const char* name )
 	return pxStr_copy_allocate( &font_name, name );
 }
 
-bool pxFontParam::set_table_file( const TCHAR* name )
+bool pxFontParam::set_table_file( const uxDS& name )
 {
 	if( !name ) return false;
-	pxStrT_free( &table_file );
-	return pxStrT_copy_allocate( &table_file, name );
+	pxStrT_free( table_file );
+	return pxStrT_copy_allocate( table_file, name );
 }
 
 
 bool pxFontParam::copy_from( const pxFontParam* src )
 {
 	pxStr_free ( &font_name  );
-	pxStrT_free( &table_file );
+	pxStrT_free( table_file );
 
 	if( src->font_name  && !pxStr_copy_allocate ( &font_name , src->font_name  ) ) return false;
-	if( src->table_file && !pxStrT_copy_allocate( &table_file, src->table_file ) ) return false;
+	if( src->table_file && !pxStrT_copy_allocate( table_file, src->table_file ) ) return false;
 
 	height     = src->height    ;
 	grid_w     = src->grid_w    ;

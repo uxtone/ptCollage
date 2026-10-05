@@ -2,6 +2,7 @@
 //#include "./DebugLog.h"
 
 #include <pxDebugLog.h>
+#include <uxStr.h>
 
 #include "./pxMidiIn.h"
 
@@ -104,19 +105,54 @@ static void CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD_PTR inst, DWORD_PTR p
 	}
 }
 
-bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func )
+#define _MIDI_PROBE_TIMEOUT_MS 3000
+
+static volatile LONG _probe_state = 0; // 0: not probed yet, 1: the driver answered, 2: it did not
+static volatile LONG _probe_num   = 0;
+
+static DWORD WINAPI _probe_thread( LPVOID p_event )
+{
+	_probe_num = (LONG)midiInGetNumDevs(); // may block forever inside winmm
+	SetEvent( (HANDLE)p_event );
+	return 0;
+}
+
+int pxMidiIn_get_device_num()
+{
+	if( _probe_state == 2 ) return 0;
+	if( _probe_state == 1 ) return (int)midiInGetNumDevs(); // the driver is loaded now, so this is safe
+
+	HANDLE h_event  = CreateEvent( NULL, TRUE, FALSE, NULL );
+	HANDLE h_thread = h_event ? CreateThread( NULL, 0, _probe_thread, h_event, 0, NULL ) : NULL;
+
+	if( h_thread && WaitForSingleObject( h_event, _MIDI_PROBE_TIMEOUT_MS ) == WAIT_OBJECT_0 )
+	{
+		_probe_state = 1;
+		CloseHandle( h_thread );
+		CloseHandle( h_event  );
+		return (int)_probe_num;
+	}
+
+	// Not answered: leave the stuck thread (and its event) alone, it may still be using them.
+	dlog_c( "MIDI driver did not respond: MIDI input is disabled." );
+	if( h_thread ) CloseHandle( h_thread );
+	_probe_state = 2;
+	return 0;
+}
+
+bool pxMidiIn::Open( const uxDS& device_name, HWND hwnd, pxMIDIIN_CALLBACK func )
 {
 	pxMidiIn::Close();
 
 	if( !hwnd && !func ) func = reinterpret_cast<pxMIDIIN_CALLBACK>(_testFunc);
 
-	int num = midiOutGetNumDevs();
+	int num = pxMidiIn_get_device_num();
 	MIDIINCAPS caps;
 	int  device_id;
 	for( device_id = 0; device_id < num; device_id++ )
 	{
 		if( midiInGetDevCaps( device_id, &caps, sizeof(caps)) == MMSYSERR_NOERROR &&
-			!_tcscmp( caps.szPname, device_name ) ) break;
+			uxDS_from_t( caps.szPname ) == device_name ) break;
 	}
 	if( device_id == num ) return false;
 
@@ -127,8 +163,8 @@ bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func
 
 	if( res != MMSYSERR_NOERROR )
 	{
-		TCHAR errmsg[MAXERRORLENGTH];
-		midiInGetErrorText(res, errmsg, MAXERRORLENGTH);
+		uxSS<MAXERRORLENGTH> errmsg;
+		midiInGetErrorText(res, uxTOut( errmsg ), MAXERRORLENGTH);
 		_h = NULL;
 		return false;
 	}

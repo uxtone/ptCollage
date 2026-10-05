@@ -3,6 +3,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxRiffWav.h"
+#include <uxStr.h>
 
 typedef struct
 {
@@ -117,7 +118,7 @@ End:
 	return b_ret ? smp_num : 0;
 }
 
-bool pxRiffWav_save ( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src )
+bool pxRiffWav_save ( const uxDS& path_dst, int32_t ch_num, int32_t sps, int32_t bps, int32_t smp_num, const void* p_src )
 {
 	bool b_ret = false;
 
@@ -135,7 +136,7 @@ bool pxRiffWav_save ( const TCHAR *path_dst, int32_t ch_num, int32_t sps, int32_
 	fmt.byte_per_sec = bps / 8 * sps * ch_num;
 	fmt.block_size   = bps / 8       * ch_num;
 
-	if( !( fp = _tfopen( path_dst, _T("wb") ) ) ) goto End;
+	if( !( fp = ux_fopen( path_dst, "wb" ) ) ) goto End;
 
 	// 'RIFFxxxxWAVE'
 	if( fwrite( _header_code_RIFF, 1, 4, (FILE*)fp ) != 4 ) goto End;

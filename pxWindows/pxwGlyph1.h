@@ -31,7 +31,7 @@ bool init         ( const pxGLYPH_PARAM1 *p_prm, float gen_mag );
 bool reset_magnify(                              float gen_mag );
 bool generate     ( uint32_t moji, bool b_wide_chaset, const pxSurface** pp_surf, sRECT* p_rc_ofs );
 bool color        ( uint32_t argb );
-bool another_font ( const TCHAR* font_name, int32_t font_h, bool b_bold );
+bool another_font ( const uxDS& font_name, int32_t font_h, bool b_bold );
 };
 
 #endif

@@ -1,10 +1,10 @@
 ﻿
 #include "ptConfig.h"
 
-static const TCHAR* _dir_name          = _T("pxtone-config");
-static const TCHAR* _name_strm_operate = _T("strm_operate.conf");
-static const TCHAR* _name_font         = _T("font.conf"        );
-static const TCHAR* _name_midi         = _T("midi.conf"        );
+static const uxSS<14>  _dir_name          = "pxtone-config";
+static const uxSS<18>  _name_strm_operate = "strm_operate.conf";
+static const uxSS<10>  _name_font         = "font.conf";
+static const uxSS<10>  _name_midi         = "midi.conf";
 
 ptConfig:: ptConfig( const pxFile2* app_file_profile, int32_t sps, int32_t ch_num, float buf_sec )
 {

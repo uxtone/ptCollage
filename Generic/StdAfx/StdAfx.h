@@ -11,3 +11,5 @@
 #pragma comment(lib,"shlwapi")
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

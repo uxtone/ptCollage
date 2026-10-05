@@ -1,5 +1,7 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
+#include <pxPath.h>
 extern pxtnService*            g_pxtn    ;
 
 #include <pxtnPulse_NoiseBuilder.h>
@@ -9,7 +11,8 @@ extern pxtnPulse_NoiseBuilder* g_ptn_bldr;
 extern pxtonewinXA2*           g_strm_xa2;
 
 #include <pxDebugLog.h>
-#include <pxTText.h>
+// #include <pxTText.h>
+#include <uxStr.h>
 
 #include <pxwPathDialog.h>
 extern pxwPathDialog* g_path_dlg_proj;
@@ -40,8 +43,8 @@ extern pxwAlteration* g_alte;
 
 extern HINSTANCE  g_hInst       ;
 extern HWND       g_hWnd_Main   ;
-extern TCHAR      g_dir_module[];
-extern TCHAR      g_app_name  [];
+extern uxSS<MAX_PATH>       g_dir_module;
+extern uxSS<32>       g_app_name;
 
 #include "../Generic/if_gen_Scroll.h"
 extern if_gen_Scroll g_ScrlEventH;
@@ -52,7 +55,7 @@ extern if_gen_Scroll g_ScrlKeyV  ;
 
 
 bool InquireOperation();
-bool SaveTune_Version( const TCHAR *path, bool bTune );
+bool SaveTune_Version( const uxDS& path, bool bTune );
 
 INT_PTR CALLBACK
 dlg_ProjectOption( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
@@ -60,7 +63,7 @@ dlg_ProjectOption( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 INT_PTR CALLBACK
 dlg_YesNo(         HWND hDlg, UINT msg, WPARAM w, LPARAM l );
 
-void    MainWindow_SetTitle               ( const TCHAR *path        );
+void    MainWindow_SetTitle               ( const uxDS& path        );
 bool    pxtoneProject_IDM_SAVEPROJECTDIFFERENCE( HWND hWnd, bool *pb_bool );
 int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 
@@ -86,10 +89,10 @@ static void _tools_init()
 }
 
 
-bool _SaveWithVersion( const TCHAR *path, bool bTune, pxtnERR* p_pxtn_err )
+bool _SaveWithVersion( const uxDS& path, bool bTune, pxtnERR* p_pxtn_err )
 {
 	bool  b_ret = false;
-	FILE* fp    = _tfopen( path, _T("wb") ); if( !fp ) return false;
+	FILE* fp    = ux_fopen( path, "wb" ); if( !fp ) return false;
 
 	*p_pxtn_err = g_pxtn->write( fp, bTune, (unsigned short)GetCompileVersion( 0, 0, 0, 0 ) );
 	if( *p_pxtn_err != pxtnOK  ) goto term;
@@ -101,12 +104,12 @@ term:
 	return b_ret;
 }
 
-bool pxtoneProject_load_and_init_tools( HWND hWnd, const TCHAR *path, bool *pb_cancel, bool *pb_save_failed )
+bool pxtoneProject_load_and_init_tools( HWND hWnd, const uxDS& path, bool *pb_cancel, bool *pb_save_failed )
 {
 	bool    b_ret    = false       ;
 	pxtnERR pxtn_err = pxtnERR_VOID;
-	TCHAR   path_get[ MAX_PATH ] = {0};
-	TCHAR   err_msg [ MAX_PATH ] = {0};
+	uxDS    path_get;
+	uxDS              err_msg;
 
 	if( pb_cancel      ) *pb_cancel      = false;
 	if( pb_save_failed ) *pb_save_failed = false;
@@ -121,12 +124,12 @@ bool pxtoneProject_load_and_init_tools( HWND hWnd, const TCHAR *path, bool *pb_c
 
 	if( !InquireOperation() ){ dlog_c( "err inq(init tool)" ); return false; }
 
-	_tcscpy( path_get, path );
+	path_get = path;
 
-	if( _tcslen( path_get ) || g_path_dlg_proj->get_last_path( path_get, MAX_PATH ) )
+	if( path_get.size() || g_path_dlg_proj->get_last_path( path_get ) )
 	{
 		dlog_t( "LoadProject InitializeTool: ", path_get );
-		FILE* fp = _tfopen( path_get, _T("rb") ); if( !fp ) goto End;
+		FILE* fp = ux_fopen( path_get, "rb" ); if( !fp ) goto End;
 		pxtn_err = g_pxtn->read( fp );
 		if( pxtn_err != pxtnOK ){ fclose( fp ); goto End; }
 		fclose( fp );
@@ -136,7 +139,7 @@ bool pxtoneProject_load_and_init_tools( HWND hWnd, const TCHAR *path, bool *pb_c
 		MainWindow_SetTitle             ( path_get );
 	}
 
-	if( g_pxtn->tones_ready() != pxtnOK ) Japanese_MessageBox( hWnd, _T("ready works"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+	if( g_pxtn->tones_ready() != pxtnOK ) Japanese_MessageBox( hWnd, "ready works", "error", MB_OK|MB_ICONEXCLAMATION );
 
 	dlog_c( "LoadProject InitializeTool( ready work ok )" );
 
@@ -145,15 +148,16 @@ End:
 
 	if( !b_ret )
 	{
-		pxTText tt; tt.set_sjis_to_t( pxtnError_get_string( pxtn_err ) );
+		// pxTText tt; tt.set_sjis_to_t( pxtnError_get_string( pxtn_err ) );
+		uxDS tt; ( tt = uxDS_from_sjis( pxtnError_get_string( pxtn_err ) ) );
 
 		g_path_dlg_proj->last_filename_clear();
-		if( Japanese_Is() ) _stprintf_s( err_msg, MAX_PATH, _T("%s は開けません。"), path_get );
-		else                _stprintf_s( err_msg, MAX_PATH, _T("Can't open %s."   ), path_get );
-		_tcscat( err_msg, _T("\r\n") );
-		_tcscat( err_msg, tt.tchr()  );
+		if( Japanese_Is() ) err_msg.format( "%s は開けません。", *path_get );
+		else                err_msg.format( "Can't open %s.", *path_get );
+		err_msg += "\r\n";
+		err_msg += tt;
 
-		Japanese_MessageBox( hWnd, err_msg, _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hWnd, *err_msg, "error", MB_OK|MB_ICONEXCLAMATION );
 		MainWindow_SetTitle( NULL );
 	}
 
@@ -167,7 +171,7 @@ End:
 // プロジェクトロード
 void pxtoneProject_IDM_LOADPROJECT( HWND hWnd )
 {
-	TCHAR path_get[MAX_PATH] = { 0 };
+	uxDS  path_get;
 	bool  b_cancel           = false;
 	bool  b_save_failed      = false;
 
@@ -178,7 +182,7 @@ void pxtoneProject_IDM_LOADPROJECT( HWND hWnd )
 
 bool pxtoneProject_IDM_HISTORY( HWND hWnd, UINT idm )
 {
-	TCHAR path[ MAX_PATH ];
+	uxDS path;
 	bool b_cancel     = false;
 	bool b_save_failed = false;
 
@@ -193,16 +197,16 @@ bool pxtoneProject_IDM_HISTORY( HWND hWnd, UINT idm )
 
 bool pxtoneProject_IDM_SAVEPROJECT( HWND hwnd, bool b_as )
 {
-	TCHAR   path_get[ MAX_PATH ] = {0};
+	uxDS    path_get;
 	pxtnERR pxtn_err             = pxtnERR_VOID;
 
 	InquireOperation();
 
-	if( !g_path_dlg_proj->entrust_save_path( hwnd, b_as, path_get, _T("no name") ) ) return false;
+	if( !g_path_dlg_proj->entrust_save_path( hwnd, b_as, path_get, "no name" ) ) return false;
 
 	if( !_SaveWithVersion( path_get, false, &pxtn_err ) )
 	{
-		Japanese_MessageBox( hwnd, _T("open file"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hwnd, "open file", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
@@ -217,13 +221,13 @@ bool pxtoneProject_IDM_SAVEPROJECT( HWND hwnd, bool b_as )
 void pxtoneProject_IDM_EDITPROJECT()
 {
 	InquireOperation();
-	if( DialogBox( g_hInst, _T("DLG_PROJECT"), g_hWnd_Main, dlg_ProjectOption ) )
+	if( DialogBox( g_hInst, uxT( "DLG_PROJECT" ), g_hWnd_Main, dlg_ProjectOption ) )
 	{
 		g_pxtn->AdjustMeasNum();
 		if_Projector_RedrawName( NULL );
 		if( g_pxtn->tones_ready() != pxtnOK )
 		{
-			Japanese_MessageBox( g_hWnd_Main, _T("ready delay work"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			Japanese_MessageBox( g_hWnd_Main, "ready delay work", "error", MB_OK|MB_ICONEXCLAMATION );
 		}
 		g_alte->set();
 	}
@@ -232,13 +236,10 @@ void pxtoneProject_IDM_EDITPROJECT()
 // プロジェクトを初期化
 bool pxtoneProject_IDM_INITPROJECT( HWND hWnd )
 {
-	TCHAR str[64];
-
 	InquireOperation();
 
-	if( Japanese_Is() ) _tcscpy( str, _T("プロジェクトを初期化します") );
-	else                _tcscpy( str, _T("Initialize project"        ) );
-	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), hWnd, dlg_YesNo, (LPARAM)str ) ) return false;
+	const char* str = Japanese_Is() ? "プロジェクトを初期化します" : "Initialize project"; // a static message, not a copy
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_YESNO" ), hWnd, dlg_YesNo, (LPARAM)str ) ) return false;
 	g_pxtn->clear();
 	_tools_init();
 	g_path_dlg_proj->last_filename_clear();
@@ -250,15 +251,12 @@ bool pxtoneProject_IDM_INITPROJECT( HWND hWnd )
 
 bool pxtoneProject_IDM_SAVEPROJECTDIFFERENCE( HWND hWnd, bool *pb_cancel )
 {
-	TCHAR str[ 32 ] = {0};
-
 	if( pb_cancel ) *pb_cancel = false;
 
 	if( !g_alte->is() ) return true;
 
-	if( Japanese_Is() ) _tcscpy( str, _T("変更を上書きしますか？") );
-	else                _tcscpy( str, _T("overwrite?"            ) );
-	switch( MessageBox( hWnd, str, g_app_name, MB_YESNOCANCEL ) )
+	const char* str = Japanese_Is() ? "変更を上書きしますか？" : "overwrite?"; // a static message (33 bytes in UTF-8: it must not be copied into a small buffer)
+	switch( MessageBox( hWnd, uxT( str ), uxT( g_app_name ), MB_YESNOCANCEL ) )
 	{
 	case IDCANCEL: if( pb_cancel ) *pb_cancel = true; return false;
 	case IDNO:     return true;
@@ -269,25 +267,27 @@ bool pxtoneProject_IDM_SAVEPROJECTDIFFERENCE( HWND hWnd, bool *pb_cancel )
 
 bool pxtoneProject_IDM_OUTPUTTUNEAS( HWND hWnd )
 {
-	TCHAR   path_dst [ MAX_PATH ] = {0};
-	TCHAR   path_name[ MAX_PATH ] = {0};
-	TCHAR   exte     [ MAX_PATH ] = {0};
+	uxDS    path_dst;
+	uxSS<MAX_PATH>    path_name = {0};
+	uxDS    exte;
 	pxtnERR pxtn_err = pxtnERR_VOID;
 
 	InquireOperation();
 
-	if( !g_path_dlg_proj->get_last_path( path_dst, MAX_PATH ) ) return false;
+	if( !g_path_dlg_proj->get_last_path( path_dst ) ) return false;
 	if( !g_path_dlg_tune->extension_get( exte ) ) return false;
-	PathRemoveExtension( path_name );
-	_tcscat( path_dst, _T(".") );
-	_tcscat( path_dst, exte    );
+	pxPath_remove_ext( path_name );
+	path_dst += ".";
+	path_dst += exte;
 
-	if( !g_path_dlg_tune->dialog_save( hWnd, path_dst, _T("no name") ) ) return false;
+	if( !g_path_dlg_tune->dialog_save( hWnd, path_dst, "no name" ) ) return false;
 
 	if( !_SaveWithVersion( path_dst, true, &pxtn_err ) )
 	{
-		pxTText tt; tt.set_sjis_to_t( pxtnError_get_string( pxtn_err ) );
-		Japanese_MessageBox( hWnd, tt.tchr(), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		// pxTText tt; tt.set_sjis_to_t( pxtnError_get_string( pxtn_err ) );
+		uxDS tt; ( tt = uxDS_from_sjis( pxtnError_get_string( pxtn_err ) ) );
+		// Japanese_MessageBox( hWnd, tt.tchr(), "error", MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( hWnd, *tt, "error", MB_OK|MB_ICONEXCLAMATION );
 	}
 	return true;
 }

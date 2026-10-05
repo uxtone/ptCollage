@@ -74,9 +74,9 @@ bool        set_destination_quality( int32_t ch_num, int32_t sps );
 bool        sampling        (             void *p1, int *p_req_size, int *p_req_packet );
 static bool sampling_wrapper( void *user, void *p1, int *p_req_size, int *p_req_packet );
 
-bool pcm_save       ( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type ) const;
-bool pcm_load_atonce( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type );
-bool pcm_open       ( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type );
+bool pcm_save       ( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type ) const;
+bool pcm_load_atonce( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type );
+bool pcm_open       ( const uxDS& path, pxPLAYPCMFMTTYPE fmt_type );
 void pcm_release    ();
 void pcm_close      ();
 

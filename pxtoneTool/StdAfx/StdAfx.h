@@ -18,3 +18,5 @@ using namespace std;
 #include <XAudio2.h>
 
 #include <tchar.h>
+
+#include <pxStdDef.h>

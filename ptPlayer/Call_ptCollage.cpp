@@ -1,28 +1,30 @@
-﻿
-extern TCHAR g_dir_module[];
+﻿#include <uxStr.h>
+#include <uxStr.h>
+
+extern uxSS<MAX_PATH> g_dir_module;
 
 bool Find_ptCollage()
 {
-	TCHAR path[ MAX_PATH ];
-	_stprintf_s( path, _T("%s\\ptCollage.exe"), g_dir_module );
+	uxSS<MAX_PATH> path;
+	ux_sprintf_s( path, "%s\\ptCollage.exe", g_dir_module );
 
 	WIN32_FIND_DATA find ;
 	HANDLE          hFind;
 
-	hFind = FindFirstFile( path, &find );
+	hFind = FindFirstFile( uxT( path ), &find );
 	if( hFind == INVALID_HANDLE_VALUE ) return false;
 	FindClose( hFind );
 
 	return true;
 }
 
-bool Call_ptCollage( HWND hWnd, const TCHAR* path )
+bool Call_ptCollage( HWND hWnd, const uxDS& path )
 {
 	HINSTANCE hShell;
-	TCHAR     cmd[ MAX_PATH ];
+	uxSS<MAX_PATH>     cmd;
 
-	_stprintf_s( cmd, MAX_PATH, _T("%s\\ptCollage.exe"), g_dir_module );
-	hShell = ShellExecute( hWnd, _T("open"), cmd, path, NULL, SW_SHOW );
+	ux_sprintf_s( cmd, MAX_PATH, "%s\\ptCollage.exe", g_dir_module );
+	hShell = ShellExecute( hWnd, uxT( "open" ), uxT( cmd ), uxT( path ), NULL, SW_SHOW );
 	if( (INT_PTR)hShell <= 32 ) return false;
 
 	return true;

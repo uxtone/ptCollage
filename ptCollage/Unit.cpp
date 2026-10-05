@@ -1,5 +1,6 @@
 ﻿
 #include <pxtnService.h>
+#include <uxStr.h>
 extern pxtnService *g_pxtn;
 
 #include <pxwUTF8.h>
@@ -47,27 +48,22 @@ bool Unit_Remove( int32_t u )
 	const pxtnUnit *p_unit = g_pxtn->Unit_Get( u );
 	if( !p_unit )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("no unit"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "no unit", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	bool        b_ret = false;
-	TCHAR       str[ _BUFNUM_DELETE_UNIT ] = {0};
-	const TCHAR* p_name_t = NULL;
+	uxSS<_BUFNUM_DELETE_UNIT>        str = {0};
+	uxDS  p_name_t;
 	wchar_t*    p_wide   = NULL;
 	const char* p_c      = p_unit->get_name_buf( NULL );
 
-#ifdef UNICODE
-	if( !pxwUTF8_sjis_to_wide( p_c, &p_wide, NULL ) ) goto term;
-	p_name_t = p_wide;
-#else
-	p_name_t = p_c;
-#endif
+	if( !( p_name_t = uxDS_from_sjis( p_c ) ) ) goto term; // SJIS -> UTF-8
 
-	if( Japanese_Is() ) _stprintf_s( str, _BUFNUM_DELETE_UNIT, _T("ユニット \'%s\'を削除します"), p_name_t );
-	else                _stprintf_s( str, _BUFNUM_DELETE_UNIT, _T("Remove : '%s\'"             ), p_name_t );
+	if( Japanese_Is() ) ux_sprintf_s( str, _BUFNUM_DELETE_UNIT, "ユニット \'%s\'を削除します", *p_name_t );
+	else                ux_sprintf_s( str, _BUFNUM_DELETE_UNIT, "Remove : '%s\'", *p_name_t );
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ){ b_ret = true; goto term; }
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_YESNO" ), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ){ b_ret = true; goto term; }
 
 	g_pxtn->Unit_Remove( u );
 	g_pxtn->evels->Record_UnitNo_Miss( (unsigned char)u );
@@ -111,15 +107,15 @@ bool Unit_Dialog_Add()
 
 	if( u >= g_pxtn->Unit_Max() )
 	{
-		Japanese_MessageBox( g_hWnd_Main, _T("full unit"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+		Japanese_MessageBox( g_hWnd_Main, "full unit", "error", MB_OK|MB_ICONEXCLAMATION );
 		return false;
 	}
 
 	ADDUNITSTRUCT addunit = {0}; strcpy( addunit.name, "unit" );
 
-	if( !DialogBoxParam( g_hInst, _T("DLG_ADDUNIT"), g_hWnd_Main, dlg_AddUnit, (LPARAM)&addunit ) ) return false;
+	if( !DialogBoxParam( g_hInst, uxT( "DLG_ADDUNIT" ), g_hWnd_Main, dlg_AddUnit, (LPARAM)&addunit ) ) return false;
 
-	if( !g_pxtn->Unit_AddNew() ){ Japanese_MessageBox( g_hWnd_Main, _T("add unit"), _T("error"), MB_OK|MB_ICONEXCLAMATION ); return false; }
+	if( !g_pxtn->Unit_AddNew() ){ Japanese_MessageBox( g_hWnd_Main, "add unit", "error", MB_OK|MB_ICONEXCLAMATION ); return false; }
 
 	{
 		int32_t name_size = 0;
@@ -145,7 +141,7 @@ bool Unit_Dialog_Edit( int32_t u )
 {
 	if( !InquireOperation() ) return false;
 
-	if( DialogBoxParam( g_hInst, _T("DLG_UNIT"), g_hWnd_Main, dlg_Unit, (LPARAM)u ) )
+	if( DialogBoxParam( g_hInst, uxT( "DLG_UNIT" ), g_hWnd_Main, dlg_Unit, (LPARAM)u ) )
 	{
 		if_UnitTray_RedrawAllName( NULL );
 		g_alte->set();

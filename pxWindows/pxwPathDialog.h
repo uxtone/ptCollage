@@ -1,5 +1,5 @@
 ﻿// '16/01/17 pxwPathStore from pxtone-project PathStore.
-// '17/01/10 pxwPathStore2 TCHAR[MAX_PATH] and const TCHAR* -> TCHAR* allocate. on "pxtone projects"
+// '17/01/10 pxwPathStore2 TCHAR[MAX_PATH] and const uxDS  -> uxDS  allocate. on "pxtone projects"
 // '17/01/18 pxwPathStore2 -> pxwPathDialog.
 // '17/10/11 apply pxFile2.
 
@@ -18,17 +18,18 @@ bool   _b_init    ;
 
 pxFile2* _ref_file_profile;
 
-TCHAR* _lst_dir1  ;
-TCHAR* _lst_fname1;
-TCHAR* _def_dir1  ;
-TCHAR* _file_name1;
+uxDS  _lst_dir1  ;
+uxDS  _lst_fname1;
+uxDS  _def_dir1  ;
+uxDS  _file_name1;
 
-TCHAR* _fltr1     ;
-TCHAR* _exte1     ;
-TCHAR* _ttl_save1 ;
-TCHAR* _ttl_load1 ;
+uxDS  _fltr1     ;
+uxDS  _exte1     ;
+uxDS  _ttl_save1 ;
+uxDS  _ttl_load1 ;
 
 void _fix_last_directory();
+void _remember( const uxDS& path ); // last file name + directory of a path the user picked
 
 void _release();
 
@@ -39,29 +40,29 @@ pxwPathDialog();
 
 bool init(
 	pxFile2*     ref_file_profile,
-	const TCHAR* filter,
-	const TCHAR* ext   ,
-	const TCHAR* file_name ,
-	const TCHAR* title_save,
-	const TCHAR* title_load,
-	const TCHAR* def_dir );
+	const char* filter,     // "name\0pattern\0...\0\0": a raw pointer, because the text contains NULs
+	const uxDS& ext   ,
+	const uxDS& file_name ,
+	const uxDS& title_save,
+	const uxDS& title_load,
+	const uxDS& def_dir );
 
 bool save_lasts   () const;
 bool load_lasts   ();
 
-bool entrust_save_path( HWND hwnd, bool b_as, TCHAR* path_dst, const TCHAR* default_name );
+bool entrust_save_path( HWND hwnd, bool b_as, uxDS& path_dst, const uxDS& default_name );
 
-bool dialog_save  ( HWND hWnd, TCHAR* path_dst, const TCHAR* default_name );
-bool dialog_load  ( HWND hWnd, TCHAR* path_dst );
+bool dialog_save  ( HWND hWnd, uxDS& path_dst, const uxDS& default_name );
+bool dialog_load  ( HWND hWnd, uxDS& path_dst );
 
-bool get_last_path  (       TCHAR* path_dst, int32_t buf_num );
-bool set_loaded_path( const TCHAR* path_src );
+bool get_last_path  (       uxDS& path_dst );
+bool set_loaded_path( const uxDS& path_src );
 
 bool last_filename_clear();
-bool last_filename_get(       TCHAR *name ) const;
-void last_filename_set( const TCHAR *name );
+bool last_filename_get(       uxDS& name ) const;
+void last_filename_set( const uxDS& name );
 
-bool extension_get    (       TCHAR* exte ) const;
+bool extension_get    (       uxDS& exte ) const;
 };
 
 #endif

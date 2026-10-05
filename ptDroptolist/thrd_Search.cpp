@@ -1,5 +1,7 @@
 ﻿
 #include <pxwFilePath.h>
+#include <uxStr.h>
+#include <pxPath.h>
 
 #include "resource.h"
 
@@ -13,7 +15,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
 	UINT             vSize;
-	TCHAR            path[ MAX_PATH ];
+	uxSS<MAX_PATH>             path;
 
 	int32_t v[ 4 ] = {0};
 
@@ -30,7 +32,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	p = malloc( size );
 	if( !p                                                    ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )               ) goto End;
-	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
+	if( !VerQueryValue( p, "\\", (LPVOID*)&info, &vSize ) ) goto End;
 
 	v[ 0 ] = HIWORD(info->dwFileVersionMS);
 	v[ 1 ] = LOWORD(info->dwFileVersionMS);
@@ -55,21 +57,21 @@ pxtnService *g_pxtn = NULL;
 
 typedef struct
 {
-	TCHAR* p_path;
+	uxDS  p_path;
 }
 _PROJECTSTRUCT;
 
 extern HWND g_hDlg;
 
-static bool _FindProjectFiles( const TCHAR* dir_start, TCHAR *dir_ext, vector <_PROJECTSTRUCT>* p_v, bool* pbSuspend )
+static bool _FindProjectFiles( const uxDS& dir_start, uxDS& dir_ext, vector <_PROJECTSTRUCT>* p_v, bool* pbSuspend )
 {
 	WIN32_FIND_DATA wfd;
-	TCHAR           path[ MAX_PATH ];
+	uxSS<MAX_PATH>            path;
 	HANDLE          hFind = NULL;
 	_PROJECTSTRUCT  project;
 
-	if( _tcslen( dir_ext ) ) _stprintf_s( path, MAX_PATH, _T("%s%s\\*"), dir_start, dir_ext );
-	else                     _stprintf_s( path, MAX_PATH, _T("%s\\*"  ), dir_start          );
+	if( strlen( dir_ext ) ) ux_sprintf_s( path, MAX_PATH, "%s%s\\*", dir_start, dir_ext );
+	else                     ux_sprintf_s( path, MAX_PATH, "%s\\*", dir_start          );
 
 	hFind = FindFirstFile( path, &wfd );
 	while( hFind != INVALID_HANDLE_VALUE )
@@ -77,28 +79,28 @@ static bool _FindProjectFiles( const TCHAR* dir_start, TCHAR *dir_ext, vector <_
 		// 中止
 		if( *pbSuspend ){ FindClose( hFind ); return false; }
 
-		if(_tcsicmp( wfd.cFileName, _T(".") ) &&_tcsicmp( wfd.cFileName, _T("..") ) )
+		if(ux_stricmp( wfd.cFileName, "." ) &&ux_stricmp( wfd.cFileName, ".." ) )
 		{
 			// ディレクトリなら再起
 			if( wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
 			{
-				if( _tcslen( dir_ext ) ) _tcscpy( path, dir_ext );
-				else                     _tcscpy( path, _T("")  );
-				_tcscat( path, _T("\\")      );
-				_tcscat( path, wfd.cFileName );
+				if( strlen( dir_ext ) ) strcpy( path, dir_ext );
+				else                     strcpy( path, ""  );
+				strcat( path, "\\"      );
+				strcat( path, wfd.cFileName );
 				if( !_FindProjectFiles( dir_start, path, p_v, pbSuspend ) ){ FindClose( hFind ); return false; }
 			}
 			// ファイルなら登録
 			else
 			{
-				if( !_tcsicmp( PathFindExtension( wfd.cFileName ), _T(".ptcop" ) ) ||
-					!_tcsicmp( PathFindExtension( wfd.cFileName ), _T(".pttune") ) )
+				if( !ux_stricmp( PathFindExtension( wfd.cFileName ), ".ptcop" ) ||
+					!ux_stricmp( PathFindExtension( wfd.cFileName ), ".pttune" ) )
 				{
-					if( _tcslen( dir_ext ) ) _stprintf_s( path, _T("%s\\%s"), dir_ext, wfd.cFileName );
-					else                     _stprintf_s( path, _T("\\%s"  ),          wfd.cFileName );
-					project.p_path = (TCHAR*)malloc( (_tcslen( path ) + 1) * sizeof(TCHAR) );
+					if( strlen( dir_ext ) ) ux_sprintf_s( path, "%s\\%s", dir_ext, wfd.cFileName );
+					else                     ux_sprintf_s( path, "\\%s",          wfd.cFileName );
+					project.p_path = (uxDS )malloc( (strlen( path ) + 1) * sizeof(char) );
 					if( !project.p_path ){ FindClose( hFind ); return false; }
-					_tcscpy( project.p_path, path );
+					strcpy( project.p_path, path );
 					p_v->push_back( project );
 
 					SetDlgItemInt( g_hDlg, IDC_FINDNUM, p_v->size(), false );
@@ -128,14 +130,14 @@ bool pxtnService::PttuneToPtcop()
 }
 */
 
-static bool _ConvertPTTUNEtoPTCOP( const TCHAR *dir_start, const TCHAR *path_ext, const TCHAR *dir_dst )
+static bool _ConvertPTTUNEtoPTCOP( const uxDS& dir_start, const uxDS& path_ext, const uxDS& dir_dst )
 {
 	bool b_ret = false;
 
 	// load..
 	{
-		TCHAR path_src[ MAX_PATH ] = {0}; _stprintf_s( path_src, MAX_PATH, _T("%s%s"), dir_start, path_ext );
-		FILE* fp = _tfopen( path_src, _T("rb") ); if( !fp ) return false;
+		uxSS<MAX_PATH> path_src = {0}; ux_sprintf_s( path_src, MAX_PATH, "%s%s", dir_start, path_ext );
+		FILE* fp = ux_fopen( path_src, "rb" ); if( !fp ) return false;
 		if( !g_pxtn->read(fp ) ){ fclose( fp ); goto End; }
 		fclose( fp );
 	}
@@ -146,12 +148,12 @@ static bool _ConvertPTTUNEtoPTCOP( const TCHAR *dir_start, const TCHAR *path_ext
 
 	// save..
 	{
-		TCHAR path_dst[ MAX_PATH ];
-		_stprintf_s( path_dst, _T("%s%s"), dir_dst, path_ext ); PathRemoveFileSpec ( path_dst ); CreateDirectory( path_dst, NULL );
-		_stprintf_s( path_dst, _T("%s%s"), dir_dst, path_ext ); PathRemoveExtension( path_dst );
-		_tcscat    ( path_dst, _T(".ptcop") );
+		uxSS<MAX_PATH> path_dst;
+		ux_sprintf_s( path_dst, "%s%s", dir_dst, path_ext ); PathRemoveFileSpec ( path_dst ); CreateDirectory( path_dst, NULL );
+		ux_sprintf_s( path_dst, "%s%s", dir_dst, path_ext ); pxPath_remove_ext( path_dst );
+		strcat    ( path_dst, ".ptcop" );
 
-		FILE* fp = _tfopen( path_dst, _T("wb") ); if( !fp ) return false;
+		FILE* fp = ux_fopen( path_dst, "wb" ); if( !fp ) return false;
 		if( !g_pxtn->write( fp, false, (unsigned short)GetCompileVersion( 0, 0, 0, 0 ) ) )
 		{
 			fclose( fp ); goto End;
@@ -171,25 +173,25 @@ DWORD CALLBACK thrd_Search( LPVOID l )
 	int32_t  ok_num    = 0;
 	int32_t  found_num = 0;
 
-	TCHAR dir_src[ MAX_PATH ] = {0};
-	TCHAR dir_dst[ MAX_PATH ] = {0};
-	TCHAR dir_ext[ MAX_PATH ] = {0};
+	uxSS<MAX_PATH> dir_src = {0};
+	uxSS<MAX_PATH> dir_dst = {0};
+	uxSS<MAX_PATH> dir_ext = {0};
 
 	FILE *fp_csv = NULL;
 
 	SetDlgItemInt(  g_hDlg, IDC_OKNUM, 0, false );
 	GetDlgItemText( g_hDlg, IDC_PATH, dir_src, MAX_PATH );
-	if( !_tcslen( dir_src ) ) goto End;
+	if( !strlen( dir_src ) ) goto End;
 
-	_tcscpy( dir_dst, dir_src );
-	_tcscat( dir_dst, _T("_converted") );
+	strcpy( dir_dst, dir_src );
+	strcat( dir_dst, "_converted" );
 
 	CreateDirectory( dir_dst, NULL );
 
 	{
-		TCHAR path_csv[ MAX_PATH ] = {0};
-		_stprintf_s( path_csv, MAX_PATH, _T("%s\\results.csv"), dir_dst );
-		fp_csv = _tfopen( path_csv, _T("wt") );
+		uxSS<MAX_PATH> path_csv = {0};
+		ux_sprintf_s( path_csv, MAX_PATH, "%s\\results.csv", dir_dst );
+		fp_csv = ux_fopen( path_csv, "wt" );
 	}
 
 	// ファイルを検索
@@ -203,11 +205,11 @@ DWORD CALLBACK thrd_Search( LPVOID l )
 		if( _ConvertPTTUNEtoPTCOP( dir_src, vProject.at( v ).p_path, dir_dst ) )
 		{
 			SetDlgItemInt( g_hDlg, IDC_OKNUM, ++ok_num, false );
-			if( fp_csv ) _ftprintf( fp_csv, _T("OK ,%s\n"), PathFindFileName( vProject.at( v ).p_path ) );
+			if( fp_csv ) _ftprintf( fp_csv, "OK ,%s\n", PathFindFileName( vProject.at( v ).p_path ) );
 		}
 		else
 		{
-			if( fp_csv ) _ftprintf( fp_csv, _T("ERR,%s\n"), PathFindFileName( vProject.at( v ).p_path ) );
+			if( fp_csv ) _ftprintf( fp_csv, "ERR,%s\n", PathFindFileName( vProject.at( v ).p_path ) );
 		}
 	}
 
@@ -219,7 +221,7 @@ End:
 	// 開放
 	for( uint32_t i = 0; i < vProject.size(); i++ ){ if( vProject.at( i ).p_path ) free( vProject.at( i ).p_path ); }
 
-	SetDlgItemText( g_hDlg, IDC_STOP, _T("Exit") );
+	SetDlgItemText( g_hDlg, IDC_STOP, "Exit" );
 
 	while( *pbSuspend == false ){ Sleep( 1 ); }
 

@@ -10,7 +10,8 @@
 #include <time.h>
 #endif
 
-#include "./pxTText.h"
+// #include "./pxTText.h"
+#include <uxStr.h>
 
 #include "./pxMem.h"
 #include "./pxError.h"
@@ -103,7 +104,7 @@ bool pxerr( const char *fmt, ... )
 	return true;
 }
 
-bool pxerr_t( const char* text1, const TCHAR* text_t )
+bool pxerr_t( const char* text1, const uxDS& text_t )
 {
 	if( !_buf  ) return false;
 	if( _b_err ) return false;
@@ -112,9 +113,12 @@ bool pxerr_t( const char* text1, const TCHAR* text_t )
 
 	strcpy( _buf, text1 );
 
-	pxTText tt;
-	if( !tt.set_TCHAR_to_sjis( text_t ) ) return false;
-	strcat( _buf, tt.sjis() );
+	// pxTText tt;
+	uxDS tt;
+	// if( !tt.set_TCHAR_to_sjis( text_t ) ) return false;
+	if( !( tt = uxDS_to_sjis( text_t ) ) ) return false;
+	// strcat( _buf, tt.sjis() );
+	strcat( _buf, *tt );
 
 	_b_err = true;
 	return true;

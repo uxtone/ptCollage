@@ -3,7 +3,18 @@ project(pxtone-common)
 add_library(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/pxStdDef.h")
 
 # Consumers do not have to manually include
-set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}")
+set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_SOURCE_DIR}/extern" )
+
+# sds (a C library, used for uxDS): compiled once and linked by everything that uses pxtone::common
+add_library(pxtone-sds STATIC "${CMAKE_SOURCE_DIR}/extern/sds/sds.c")
+target_include_directories(pxtone-sds PUBLIC "${CMAKE_SOURCE_DIR}/extern")
+set_target_properties(pxtone-sds PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if(MSVC)
+    target_compile_options(pxtone-sds PRIVATE "/W0")
+else()
+    target_compile_options(pxtone-sds PRIVATE "-w")
+endif()
+target_link_libraries(${PROJECT_NAME} INTERFACE pxtone-sds)
 
 if(NOT "${BUNDLE_BUILD_DIR}" STREQUAL "")
     file(COPY "${CMAKE_SOURCE_DIR}/data/" DESTINATION "${CMAKE_SOURCE_DIR}/${BUNDLE_BUILD_DIR}")
@@ -39,7 +50,9 @@ macro(add_pxtone_subproject PROJECT)
     target_binary(${PROJECT})
     set(STDAFX_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/StdAfx/StdAfx.h")
     if(EXISTS "${STDAFX_HEADER}")
-        target_include_directories(${PROJECT} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/StdAfx")
+        target_include_directories(${PROJECT} PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/StdAfx"
+        )
         target_precompile_headers(${PROJECT} PRIVATE ${STDAFX_HEADER})
     endif()
 endmacro()

@@ -1,4 +1,5 @@
-﻿#define BUFSIZE_FONTNAME 100
+﻿#include <pxStdDef.h>
+#define BUFSIZE_FONTNAME 100
 
 #include <pxDescriptor.h>
 
@@ -11,7 +12,7 @@ public:
 
 ptConfig_Font();
 
-TCHAR name[ BUFSIZE_FONTNAME ];
+uxSS<BUFSIZE_FONTNAME> name;
 
 void set_default();
 bool write( pxDescriptor* desc ) const;
