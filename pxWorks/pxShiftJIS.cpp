@@ -26,7 +26,7 @@ bool    pxShiftJIS_check_code_byte( uint32_t code,    int32_t* p_byte )
 	{
 		*p_byte = 1;
 	}
-	return true;	
+	return true;
 }
 
 bool    pxShiftJIS_append_code    ( char* str_dst, uint32_t code )
@@ -96,9 +96,9 @@ bool pxShiftJIS_free( char** pp )
 bool pxShiftJIS_copy_allocate( char** pp, const char* str_src )
 {
 	if( !str_src ) return false;
-	char*   p    = NULL; 
+	char*   p    = NULL;
 	int32_t size = 0;
-	
+
 	if( !pxShiftJIS_check_size( str_src, &size, false ) ) return false;
 	if( !pxMem_zero_alloc( (void**)&p, size + 1 ) ) return false;
 	memcpy( p, str_src, size );

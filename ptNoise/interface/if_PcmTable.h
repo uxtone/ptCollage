@@ -8,5 +8,5 @@ void         if_PcmTable_Scope_SetStart    ( float cur_x );
 void         if_PcmTable_Scope_SetEnd      ( float cur_x );
 bool         if_PcmTable_Scope_GetScope    ( int32_t* p_start, int32_t* p_end );
 bool         if_PcmTable_Scope_IsHitPCM    ( float cur_x, float cur_y );
-	         
+
 void         if_PcmTable_SetParameter      ( int32_t zoom );

@@ -35,7 +35,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 
 static bool _Action_Drag( float cur_x, float cur_y )
 {
-		
+
 	bool bDrag = false;
 
 	g_cursor.focus  = ifCurFocus_Tenkey_Tuning;

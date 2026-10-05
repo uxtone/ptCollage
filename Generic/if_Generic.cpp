@@ -61,7 +61,7 @@ void if_gen_num6_clip( float x, float y, int32_t value, uint32_t flag, const fRE
 		value *= -1;
 		bMinus = true;
 	}
-	
+
 	xpos = x;
 
 	for( offset = (flag&0x0F)-1; offset >= 0; offset-- )
@@ -80,7 +80,7 @@ void if_gen_num6_clip( float x, float y, int32_t value, uint32_t flag, const fRE
 		}
 		if(          a           ) bPut = true;
 		xpos += 8;
-	}	
+	}
 }
 
 void if_gen_num6( float x, float y, int32_t value, uint32_t flag )
@@ -107,7 +107,7 @@ void if_gen_float6_clip( float x, float y, float f, const fRECT *p_rc_clip )
 	while( l >=    100 ){ buf[ 3 ]++; l -=    100; }
 	while( l >=     10 ){ buf[ 4 ]++; l -=     10; }
 	while( l >=      1 ){ buf[ 5 ]++; l -=      1; }
-	
+
 	for( int32_t i = 0; i < 6; i++, xpos += 8 )
 	{
 		if( p_rc_clip ) _dxdraw->tex_Put_Clip( x + xpos, y, &_rcNum[ buf[ i ] ], _surf_tenkey, p_rc_clip );

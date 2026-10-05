@@ -122,8 +122,8 @@ VOLUMEBUTTON if_VolumePanel_GetHitButton( float cur_x, float cur_y )
 		return VOLUMEBUTTON_Switch;
 	}
 	else if( _bUseVolume &&
-		cur_x > _rcPanel.l + _VOLUMETYPE_X && cur_x < _rcPanel.l + _VOLUMETYPE_X+88   &&
-		cur_y > _rcPanel.t + _VOLUMETYPE_Y && cur_y < _rcPanel.t + _VOLUMETYPE_Y+12 * 8 )
+			 cur_x > _rcPanel.l + _VOLUMETYPE_X && cur_x < _rcPanel.l + _VOLUMETYPE_X+88   &&
+			 cur_y > _rcPanel.t + _VOLUMETYPE_Y && cur_y < _rcPanel.t + _VOLUMETYPE_Y+12 * 8 )
 	{
 		return (VOLUMEBUTTON)( (int32_t)( cur_y - _rcPanel.t - _VOLUMETYPE_Y ) / 12 + VOLUMEBUTTON_Velocity );
 	}

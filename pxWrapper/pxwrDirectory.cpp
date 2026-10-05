@@ -29,7 +29,7 @@ bool pxwrDirectory_copy_folders( const TCHAR *path_dst, const TCHAR* path_src )
 #elif defined pxSCE
 	return false;
 #else
-    return false;
+	return false;
 #endif
 }
 
@@ -38,6 +38,6 @@ bool pxwrDirectory_create( const TCHAR *path_dir )
 #ifdef pxPLATFORM_windows
 	return pxwDirectory_create( path_dir );
 #else
-    return false;
+	return false;
 #endif
 }

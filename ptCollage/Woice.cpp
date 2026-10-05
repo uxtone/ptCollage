@@ -85,9 +85,9 @@ static bool _MakeWoiceName( pxtnWoice *p_w, const TCHAR* path )
 #ifdef UNICODE
 	if( !pxwUTF8_wide_to_sjis( name_t, &sjis_name, &sjis_size ) ) return false;
 #else
-    if( !pxStr_copy_allocate( &sjis_name, name_t ) ) return false;
+	if( !pxStr_copy_allocate( &sjis_name, name_t ) ) return false;
 //    if( !( sjis_name = pxStr_copy_allocate( name_t ) ) ) return false;
-if( !pxShiftJIS_check_size( sjis_name, &sjis_size, false ) ) return false;
+	if( !pxShiftJIS_check_size( sjis_name, &sjis_size, false ) ) return false;
 	//sjis_size = pxShiftJIS_check_size( sjis_name );
 #endif
 

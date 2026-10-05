@@ -15,22 +15,22 @@
 class pxWords
 {
 private:
-	
-	bool   _b_loaded;
-	int    _word_num;
-	char** _words   ;
 
-	void _release();
+bool   _b_loaded;
+int    _word_num;
+char** _words   ;
 
-public :
-	
-	 pxWords();
-	~pxWords();
+void _release();
 
-	bool        load    ( pxDescriptor* desc, bool b_UTF8 );	
-	bool        is_valid(         ) const;
-	const char* W       ( int wid ) const;
-    int32_t     get_num (         ) const;
+public:
+
+pxWords();
+~pxWords();
+
+bool        load    ( pxDescriptor* desc, bool b_UTF8 );
+bool        is_valid(         ) const;
+const char* W       ( int wid ) const;
+int32_t     get_num (         ) const;
 };
 
 #endif

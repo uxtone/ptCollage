@@ -68,11 +68,11 @@ static bool _SetParameter( HWND hDlg )
 }
 
 static void _GetParameter( HWND hDlg,
-		TCHAR*   p_name      ,
-		int32_t* p_beat_num  ,
-		float*   p_beat_tempo,
-		int32_t* p_beat_clock,
-		int32_t* p_meas_num )
+						   TCHAR*   p_name      ,
+						   int32_t* p_beat_num  ,
+						   float*   p_beat_tempo,
+						   int32_t* p_beat_clock,
+						   int32_t* p_meas_num )
 {
 	TCHAR str[10];
 
@@ -165,12 +165,12 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDC_TEMPO:
 		case IDC_MEASNUM:
 
-            if( HIWORD( w ) == EN_SETFOCUS )
+			if( HIWORD( w ) == EN_SETFOCUS )
 			{
 				HIMC hImc = ImmGetContext( hDlg );
-                ImmSetOpenStatus( hImc, false );
-                ImmReleaseContext( hDlg, hImc );
-            }
+				ImmSetOpenStatus( hImc, false );
+				ImmReleaseContext( hDlg, hImc );
+			}
 			break;
 		}
 		break;
@@ -196,26 +196,26 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		switch( LOWORD( w ) )
 		{
 		case IDOK:
-			{
-				TCHAR   name_t[ MAX_PROJECTNAME + 1 ] = {0};
-				int32_t b_num, q_clock, m_num;
-				float   b_tempo;
-				_GetParameter(   hDlg, name_t, &b_num, &b_tempo, &q_clock, &m_num );
+		{
+			TCHAR   name_t[ MAX_PROJECTNAME + 1 ] = {0};
+			int32_t b_num, q_clock, m_num;
+			float   b_tempo;
+			_GetParameter(   hDlg, name_t, &b_num, &b_tempo, &q_clock, &m_num );
 
-				if( _CheckParameter( hDlg, b_tempo, m_num ) )
+			if( _CheckParameter( hDlg, b_tempo, m_num ) )
+			{
+				pxTText tt; if( tt.set_TCHAR_to_sjis( name_t ) )
 				{
-					pxTText tt; if( tt.set_TCHAR_to_sjis( name_t ) )
-					{
-						int32_t size = 0;
-						pxShiftJIS_check_size( tt.sjis(), &size, true );
-						g_pxtn->text->set_name_buf( tt.sjis(), size );
-					}
-					g_pxtn->master->Set( b_num, b_tempo, q_clock );
-					g_pxtn->master->set_meas_num( m_num );
-					EndDialog( hDlg, true );
+					int32_t size = 0;
+					pxShiftJIS_check_size( tt.sjis(), &size, true );
+					g_pxtn->text->set_name_buf( tt.sjis(), size );
 				}
+				g_pxtn->master->Set( b_num, b_tempo, q_clock );
+				g_pxtn->master->set_meas_num( m_num );
+				EndDialog( hDlg, true );
 			}
-			break;
+		}
+		break;
 
 		case IDCANCEL:
 			EndDialog( hDlg, false );
@@ -230,7 +230,7 @@ dlg_ProjectOption( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

@@ -274,7 +274,7 @@ int32_t ScopeEvent_Paste( int32_t clock, int32_t times, bool* p_bEventKinds )
 			if( UnitFocus_IsFocusedOrOperated( u ) ) UndoEvent_SetOrderUnit( u );
 		}
 		UndoEvent_Push( true );
-	
+
 		for( int32_t u = 0; u < pxtnMAX_TUNEUNITSTRUCT; u++ )
 		{
 			if( UnitFocus_IsFocusedOrOperated( u ) )
@@ -345,7 +345,7 @@ int32_t ScopeEvent_Insert( int32_t clock, int32_t times )
 			if( UnitFocus_IsFocusedOrOperated( u ) ) UndoEvent_SetOrderUnit( u );
 		}
 		UndoEvent_Push( true );
-	
+
 		for( int32_t u = 0; u < pxtnMAX_TUNEUNITSTRUCT; u++ )
 		{
 			if( UnitFocus_IsFocusedOrOperated( u ) )

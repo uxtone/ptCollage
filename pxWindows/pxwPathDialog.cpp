@@ -14,14 +14,14 @@ pxwPathDialog::pxwPathDialog()
 
 	_ref_file_profile = NULL;
 
-	_fltr1     	= NULL ;
-	_def_dir1  	= NULL ;
+	_fltr1		= NULL ;
+	_def_dir1	= NULL ;
 	_file_name1	= NULL ;
-	_exte1     	= NULL ;
-	_ttl_save1 	= NULL ;
-	_ttl_load1 	= NULL ;
+	_exte1		= NULL ;
+	_ttl_save1	= NULL ;
+	_ttl_load1	= NULL ;
 
-	_lst_dir1  	= NULL ;
+	_lst_dir1	= NULL ;
 	_lst_fname1	= NULL ;
 }
 
@@ -45,10 +45,10 @@ pxwPathDialog::~pxwPathDialog()
 }
 
 
-bool pxwPathDialog::init( 
+bool pxwPathDialog::init(
 	pxFile2*     ref_file_profile,
 	const TCHAR* filter    ,
-	const TCHAR* ext       , 
+	const TCHAR* ext       ,
 	const TCHAR* file_name ,
 	const TCHAR* title_save,
 	const TCHAR* title_load,
@@ -123,12 +123,12 @@ bool pxwPathDialog::load_lasts()
 	if( !pxMem_zero( _lst_dir1  , sizeof(TCHAR) * MAX_PATH ) ) goto term;
 	if( !pxMem_zero( _lst_fname1, sizeof(TCHAR) * MAX_PATH ) ) goto term;
 
-    static bool          b_ret;
-    b_ret = false;
-    static int32_t       size;
-    size = 0;
-    static pxDescriptor* desc;
-    desc = nullptr;
+	static bool          b_ret;
+	b_ret = false;
+	static int32_t       size;
+	size = 0;
+	static pxDescriptor* desc;
+	desc = nullptr;
 
 	if( !_ref_file_profile->open_r( &desc, _dir_name, _file_name1, NULL ) ) goto term;
 
@@ -162,7 +162,7 @@ bool pxwPathDialog::dialog_save( HWND hWnd, TCHAR* path_dst, const TCHAR* defaul
 	if( _tcslen( path_dst ) )
 	{
 		TCHAR    path_temp[ MAX_PATH ] = { 0 };
-		_tcscpy( path_temp, path_dst ); 
+		_tcscpy( path_temp, path_dst );
 		PathRemoveFileSpec(  path_temp );
 		if( PathIsDirectory( path_temp ) ){ enable_dst = true; _tcscpy( _lst_dir1, path_temp ); }
 	}
@@ -170,7 +170,7 @@ bool pxwPathDialog::dialog_save( HWND hWnd, TCHAR* path_dst, const TCHAR* defaul
 	if( !enable_dst )
 	{
 		_fix_last_directory();
-		_tcscpy( path_dst, _lst_dir1 ); 
+		_tcscpy( path_dst, _lst_dir1 );
 		if( _tcslen( _lst_dir1 ) != 3 ) _tcscat( path_dst, _T("\\") );
 		// file name..
 		if     ( _tcslen( _lst_fname1 ) > 0 ) _tcscat( path_dst, _lst_fname1      );

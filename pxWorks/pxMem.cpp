@@ -5,9 +5,11 @@
 bool pxMem_zero_alloc( void** pp, uint32_t byte_size )
 {
 	if( byte_size <= 0                  ){
-		pxerr("** pxMEM-z **"); return false; }
+		pxerr("** pxMEM-z **"); return false;
+	}
 	if( !(  *pp = malloc( byte_size ) ) ){
-		pxerr("** pxMEM **"  ); return false; }
+		pxerr("** pxMEM **"  ); return false;
+	}
 	memset( *pp, 0,       byte_size );
 	return true;
 }

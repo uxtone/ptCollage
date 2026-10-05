@@ -25,58 +25,58 @@ class ptuiCursor
 {
 private:
 
-	bool         _b_init  ;
+bool         _b_init  ;
 
-	fRECT        _rc      ;
-	
-	void*        _p_tgt   ;
-	ptuiCURACT   _action  ;
-	int32_t      _tgt_idx ;
+fRECT        _rc      ;
 
-	float        _drag_ypos;
-	int32_t      _scroll_count;
-	int32_t      _active_tone_id;
+void*        _p_tgt   ;
+ptuiCURACT   _action  ;
+int32_t      _tgt_idx ;
 
-	int32_t      _bits_now;
-	int32_t      _bits_trg;
+float        _drag_ypos;
+int32_t      _scroll_count;
+int32_t      _active_tone_id;
 
-	int32_t      _now_x   ;
-	int32_t      _now_y   ;
+int32_t      _bits_now;
+int32_t      _bits_trg;
 
-	int32_t      _start_x ;
-	int32_t      _start_y ;
+int32_t      _now_x   ;
+int32_t      _now_y   ;
+
+int32_t      _start_x ;
+int32_t      _start_y ;
 
 public:
-	ptuiCursor();
+ptuiCursor();
 
-	bool init      ();
-	void DragScroll( int32_t frame1, int32_t frame2, int32_t cur, if_gen_Scroll* scrl );
+bool init      ();
+void DragScroll( int32_t frame1, int32_t frame2, int32_t cur, if_gen_Scroll* scrl );
 
-	bool set_mouse_status( const pxMouse* mosue );
+bool set_mouse_status( const pxMouse* mosue );
 
-	bool action_free_try ( void* ptui );
-	bool action_busy     ();
+bool action_free_try ( void* ptui );
+bool action_busy     ();
 
-	void put();
+void put();
 
-	bool set_action( void* p_tgt, ptuiCURACT action, int32_t tgt_idx );
-	void set_action_free  ();
-	void set_action_keep_R();
+bool set_action( void* p_tgt, ptuiCURACT action, int32_t tgt_idx );
+void set_action_free  ();
+void set_action_keep_R();
 
-	ptuiCURACT get_action() const;
-	void*      get_target() const;
+ptuiCURACT get_action() const;
+void*      get_target() const;
 
-	bool is_rect( float l, float t, float r, float b ) const;
-	bool is_rect( const fRECT* p_rc                  ) const;
-	bool get_pos      ( int32_t* px, int32_t* py ) const;
-	bool get_pos_start( int32_t* px, int32_t* py ) const;
-	bool get_target_index( int32_t* p_idx ) const; 
+bool is_rect( float l, float t, float r, float b ) const;
+bool is_rect( const fRECT* p_rc                  ) const;
+bool get_pos      ( int32_t* px, int32_t* py ) const;
+bool get_pos_start( int32_t* px, int32_t* py ) const;
+bool get_target_index( int32_t* p_idx ) const;
 
 
-	bool is_click_left   () const;
-	bool is_click_right  () const;
-	bool is_trigger_left () const;
-	bool is_trigger_right() const;
+bool is_click_left   () const;
+bool is_click_right  () const;
+bool is_trigger_left () const;
+bool is_trigger_right() const;
 
 };
 

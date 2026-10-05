@@ -25,28 +25,28 @@ class ptuiWavePreset: public ptui
 {
 private:
 
-	bool         _b_init;
-	WoiceUnit*   _woice ;
-	ptuiSwitch** _btns  ;
+bool         _b_init;
+WoiceUnit*   _woice ;
+ptuiSwitch** _btns  ;
 
-	bool _cursor_free      (       ptuiCursor* p_cur )       override;
-	bool _cursor_click_hold(       ptuiCursor* p_cur )       override;
-	void _put              ( const ptuiCursor *p_cur ) const override;
+bool _cursor_free      (       ptuiCursor* p_cur )       override;
+bool _cursor_click_hold(       ptuiCursor* p_cur )       override;
+void _put              ( const ptuiCursor *p_cur ) const override;
 
-	bool _search_button( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
+bool _search_button( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
 
-	void _release();
+void _release();
 
-	bool _module_overtone ( pxtnVOICEUNIT *p_vc, ptvWAVEPRESET index );
-	bool _module_coodinate( pxtnVOICEUNIT *p_vc, ptvWAVEPRESET index );
-	void _do_preset       (                      ptvWAVEPRESET index );
+bool _module_overtone ( pxtnVOICEUNIT *p_vc, ptvWAVEPRESET index );
+bool _module_coodinate( pxtnVOICEUNIT *p_vc, ptvWAVEPRESET index );
+void _do_preset       (                      ptvWAVEPRESET index );
 
-public :
+public:
 
-	 ptuiWavePreset();
-	~ptuiWavePreset();
+ptuiWavePreset();
+~ptuiWavePreset();
 
-	bool init( WoiceUnit* woice );
+bool init( WoiceUnit* woice );
 
 };
 

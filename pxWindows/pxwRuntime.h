@@ -8,14 +8,14 @@
 // Use by declaring one at the top of the entry point, before any goto
 class pxwRuntime
 {
-	pxwXAudio2Keep_loadlib* _xa2_keep = nullptr;
-	bool                    _com      = false;
+pxwXAudio2Keep_loadlib* _xa2_keep = nullptr;
+bool                    _com      = false;
 
 public:
-	 pxwRuntime() = default;
-	~pxwRuntime();
-	pxwRuntime( const pxwRuntime& ) = delete;
-	pxwRuntime& operator=( const pxwRuntime& ) = delete;
+pxwRuntime() = default;
+~pxwRuntime();
+pxwRuntime( const pxwRuntime& ) = delete;
+pxwRuntime& operator=( const pxwRuntime& ) = delete;
 
-	bool init( const TCHAR* app_name, int* p_exit_code );
+bool init( const TCHAR* app_name, int* p_exit_code );
 };

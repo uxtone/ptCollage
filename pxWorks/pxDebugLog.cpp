@@ -115,7 +115,7 @@ void dlog_t( const char* text1, const TCHAR* text_t )
 		if( _file->open_a( &desc, _log_dir_name, name, _ext_ ) )
 		{
 #ifdef UNICODE
- 			if( !( size_utf8 =      WideCharToMultiByte( CP_UTF8, 0, text_t, -1, NULL    ,         0, NULL, NULL ) ) ||
+			if( !( size_utf8 =      WideCharToMultiByte( CP_UTF8, 0, text_t, -1, NULL    ,         0, NULL, NULL ) ) ||
 				size_utf8 >= 512|| !WideCharToMultiByte( CP_UTF8, 0, text_t, -1, str_utf8, size_utf8, NULL, NULL ) )
 			{
 				SAFE_DELETE( desc );
@@ -175,13 +175,13 @@ static int _GetPassedDays( const TCHAR* name )
 	pxDateTime_get_now( &time_now );
 
 	time_name.Y = (uint16_t)( name[ 0 ] - '0' ) * 1000 +
-				  (uint16_t)( name[ 1 ] - '0' ) *  100 +
-				  (uint16_t)( name[ 2 ] - '0' ) *   10 +
-				  (uint16_t)( name[ 3 ] - '0' ) *    1 ;
+		(uint16_t)( name[ 1 ] - '0' ) *  100 +
+		(uint16_t)( name[ 2 ] - '0' ) *   10 +
+		(uint16_t)( name[ 3 ] - '0' ) *    1 ;
 	time_name.M = (uint8_t )( name[ 4 ] - '0' ) *   10 +
-				  (uint8_t )( name[ 5 ] - '0' ) *    1 ;
+		(uint8_t )( name[ 5 ] - '0' ) *    1 ;
 	time_name.D = (uint8_t )( name[ 6 ] - '0' ) *   10 +
-				  (uint8_t )( name[ 7 ] - '0' ) *    1 ;
+		(uint8_t )( name[ 7 ] - '0' ) *    1 ;
 
 	return (int)pxDateTime_compare_days( &time_now, &time_name );
 }
@@ -209,16 +209,16 @@ int pxDebugLog_DeleteOlds( int days )
 {
 	_DELETEANDCOUNT dac = {}; dac.limit_day = days;
 	/*
-//	TCHAR           path     [ pxBUFSIZE_PATH ];
-//	TCHAR           path_find[ pxBUFSIZE_PATH ];
+	//	TCHAR           path     [ pxBUFSIZE_PATH ];
+	//	TCHAR           path_find[ pxBUFSIZE_PATH ];
 
-#ifdef UNICODE
+	#ifdef UNICODE
 	_stprintf_s( path_find, pxBUFSIZE_PATH, _T("%s/%s"  ), pxFile::sttc_get_trns_dir(), _dir_name );
 	_stprintf_s( path     , pxBUFSIZE_PATH, _T("%s/*.%s"), path_find, _ext_ );
-#else
+	#else
 	sprintf    ( path_find,                    "%s/%s"   , pxFile::sttc_get_trns_dir(), _dir_name );
 	sprintf    ( path     ,                    "%s/*.%s" , path_find, _ext_ );
-#endif
+	#endif
 	*/
 	TCHAR* path_find = NULL;
 	if( !_file->make_real_path( &path_find, _log_dir_name, NULL, _ext_ ) ) return -1;

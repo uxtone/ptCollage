@@ -10,9 +10,9 @@
 
 typedef struct
 {
-    char*   p_buf; // ogg vorbis-data on memory.s
-    int32_t size ; //
-    int32_t pos  ; // reading position.
+	char*   p_buf; // ogg vorbis-data on memory.s
+	int32_t size ; //
+	int32_t pos  ; // reading position.
 }
 OVMEM;
 
@@ -89,40 +89,40 @@ bool pxtnPulse_Oggv::_SetInformation()
 	ovmem.size  = _size  ;
 
 	// set callback func.
-	ov_callbacks   oc; 
-    oc.read_func  = _mread       ;
-    oc.seek_func  = _mseek       ;
-    oc.close_func = _mclose_dummy;
-    oc.tell_func  = _mtell       ;
-  
+	ov_callbacks   oc;
+	oc.read_func  = _mread       ;
+	oc.seek_func  = _mseek       ;
+	oc.close_func = _mclose_dummy;
+	oc.tell_func  = _mtell       ;
+
 	OggVorbis_File vf;
-	
+
 	vorbis_info*  vi;
 
 	switch( ov_open_callbacks( &ovmem, &vf, NULL, 0, oc ) )
 	{
-	case OV_EREAD     : goto End; //{printf("A read from media returned an error.\n");exit(1);} 
+	case OV_EREAD     : goto End; //{printf("A read from media returned an error.\n");exit(1);}
 	case OV_ENOTVORBIS: goto End; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
 	case OV_EVERSION  : goto End; //{printf("Vorbis version mismatch. \n");exit(1);}
 	case OV_EBADHEADER: goto End; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
 	case OV_EFAULT    : goto End; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
 	default:
 		break;
-    }
+	}
 
-    vi = ov_info( &vf,-1 );
+	vi = ov_info( &vf,-1 );
 
 	_ch      = vi->channels;
 	_sps2    = vi->rate    ;
 	_smp_num = (int32_t)ov_pcm_total( &vf, -1 );
-    
-    // end.
-    ov_clear( &vf );
+
+	// end.
+	ov_clear( &vf );
 
 	b_ret = true;
 
 End:
-    return b_ret;
+	return b_ret;
 
 }
 
@@ -182,7 +182,7 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 
 	OggVorbis_File vf;
 	vorbis_info*   vi;
-	ov_callbacks   oc; 
+	ov_callbacks   oc;
 
 	OVMEM ovmem;
 
@@ -190,40 +190,40 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 	ovmem.pos   =       0;
 	ovmem.size  = _size  ;
 
-    // set callback func.
-    oc.read_func  = _mread       ;
-    oc.seek_func  = _mseek       ;
-    oc.close_func = _mclose_dummy;
-    oc.tell_func  = _mtell       ;
-  
-    switch( ov_open_callbacks( &ovmem, &vf, NULL, 0, oc ) )
+	// set callback func.
+	oc.read_func  = _mread       ;
+	oc.seek_func  = _mseek       ;
+	oc.close_func = _mclose_dummy;
+	oc.tell_func  = _mtell       ;
+
+	switch( ov_open_callbacks( &ovmem, &vf, NULL, 0, oc ) )
 	{
-	case OV_EREAD     : res = pxtnERR_ogg; goto term; //{printf("A read from media returned an error.\n");exit(1);} 
+	case OV_EREAD     : res = pxtnERR_ogg; goto term; //{printf("A read from media returned an error.\n");exit(1);}
 	case OV_ENOTVORBIS: res = pxtnERR_ogg; goto term; //{printf("Bitstream is not Vorbis data. \n");exit(1);}
 	case OV_EVERSION  : res = pxtnERR_ogg; goto term; //{printf("Vorbis version mismatch. \n");exit(1);}
 	case OV_EBADHEADER: res = pxtnERR_ogg; goto term; //{printf("Invalid Vorbis bitstream header. \n");exit(1);}
 	case OV_EFAULT    : res = pxtnERR_ogg; goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
 	default: break;
-    }
+	}
 
-    vi    = ov_info( &vf,-1 );
-	
-    static int32_t current_section;
-    current_section = {};
-    static char pcmout[ 4096 ];
-    memset(&pcmout, 0x00, sizeof(pcmout)); //take 4k out of the data segment, not the stack
+	vi    = ov_info( &vf,-1 );
+
+	static int32_t current_section;
+	current_section = {};
+	static char pcmout[ 4096 ];
+	memset(&pcmout, 0x00, sizeof(pcmout)); //take 4k out of the data segment, not the stack
 	{
-        static int32_t smp_num;
-        smp_num = (int32_t)ov_pcm_total( &vf, -1 );
-        static uint32_t bytes;
-        bytes = {};
+		static int32_t smp_num;
+		smp_num = (int32_t)ov_pcm_total( &vf, -1 );
+		static uint32_t bytes;
+		bytes = {};
 
 		bytes = vi->channels * 2 * smp_num;
 
 		res = p_pcm->Create( vi->channels, vi->rate, 16, smp_num );
 		if( res != pxtnOK ) goto term;
 	}
-    // decode..
+	// decode..
 	{
 		int32_t ret = 0;
 		uint8_t  *p  = (uint8_t*)p_pcm->get_p_buf_variable();
@@ -235,14 +235,14 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 		}
 		while( ret );
 	}
-    
-    // end.
-    ov_clear( &vf );
+
+	// end.
+	ov_clear( &vf );
 
 	res = pxtnOK;
 
 term:
-    return res;
+	return res;
 }
 
 bool pxtnPulse_Oggv::GetInfo( int* p_ch, int* p_sps, int* p_smp_num )

@@ -64,7 +64,7 @@ dlg_PCM_Volume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

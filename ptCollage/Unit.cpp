@@ -67,7 +67,7 @@ bool Unit_Remove( int32_t u )
 	if( Japanese_Is() ) _stprintf_s( str, _BUFNUM_DELETE_UNIT, _T("ユニット \'%s\'を削除します"), p_name_t );
 	else                _stprintf_s( str, _BUFNUM_DELETE_UNIT, _T("Remove : '%s\'"             ), p_name_t );
 
-    if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ){ b_ret = true; goto term; }
+	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), g_hWnd_Main, dlg_YesNo, (LPARAM)str ) ){ b_ret = true; goto term; }
 
 	g_pxtn->Unit_Remove( u );
 	g_pxtn->evels->Record_UnitNo_Miss( (unsigned char)u );

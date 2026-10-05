@@ -13,19 +13,19 @@ extern pxwDx09Draw *g_dxdraw;
 ptuiCursor::ptuiCursor()
 {
 	_b_init         = false;
-		
+
 	pxMem_zero( &_rc, sizeof(_rc) );
 	_p_tgt          = 0;
 	_action         = ptuiCURACT_free;
 	_tgt_idx        = 0;
-		
+
 	_drag_ypos      = 0;
 	_scroll_count   = 0;
 	_active_tone_id = 0;
-		
+
 	_now_x          = 0;
 	_now_y          = 0;
-		
+
 	_start_x        = 0;
 	_start_y        = 0;
 
@@ -38,7 +38,7 @@ bool ptuiCursor::init()
 {
 	if( _b_init ) return false;
 	_b_init = true;
-	return _b_init;		 
+	return _b_init;
 }
 
 bool ptuiCursor::set_mouse_status( const pxMouse* mouse )

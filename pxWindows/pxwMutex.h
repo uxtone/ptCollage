@@ -5,18 +5,18 @@
 class pxwMutex
 {
 private:
-	
-	CRITICAL_SECTION *_cs;
 
-public :
+CRITICAL_SECTION *_cs;
 
-	 pxwMutex( void );
-	~pxwMutex( void );
+public:
 
-	bool init   ();
-	void lock   ();
-	bool trylock();
-	void unlock ();
+pxwMutex( void );
+~pxwMutex( void );
+
+bool init   ();
+void lock   ();
+bool trylock();
+void unlock ();
 };
 
 #endif

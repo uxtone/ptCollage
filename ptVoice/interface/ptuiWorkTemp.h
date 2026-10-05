@@ -25,32 +25,32 @@ class ptuiWorkTemp: public ptui
 {
 private:
 
-	bool          _b_init  ;
-	WoiceUnit*    _woice   ;
-	int32_t       _unit_num;
-	WORKTEMPUNIT* _units   ;
-	int32_t       _last_u  ;
+bool          _b_init  ;
+WoiceUnit*    _woice   ;
+int32_t       _unit_num;
+WORKTEMPUNIT* _units   ;
+int32_t       _last_u  ;
 
-	bool _cursor_free      ( ptuiCursor* p_cur ) override;
-	bool _cursor_click_hold( ptuiCursor* p_cur ) override;
-	void _put        ( const ptuiCursor* p_cur ) const override;
+bool _cursor_free      ( ptuiCursor* p_cur ) override;
+bool _cursor_click_hold( ptuiCursor* p_cur ) override;
+void _put        ( const ptuiCursor* p_cur ) const override;
 
-	bool _search_button( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
+bool _search_button( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
 
-	void _anime_reset();
-	void _anime_set  ( int32_t tgt_id, int32_t ani_no );
+void _anime_reset();
+void _anime_set  ( int32_t tgt_id, int32_t ani_no );
 
-	void _release();
+void _release();
 
-public :
+public:
 
-	 ptuiWorkTemp();
-	~ptuiWorkTemp();
+ptuiWorkTemp();
+~ptuiWorkTemp();
 
-	bool init       ();
+bool init       ();
 
 
-	void last_unit_clear();
+void last_unit_clear();
 };
 
 

@@ -32,7 +32,7 @@ bool ptuiKnob::is_touch( const fRECT* rc_prnt, int32_t volume, const ptuiCursor*
 	}
 	else
 	{
-		x = rc_prnt->l + _prm.zero_x + volume/_prm.volume_rate; 
+		x = rc_prnt->l + _prm.zero_x + volume/_prm.volume_rate;
 		y = rc_prnt->t + _prm.zero_y;
 	}
 
@@ -46,7 +46,7 @@ bool ptuiKnob::is_touch( const fRECT* rc_prnt, int32_t volume, const ptuiCursor*
 void ptuiKnob::put( const fRECT* rc_prnt, int32_t volume, int32_t ani_no ) const
 {
 	float   x, y;
-	
+
 	if( _prm.b_vertical )
 	{
 		fRECT rcKnob[] =

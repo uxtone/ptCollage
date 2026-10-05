@@ -24,7 +24,7 @@ bool pxwDirectory_find( const TCHAR *path_dir, const TCHAR *ext, bool b_sub_dir,
 			_stprintf_s( path, MAX_PATH, _T("%s\\%s"), path_dir, find.cFileName );
 			if( PathIsDirectory( path ) )
 			{
-				if( b_sub_dir && !pxwDirectory_find( path, ext, b_sub_dir, func, user ) ) goto End;  
+				if( b_sub_dir && !pxwDirectory_find( path, ext, b_sub_dir, func, user ) ) goto End;
 			}
 			else
 			{
@@ -65,8 +65,8 @@ bool pxwDirectory_copy_folders( const TCHAR *path_dst, const TCHAR* path_src )
 			if( PathIsDirectory( path_s ) )
 			{
 				_stprintf_s( path_d, MAX_PATH, _T("%s\\%s"), path_dst, find.cFileName );
-				
-				if( !pxwDirectory_copy_folders( path_d, path_s ) ) goto term;  
+
+				if( !pxwDirectory_copy_folders( path_d, path_s ) ) goto term;
 			}
 		}
 	}

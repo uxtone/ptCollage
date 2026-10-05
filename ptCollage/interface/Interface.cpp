@@ -79,7 +79,7 @@ static void _GetMousePointer( HWND hWnd, float* p_cur_x, float* p_cur_y )
 
 	GetCursorPos( &pt );
 	ScreenToClient( hWnd, &pt );
-	
+
 	*p_cur_x = (float)pt.x / g_dxdraw->get_screen_mag();
 	*p_cur_y = (float)pt.y / g_dxdraw->get_screen_mag();
 }
@@ -121,11 +121,11 @@ static void _SetRects( const fRECT *rc_view )
 bool Interface_init( HWND hWnd, const pxPalette* palette, const pxFile2* file_profile )
 {
 	// スクロールバーの初期化
-	g_ScrlEventH.Initialize( g_dxdraw, SURF_TABLES, false ); 
-	g_ScrlWoiceH.Initialize( g_dxdraw, SURF_TABLES, false ); 
-	g_ScrlWoiceV.Initialize( g_dxdraw, SURF_TABLES, true  ); 
-	g_ScrlUnitV.Initialize ( g_dxdraw, SURF_TABLES, true  ); 
-	g_ScrlKeyV.Initialize  ( g_dxdraw, SURF_TABLES, true  ); 
+	g_ScrlEventH.Initialize( g_dxdraw, SURF_TABLES, false );
+	g_ScrlWoiceH.Initialize( g_dxdraw, SURF_TABLES, false );
+	g_ScrlWoiceV.Initialize( g_dxdraw, SURF_TABLES, true  );
+	g_ScrlUnitV.Initialize ( g_dxdraw, SURF_TABLES, true  );
+	g_ScrlKeyV.Initialize  ( g_dxdraw, SURF_TABLES, true  );
 
 	g_ScrlWoiceV.SetSize   ( UNIT_HEIGHT * 1              );
 	g_ScrlUnitV .SetSize   ( UNIT_HEIGHT * 1              );
@@ -197,8 +197,8 @@ void Interface_Process( HWND hWnd, bool bDraw )
 	fRECT rcDummy4        = {144, 88,160,136}; // スケールの右
 	fRECT rcVolumeName    = {  0, 80,128,208}; // ボリューム
 
-	fRECT rcKeySeparator1 = {368,160,512,168}; 
-	fRECT rcKeySeparator2 = {368,288,384,296}; 
+	fRECT rcKeySeparator1 = {368,160,512,168};
+	fRECT rcKeySeparator2 = {368,288,384,296};
 
 	float cur_x;
 	float cur_y;

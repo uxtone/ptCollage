@@ -35,7 +35,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 	g_cursor.p_field_rect = p_field_rect;
 	g_cursor.drag_xpos[0] = cur_x;
 	g_cursor.drag_ypos    = cur_y;
-	
+
 	if_Effector_SetCursor( cur_x, cur_y );
 
 	// 左クリック
@@ -67,7 +67,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 
 static bool _Action_Drag_Shut( float cur_x, float cur_y )
 {
-		
+
 	fRECT* p_field_rect;
 	bool   bDrag = false;
 
@@ -90,7 +90,7 @@ static bool _Action_Drag_Shut( float cur_x, float cur_y )
 
 static bool _Action_Drag_Frame( float cur_x, float cur_y )
 {
-		
+
 	fRECT* p_field_rect;
 	bool   bDrag = false;
 

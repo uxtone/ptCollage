@@ -14,36 +14,36 @@ class pxtnData
 {
 private:
 
-	void operator = (const pxtnData& src){}
-	pxtnData        (const pxtnData& src){}
+void operator = (const pxtnData& src){}
+pxtnData        (const pxtnData& src){}
 
 protected:
 
-	bool        _b_init  ;
+bool        _b_init  ;
 
-	pxtnIO_r    _io_read ;
-	pxtnIO_w    _io_write;
-	pxtnIO_seek _io_seek ;
-	pxtnIO_pos  _io_pos  ;
+pxtnIO_r    _io_read ;
+pxtnIO_w    _io_write;
+pxtnIO_seek _io_seek ;
+pxtnIO_pos  _io_pos  ;
 
-	void _release();
+void _release();
 
-	bool    _data_w_v     ( void* desc, int32_t   v, int32_t* p_add ) const;
-	bool    _data_r_v     ( void* desc, int32_t* pv                 ) const;
-	bool    _data_get_size( void* desc, int32_t* p_size             ) const;
-	int32_t _data_check_v_size( uint32_t v ) const;
+bool    _data_w_v     ( void* desc, int32_t   v, int32_t* p_add ) const;
+bool    _data_r_v     ( void* desc, int32_t* pv                 ) const;
+bool    _data_get_size( void* desc, int32_t* p_size             ) const;
+int32_t _data_check_v_size( uint32_t v ) const;
 
-	void _set_io_funcs( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
+void _set_io_funcs( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
 
-public :
+public:
 
-	pxtnData();
-	virtual ~pxtnData();
+pxtnData();
+virtual ~pxtnData();
 
-	bool copy_from( const pxtnData* src );
+bool copy_from( const pxtnData* src );
 
-	bool init();
-	bool Xxx ();
+bool init();
+bool Xxx ();
 };
 
 #endif

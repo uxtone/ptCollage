@@ -63,7 +63,7 @@ static void CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD_PTR inst, DWORD_PTR p
 {
 	MIDIHDR *hdr;
 //	char str[ 256 ];
-	
+
 	switch( msg )
 	{
 	case MIM_OPEN :
@@ -97,10 +97,10 @@ static void CALLBACK _testFunc( HMIDIIN h, UINT msg, DWORD_PTR inst, DWORD_PTR p
 	case MIM_LONGERROR:
 	case MIM_MOREDATA :
 	default:
-		{
-			dlog_c( "MidiInProc: wMsg=%08X, p1=%08X, p2=%08X\n", msg, prm1, prm2 );
-			break;
-		}
+	{
+		dlog_c( "MidiInProc: wMsg=%08X, p1=%08X, p2=%08X\n", msg, prm1, prm2 );
+		break;
+	}
 	}
 }
 
@@ -108,7 +108,7 @@ bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func
 {
 	pxMidiIn::Close();
 
-    if( !hwnd && !func ) func = reinterpret_cast<pxMIDIIN_CALLBACK>(_testFunc);
+	if( !hwnd && !func ) func = reinterpret_cast<pxMIDIIN_CALLBACK>(_testFunc);
 
 	int num = midiOutGetNumDevs();
 	MIDIINCAPS caps;
@@ -121,7 +121,7 @@ bool pxMidiIn::Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func
 	if( device_id == num ) return false;
 
 	int res;
-	
+
 	if( hwnd ) res = midiInOpen( &_h, device_id, (DWORD_PTR)hwnd, 0, CALLBACK_WINDOW   );
 	else       res = midiInOpen( &_h, device_id, (DWORD_PTR)func, 0, CALLBACK_FUNCTION );
 
@@ -193,7 +193,7 @@ void pxMidiIn_ClearVelos()
 bool CALLBACK pxMidiIn_Callback( HMIDIIN h, UINT msg, DWORD inst, LPARAM l, WPARAM w )
 {
 	MIDIHDR *hdr;
-	
+
 	switch( msg )
 	{
 	case MIM_OPEN : memset( _velocities, 0, sizeof(_velocities ) ); _b_init = true; dlog_c( "MIDI device is opened2." ); break;
@@ -225,10 +225,10 @@ bool CALLBACK pxMidiIn_Callback( HMIDIIN h, UINT msg, DWORD inst, LPARAM l, WPAR
 	case MIM_LONGERROR:
 	case MIM_MOREDATA :
 	default:
-		{
-			dlog_c( "MidiInProc: wMsg=%08X, p1=%08X, p2=%08X", msg, l, w );
-			return false;
-		}
+	{
+		dlog_c( "MidiInProc: wMsg=%08X, p1=%08X, p2=%08X", msg, l, w );
+		return false;
+	}
 	}
 	return true;
 }

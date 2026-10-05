@@ -251,7 +251,7 @@ INT_PTR CALLBACK dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			EnableWindow( GetDlgItem( hDlg, IDCANCEL ), false );
 			break;
 		}
-		default:return false;
+	default: return false;
 
 	}
 	return true;

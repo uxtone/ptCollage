@@ -114,34 +114,34 @@ void if_WoiceField_Put()
 			switch( p_w->get_type() )
 			{
 			case pxtnWOICE_PCM :
+			{
+				int ch       = p_v->p_pcm->get_ch      ();
+				int bps      = p_v->p_pcm->get_bps     ();
+				int sps      = p_v->p_pcm->get_sps     ();
+				int smp_body = p_v->p_pcm->get_smp_body();
+
+				g_dxdraw->tex_Put_Clip( x      , y, &rcType   [      0 ], SURF_FIELDS, &_rcField );
+				g_dxdraw->tex_Put_Clip( x +  32, y, &rcChannel[ ch - 1 ], SURF_FIELDS, &_rcField );
+				switch( bps )
 				{
-					int ch       = p_v->p_pcm->get_ch      ();
-					int bps      = p_v->p_pcm->get_bps     ();
-					int sps      = p_v->p_pcm->get_sps     ();
-					int smp_body = p_v->p_pcm->get_smp_body();
-
-					g_dxdraw->tex_Put_Clip( x      , y, &rcType   [      0 ], SURF_FIELDS, &_rcField );
-					g_dxdraw->tex_Put_Clip( x +  32, y, &rcChannel[ ch - 1 ], SURF_FIELDS, &_rcField );
-					switch( bps )
-					{
-					case     8: i = 0; break;
-					case    16: i = 1; break;
-					}
-					g_dxdraw->tex_Put_Clip( x +  56, y, &rcBPS    [ i      ], SURF_FIELDS, &_rcField );
-					switch( sps )
-					{
-					case 11025: i = 0; break;
-					case 22050: i = 1; break;
-					case 44100: i = 2; break;
-					case 48000: i = 3; break;
-					}
-					g_dxdraw->tex_Put_Clip( x +  88, y, &rcSPS    [ i      ], SURF_FIELDS, &_rcField );
-
-					if_gen_num6_clip      ( x + 148, y + 4, p_v->p_pcm->get_smp_body(), 6, &_rcField );
-					g_dxdraw->tex_Put_Clip( x + 196, y, &rcSample           , SURF_FIELDS, &_rcField );
-
-					break;
+				case     8: i = 0; break;
+				case    16: i = 1; break;
 				}
+				g_dxdraw->tex_Put_Clip( x +  56, y, &rcBPS    [ i      ], SURF_FIELDS, &_rcField );
+				switch( sps )
+				{
+				case 11025: i = 0; break;
+				case 22050: i = 1; break;
+				case 44100: i = 2; break;
+				case 48000: i = 3; break;
+				}
+				g_dxdraw->tex_Put_Clip( x +  88, y, &rcSPS    [ i      ], SURF_FIELDS, &_rcField );
+
+				if_gen_num6_clip      ( x + 148, y + 4, p_v->p_pcm->get_smp_body(), 6, &_rcField );
+				g_dxdraw->tex_Put_Clip( x + 196, y, &rcSample           , SURF_FIELDS, &_rcField );
+
+				break;
+			}
 
 			case pxtnWOICE_PTV :
 				g_dxdraw->tex_Put_Clip( x      , y, &rcType[                       1 ], SURF_FIELDS, &_rcField );
@@ -156,30 +156,30 @@ void if_WoiceField_Put()
 
 			case pxtnWOICE_OGGV:
 #ifdef pxINCLUDE_OGGVORBIS
+			{
+				int ch, sps, smp_num;
+				p_v->p_oggv->GetInfo( &ch, &sps, &smp_num );
+				g_dxdraw->tex_Put_Clip( x      , y, &rcType   [      3 ], SURF_FIELDS, &_rcField );
+				g_dxdraw->tex_Put_Clip( x +  32, y, &rcChannel[ ch - 1 ], SURF_FIELDS, &_rcField );
+				switch( sps )
 				{
-					int ch, sps, smp_num;
-					p_v->p_oggv->GetInfo( &ch, &sps, &smp_num );
-					g_dxdraw->tex_Put_Clip( x      , y, &rcType   [      3 ], SURF_FIELDS, &_rcField );
-					g_dxdraw->tex_Put_Clip( x +  32, y, &rcChannel[ ch - 1 ], SURF_FIELDS, &_rcField );
-					switch( sps )
-					{
-					case 11025: i = 0; break;
-					case 22050: i = 1; break;
-					case 44100: i = 2; break;
-					case 48000: i = 3; break;
-					case 24000: i = 4; break;
-					case 32000: i = 5; break;
-					case  8000: i = 6; break;
-					default   : i = 7; break;
-					}
-					g_dxdraw->tex_Put_Clip( x +  88, y, &rcSPS[           i ], SURF_FIELDS, &_rcField );
-					if_gen_num6_clip      ( x + 148, y + 4, smp_num, 6                    , &_rcField );
-					g_dxdraw->tex_Put_Clip( x + 196, y, &rcSample            , SURF_FIELDS, &_rcField );
+				case 11025: i = 0; break;
+				case 22050: i = 1; break;
+				case 44100: i = 2; break;
+				case 48000: i = 3; break;
+				case 24000: i = 4; break;
+				case 32000: i = 5; break;
+				case  8000: i = 6; break;
+				default   : i = 7; break;
 				}
+				g_dxdraw->tex_Put_Clip( x +  88, y, &rcSPS[           i ], SURF_FIELDS, &_rcField );
+				if_gen_num6_clip      ( x + 148, y + 4, smp_num, 6                    , &_rcField );
+				g_dxdraw->tex_Put_Clip( x + 196, y, &rcSample            , SURF_FIELDS, &_rcField );
+			}
 #endif
 				break;
 			}
-			
+
 
 		}
 	}

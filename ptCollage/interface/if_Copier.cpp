@@ -219,7 +219,7 @@ static SUBWINDOWSTRUCT* _handle = NULL;
 bool if_Cursor_Action_Copier( float cur_x, float cur_y );
 
 void if_Copier_init( HWND hWnd, const pxFile2* file_profile )
-{	
+{
 	pxDescriptor* desc = NULL;
 	_ref_file_profile = file_profile;
 

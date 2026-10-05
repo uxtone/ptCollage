@@ -88,7 +88,7 @@ void Japanese_MenuItem_Change( HMENU hMenu )
 
 					if( hSub )
 					{
-                        ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (uintptr_t)hSub, _table_menuitems[i].p_text_j );
+						ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (uintptr_t)hSub, _table_menuitems[i].p_text_j );
 						Japanese_MenuItem_Change( hSub ); // 再帰！！
 					}
 				}

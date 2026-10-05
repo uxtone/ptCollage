@@ -23,8 +23,8 @@ static void _InitDialog( HWND hDlg )
 
 	ptConfig_cmb_quality_init( hDlg, IDC_COMBO_CHANNEL, IDC_COMBO_SPS, Japanese_Is() );
 
-	TCHAR *mode_scope_e[  ] = { _T("top - last"      ), _T("appoint by time"   ) };
-	TCHAR *mode_scope_j[  ] = { _T("最初から最後まで"), _T("演奏時間で指定する") };
+	TCHAR *mode_scope_e[] = { _T("top - last"      ), _T("appoint by time"   ) };
+	TCHAR *mode_scope_j[] = { _T("最初から最後まで"), _T("演奏時間で指定する") };
 
 	if( Japanese_Is() )
 	{
@@ -82,8 +82,8 @@ static void _Enable_Scope( HWND hDlg )
 static void _SetParameter( HWND hDlg, const ptConfig_Build *p_c )
 {
 	ptConfig_cmb_quality_set( hDlg,
-		IDC_COMBO_CHANNEL, p_c->strm->ch_num,
-		IDC_COMBO_SPS    , p_c->strm->sps   );
+							  IDC_COMBO_CHANNEL, p_c->strm->ch_num,
+							  IDC_COMBO_SPS    , p_c->strm->sps   );
 
 	CheckDlgButton( hDlg, IDC_CHECK_UNITMUTE, p_c->b_mute ? 1 : 0 );
 
@@ -103,8 +103,8 @@ static bool _GetInputParameter( HWND hDlg, ptConfig_Build *p_c )
 	p_c->set_default();
 
 	ptConfig_cmb_quality_get( hDlg    ,
-		IDC_COMBO_CHANNEL, &p_c->strm->ch_num,
-		IDC_COMBO_SPS    , &p_c->strm->sps );
+							  IDC_COMBO_CHANNEL, &p_c->strm->ch_num,
+							  IDC_COMBO_SPS    , &p_c->strm->sps );
 
 	p_c->b_mute     = IsDlgButtonChecked( hDlg, IDC_CHECK_UNITMUTE ) ? true : false;
 	p_c->scope_mode = (BUILDSCOPEMODE) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_GETCURSEL, 0, 0 );
@@ -194,7 +194,7 @@ dlg_BuildOption_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

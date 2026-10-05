@@ -27,10 +27,10 @@ void pxwrMouse::trigger_update()
 bool pxwrMouse::set_position()
 {
 #ifdef _WIN32
-	if( !_hwnd ) return false; 
+	if( !_hwnd ) return false;
 	POINT pt;
 	GetCursorPos( &pt );
-	ScreenToClient( (HWND)_hwnd, &pt );	
+	ScreenToClient( (HWND)_hwnd, &pt );
 	_x = pt.x;
 	_y = pt.y;
 #else

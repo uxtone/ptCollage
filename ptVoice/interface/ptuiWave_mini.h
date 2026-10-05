@@ -18,21 +18,21 @@ class ptuiWave_mini: public ptuiMap
 {
 private:
 
-	bool       _b_init  ;
-	WoiceUnit* _woice   ;
-	int32_t    _unit_idx;
+bool       _b_init  ;
+WoiceUnit* _woice   ;
+int32_t    _unit_idx;
 
-	bool _try_update(                         )       override;
-	void _put       ( const ptuiCursor* p_cur ) const override;
+bool _try_update(                         )       override;
+void _put       ( const ptuiCursor* p_cur ) const override;
 
-	void _release   ();
+void _release   ();
 
 public:
 
-	 ptuiWave_mini();
-	~ptuiWave_mini();
+ptuiWave_mini();
+~ptuiWave_mini();
 
-	bool init( WoiceUnit* woice, int32_t unit_idx );
+bool init( WoiceUnit* woice, int32_t unit_idx );
 };
 
 #endif

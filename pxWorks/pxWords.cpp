@@ -60,7 +60,7 @@ term:
 
 int32_t     pxWords::get_num (         ) const
 {
-    return _word_num;
+	return _word_num;
 }
 
 

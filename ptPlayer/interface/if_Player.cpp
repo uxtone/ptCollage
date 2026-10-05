@@ -204,8 +204,8 @@ void if_Player_PushOneStatusFlag( int32_t flag )
 {
 	switch( flag )
 	{
-		case IF_PLAYER_STATUS_LOOP: break;
-		default: return;
+	case IF_PLAYER_STATUS_LOOP: break;
+	default: return;
 	}
 
 	if( flag & _player.status_flag ) _player.status_flag &= ~flag;

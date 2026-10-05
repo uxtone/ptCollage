@@ -262,7 +262,7 @@ bool pxSurface::png_write     ( pxDescriptor* desc ) const
 	png_byte*   trns     = NULL ;
 
 	int         color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-	
+
 //	if( !( fp = _tfopen( path_dst, _T("wb") ) ) ) goto term;
 
 	png_ptr  = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -270,10 +270,10 @@ bool pxSurface::png_write     ( pxDescriptor* desc ) const
 //	png_init_io ( png_ptr, fp );
 	png_set_write_fn( png_ptr, desc, _write_png, _write_png_flash );
 	png_set_IHDR( png_ptr, info_ptr, _w, _h, _depth,
-		color_type,
-		PNG_INTERLACE_NONE,
-		PNG_COMPRESSION_TYPE_DEFAULT,
-		PNG_FILTER_TYPE_DEFAULT );
+				  color_type,
+				  PNG_INTERLACE_NONE,
+				  PNG_COMPRESSION_TYPE_DEFAULT,
+				  PNG_FILTER_TYPE_DEFAULT );
 /*
 	if( color_type == PNG_COLOR_TYPE_PALETTE )
 	{

@@ -63,53 +63,53 @@ class Interface
 {
 private:
 
-	void operator = (const Interface& src){}
-	Interface       (const Interface& src){}
+void operator = (const Interface& src){}
+Interface       (const Interface& src){}
 
-	bool _b_init;
+bool _b_init;
 
-	ptuiCursor*      _cursor   ;
+ptuiCursor*      _cursor   ;
 
-	ptuiHeader*      _header   ;
-	ptuiRackFull*    _rack_0   ;
-	ptuiWave_mini*   _rack_0_wa;
-	ptuiEnve_mini*   _rack_0_en;
-	ptuiRackFull*    _rack_1   ;
-	ptuiWave_mini*   _rack_1_wa;
-	ptuiEnve_mini*   _rack_1_en;
-	ptuiRackHalf*    _rack_half;
+ptuiHeader*      _header   ;
+ptuiRackFull*    _rack_0   ;
+ptuiWave_mini*   _rack_0_wa;
+ptuiEnve_mini*   _rack_0_en;
+ptuiRackFull*    _rack_1   ;
+ptuiWave_mini*   _rack_1_wa;
+ptuiEnve_mini*   _rack_1_en;
+ptuiRackHalf*    _rack_half;
 
-	ptuiWavePreset*  _wavepre  ;
-	ptuiWorkTemp*    _worktemp ;
-	ptuiWaveHead*    _wavehead ;
-	ptuiEnveHead*    _envehead ;
-	ptuiVelocity*    _velocity ;
-	ptuiSines*       _sines    ;
-	ptuiReleaseTime* _rlstime  ;
-	ptuiOrganKey*    _organkey ;
-	ptuiWave*        _wavetbl  ;
-	ptuiEnvelope*    _envetbl  ;
+ptuiWavePreset*  _wavepre  ;
+ptuiWorkTemp*    _worktemp ;
+ptuiWaveHead*    _wavehead ;
+ptuiEnveHead*    _envehead ;
+ptuiVelocity*    _velocity ;
+ptuiSines*       _sines    ;
+ptuiReleaseTime* _rlstime  ;
+ptuiOrganKey*    _organkey ;
+ptuiWave*        _wavetbl  ;
+ptuiEnvelope*    _envetbl  ;
 
 
-	ptui**           _ptuis   ;
-	int32_t          _ptui_num;
-	int32_t          _ptui_max;
+ptui**           _ptuis   ;
+int32_t          _ptui_num;
+int32_t          _ptui_max;
 
-	void _release();
-	bool _key_control();
-	bool _mode_update();
+void _release();
+bool _key_control();
+bool _mode_update();
 
 public:
 
-	 Interface();
-	~Interface();
+Interface();
+~Interface();
 
-	bool init();
+bool init();
 
-	bool proc( const fRECT* rc_view, const pxMouse* mouse, bool b_draw );
+bool proc( const fRECT* rc_view, const pxMouse* mouse, bool b_draw );
 
-	bool organkey_reset();
-	bool map_redraw_set();
+bool organkey_reset();
+bool map_redraw_set();
 };
 
 #endif

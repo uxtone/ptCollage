@@ -18,7 +18,7 @@ void ptuiRackFull::_release()
 {
 	_b_init = false;
 	pxMem_free( (void**)&_ani_nos );
-	
+
 	SAFE_DELETE( _knob_volume );
 	SAFE_DELETE( _knob_pan    );
 	SAFE_DELETE( _knob_tuning );
@@ -127,7 +127,7 @@ bool ptuiRackFull::init( WoiceUnit* woice, int32_t unit_idx )
 		prm.y         =   8;
 		_btn_add_unit = new ptuiSwitch( &prm );
 	}
-	
+
 
 	_woice    = woice   ;
 	_unit_idx = unit_idx;
@@ -314,25 +314,25 @@ bool ptuiRackFull::_cursor_drag_unit(  ptuiCursor* p_cur )
 		return true;
 	}
 
-		int32_t now_x  ;
-		int32_t start_x;
+	int32_t now_x  ;
+	int32_t start_x;
 
 	switch( idx )
 	{
 	case _UNIT_KNOB_volume:
-		{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_volume->make_volume( &_rect, &now_x  , fx ); }
+	{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_volume->make_volume( &_rect, &now_x  , fx ); }
 		{ int32_t fx; p_cur->get_pos_start( &fx, NULL ); _knob_volume->make_volume( &_rect, &start_x, fx ); }
 		_volume_set( (_UNIT_ID)idx, _start_volume + ( now_x - start_x ) );
 		break;
 
 	case _UNIT_KNOB_pan   :
-		{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_pan   ->make_volume( &_rect, &now_x  , fx ); }
+	{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_pan   ->make_volume( &_rect, &now_x  , fx ); }
 		{ int32_t fx; p_cur->get_pos_start( &fx, NULL ); _knob_pan   ->make_volume( &_rect, &start_x, fx ); }
 		_volume_set( (_UNIT_ID)idx, _start_volume + ( now_x - start_x ) );
 		break;
 
 	case _UNIT_KNOB_tuning:
-		{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_tuning->make_volume( &_rect, &now_x  , fx ); }
+	{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_tuning->make_volume( &_rect, &now_x  , fx ); }
 		{ int32_t fx; p_cur->get_pos_start( &fx, NULL ); _knob_tuning->make_volume( &_rect, &start_x, fx ); }
 		_volume_set( (_UNIT_ID)idx, _start_volume + ( now_x - start_x ) );
 		break;
@@ -401,7 +401,7 @@ void ptuiRackFull::_put( const ptuiCursor *p_cur ) const
 	if( !is_enable() )
 	{
 		fRECT rc_body = {  0,512,560,536};
-		fRECT rc_btm  = {  0,648,560,656}; 
+		fRECT rc_btm  = {  0,648,560,656};
 		g_dxdraw->tex_Put_View( _rect.l     , _rect.t              , &rc_body, SURF_PARTS );
 		g_dxdraw->tex_Put_View( _rect.l     , _rect.t + rc_body.h(), &rc_btm , SURF_PARTS );
 		g_dxdraw->tex_Put_View( _rect.l + 24, _rect.t + 8, &rc_name, SURF_PARTS );

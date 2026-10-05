@@ -357,26 +357,26 @@ bool UndoEvent_Pop( bool bUndo )
 
 	// アンドゥのアンドゥ ====================================================
 	UndoEvent_SetOrderClock( pUndoList->clock1, pUndoList->clock2 );
-	
+
 	for( int u = 0; u < _max_unit; u++ )
-	{	
+	{
 		if( g_pxtn->Unit_Get( u ) && pUndoList->b_units[ u ] )
 			UndoEvent_SetOrderUnit( u );
 	}
 	// アンドゥの場合リドゥを追加
 	if( bUndo )
 	{
-		if( !UndoEvent_Push( false ) )return false;
+		if( !UndoEvent_Push( false ) ) return false;
 	}
 	// リドゥの場合アンドゥを追加
 	else
 	{
-		if( !UndoEvent_Push( true ) )return false;
+		if( !UndoEvent_Push( true ) ) return false;
 	}
 	// =======================================================================
 
 	for( int32_t u = 0; u < _max_unit; u++ )
-	{	
+	{
 		if( g_pxtn->Unit_Get( u ) && pUndoList->b_units[ u ] )
 			g_pxtn->evels->Record_Delete( pUndoList->clock1, pUndoList->clock2, u );
 	}
@@ -440,7 +440,7 @@ static void _Replace_UnitNo( UNDOEVENTLIST* list, int32_t old_pos, int32_t new_p
 {
 	UNDOEVENTLIST* p_undo = list;
 	UNDOEVENTDATA* p_data;
-	
+
 	for( int32_t u = 0; u < MAX_UNDOEVENT; u++, p_undo++ )
 	{
 		if( p_undo->bValid )
@@ -484,7 +484,7 @@ static void _Replace_VoiceNo( UNDOEVENTLIST* list, int32_t old_pos, int32_t new_
 {
 	UNDOEVENTLIST* p_undo = list;
 	UNDOEVENTDATA* p_data;
-	
+
 	for( int32_t u = 0; u < MAX_UNDOEVENT; u++, p_undo++ )
 	{
 		if( p_undo->bValid )

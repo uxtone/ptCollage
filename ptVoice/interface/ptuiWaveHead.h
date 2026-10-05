@@ -19,33 +19,33 @@ class ptuiWaveHead: public ptui
 {
 private:
 
-	enum _UNIT_ID
-	{
-		_UNIT_cood     ,
-		_UNIT_osci     ,
-		_UNIT_btn_close,
-		_UNIT_num      ,
-	};
+enum _UNIT_ID
+{
+	_UNIT_cood     ,
+	_UNIT_osci     ,
+	_UNIT_btn_close,
+	_UNIT_num      ,
+};
 
 
-	bool         _b_init;
-	WoiceUnit*   _woice ;
-	ptuiSwitch** _btns  ;
+bool         _b_init;
+WoiceUnit*   _woice ;
+ptuiSwitch** _btns  ;
 
-	bool _search_a_button   ( const ptuiCursor* p_cur, int32_t* p_idx );
-	bool _cursor_free       (       ptuiCursor* p_cur ) override;
-	bool _cursor_click_hold (       ptuiCursor* p_cur ) override;
-	void _put               ( const ptuiCursor *p_cur ) const override;
+bool _search_a_button   ( const ptuiCursor* p_cur, int32_t* p_idx );
+bool _cursor_free       (       ptuiCursor* p_cur ) override;
+bool _cursor_click_hold (       ptuiCursor* p_cur ) override;
+void _put               ( const ptuiCursor *p_cur ) const override;
 
-	bool _set_wave_tool( pxtnVOICETYPE type );
+bool _set_wave_tool( pxtnVOICETYPE type );
 
-	void _release();
+void _release();
 
 public:
-	 ptuiWaveHead();
-	~ptuiWaveHead();
+ptuiWaveHead();
+~ptuiWaveHead();
 
-	bool init( WoiceUnit* woice );
+bool init( WoiceUnit* woice );
 };
 
 #endif

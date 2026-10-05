@@ -8,20 +8,20 @@
 class pxwAlteration
 {
 private:
-	void operator = (const pxwAlteration& src){}
-	pxwAlteration   (const pxwAlteration& src){}
+void operator = (const pxwAlteration& src){}
+pxwAlteration   (const pxwAlteration& src){}
 
-	HWND _hwnd  ;
-	bool _b_alte;
-	
-public :
-	 pxwAlteration();
+HWND _hwnd  ;
+bool _b_alte;
 
-	void set_window( HWND hwnd );
+public:
+pxwAlteration();
 
-	void off();
-	void set();
-	bool is () const;
+void set_window( HWND hwnd );
+
+void off();
+void set();
+bool is () const;
 };
 
 #endif

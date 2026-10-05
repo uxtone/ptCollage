@@ -213,8 +213,8 @@ dlg_History( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			LPNMHDR pNtfy = (LPNMHDR)l;
 			if( pNtfy->code == NM_DBLCLK       ) _NM_DBLCLK      ( hDlg );
 			if( pNtfy->code == LVN_ITEMCHANGED ) _LVN_ITEMCHANGED( hDlg );
-        }
-        break;
+		}
+		break;
 
 	default: return FALSE;
 	}

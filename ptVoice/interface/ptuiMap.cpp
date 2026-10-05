@@ -38,7 +38,7 @@ void ptuiMap::redraw_clear ()
 bool ptuiMap::_map_init( int32_t map_w, int32_t map_h, int32_t surf_screen )
 {
 	if( _b_map_init ) return false;
-	
+
 	int32_t work_byte = sizeof(uint32_t) * map_w * map_h;
 
 	if( !work_byte ) goto term;

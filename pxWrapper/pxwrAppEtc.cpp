@@ -54,7 +54,7 @@ void pxwrAppEtc_Version( char *p_str )
 
 #ifndef pxRELEASE
 	strcat( p_str, " d" );
-#endif	
+#endif
 }
 
 int   pxwrAppEtc_Local()
@@ -65,17 +65,17 @@ int   pxwrAppEtc_Local()
 	return pxsce_get_lang ();
 #else
 	return pxmApp_Local   ();
-#endif	
+#endif
 }
 
 void pxwrAppEtc_Sleep( float sec )
 {
 #ifdef pxPLATFORM_windows
-    pxwAppEtc_sleep( sec );
+	pxwAppEtc_sleep( sec );
 #elif defined pxSCE
 	pxsce_sleep    ( sec );
 #else
-    pxmApp_Sleep   ( (int32_t)(sec*1000) );
+	pxmApp_Sleep   ( (int32_t)(sec*1000) );
 #endif
 }
 

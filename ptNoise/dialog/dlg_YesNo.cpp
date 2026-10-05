@@ -26,7 +26,7 @@ dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		case IDOK    : EndDialog( hWnd, true  ); break;
 		}
 
-		default:return false;
+	default: return false;
 	}
 	return true;
 }

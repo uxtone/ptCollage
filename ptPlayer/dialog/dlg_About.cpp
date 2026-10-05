@@ -24,7 +24,7 @@ void GetCompileDate( int32_t *year, int32_t *month, int32_t *day )
 
 	sscanf(__DATE__, "%s %d %d", strMonth, day, year );
 
-	for(i = 0; i < 12; i++){ if( !memcmp( strMonth, table[i], 3 ) )break; }
+	for(i = 0; i < 12; i++){ if( !memcmp( strMonth, table[i], 3 ) ) break; }
 	*month = i;
 
 	return;
@@ -86,15 +86,15 @@ dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 	case WM_INITDIALOG:
 
-		{
-			TCHAR str[64];
-			int32_t y, m, d;
-			int32_t v1,v2,v3,v4;
-			GetCompileDate( &y, &m, &d );
-			GetCompileVersion( &v1, &v2, &v3, &v4 );
-			_stprintf_s( str, 64, gStrVersion, v1, v2, v3, v4, y, m, d );
-			SetDlgItemText( hDlg, IDC_VERSION, str );
-		}
+	{
+		TCHAR str[64];
+		int32_t y, m, d;
+		int32_t v1,v2,v3,v4;
+		GetCompileDate( &y, &m, &d );
+		GetCompileVersion( &v1, &v2, &v3, &v4 );
+		_stprintf_s( str, 64, gStrVersion, v1, v2, v3, v4, y, m, d );
+		SetDlgItemText( hDlg, IDC_VERSION, str );
+	}
 
 		SetDlgItemText( hDlg, IDC_MESSAGE, _T("beta test") );
 
@@ -111,7 +111,7 @@ dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDCANCEL: EndDialog( hDlg, false ); break;
 		case IDOK    : EndDialog( hDlg, true  ); break;
 		}
-		default:return false;
+	default: return false;
 	}
 	return true;
 }

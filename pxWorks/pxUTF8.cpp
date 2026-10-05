@@ -204,7 +204,7 @@ bool pxUTF8_free( char** pp )
 bool pxUTF8_copy_allocate( char** pp, const char* str_src )
 {
 	if( !str_src ) return false;
-	char*   p    = NULL; 
+	char*   p    = NULL;
 	int32_t size = 0;
 
 	if( !pxUTF8_check_size( str_src, &size, false ) ) return false;

@@ -1,0 +1,24 @@
+{
+  // Format only the open buffer: Zed pipes it through uncrustify on stdin and replaces it with stdout,
+  // so no other file is read or written. Same flags as .githooks/pre-commit (config: uncrustify.cfg).
+  // uncrustify comes from the flake dev shell, hence `direnv exec .` (run from the project root).
+  "format_on_save": "off",
+  "languages": {
+    "C++": {
+      "formatter": {
+        "external": {
+          "command": "direnv",
+          "arguments": ["exec", ".", "uncrustify", "-q", "-c", "uncrustify.cfg", "-l", "CPP"]
+        }
+      }
+    },
+    "C": {
+      "formatter": {
+        "external": {
+          "command": "direnv",
+          "arguments": ["exec", ".", "uncrustify", "-q", "-c", "uncrustify.cfg", "-l", "CPP"]
+        }
+      }
+    }
+  }
+}

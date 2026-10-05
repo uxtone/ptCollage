@@ -163,12 +163,12 @@ dlg_EventVolume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDC_FROMCLOCK2:
 		case IDC_TRANSPOSE :
 
-            if( HIWORD( w ) == EN_SETFOCUS )
+			if( HIWORD( w ) == EN_SETFOCUS )
 			{
 				HIMC hImc = ImmGetContext( hDlg );
-                ImmSetOpenStatus( hImc, false );
-                ImmReleaseContext( hDlg, hImc );
-            }
+				ImmSetOpenStatus( hImc, false );
+				ImmReleaseContext( hDlg, hImc );
+			}
 			break;
 		}
 		break;
@@ -204,7 +204,7 @@ dlg_EventVolume( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

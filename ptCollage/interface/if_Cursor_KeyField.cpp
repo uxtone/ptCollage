@@ -116,7 +116,7 @@ static bool _Action_Drag( float cur_x, float cur_y, bool bDelete )
 				count += g_pxtn->evels->Record_Add_i    ( clock1,         u, EVENTKIND_KEY, value );
 			}
 			else
-			{																	  
+			{
 				count += g_pxtn->evels->Record_Delete( clock1, clock2, u, EVENTKIND_KEY      );
 				count += g_pxtn->evels->Record_Add_i ( clock1,         u, EVENTKIND_KEY     , value );
 				count += g_pxtn->evels->Record_Delete( clock1, clock2, u, EVENTKIND_VELOCITY );

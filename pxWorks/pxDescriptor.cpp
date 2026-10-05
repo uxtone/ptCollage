@@ -106,7 +106,7 @@ bool  pxDescriptor::get_pos( int32_t* p_pos ) const
 		fpos_t sz;
 		if( fgetpos( (FILE*)_p_desc, &sz ) ) return false;
 
-	*p_pos = pxFPOS_OFFSET(sz);
+		*p_pos = pxFPOS_OFFSET(sz);
 
 	}
 	else
@@ -286,10 +286,10 @@ int  pxDescriptor_v_chk( int val )
 	uint32_t  us;
 
 	us = (uint32_t)val;
-	if( us <        0x80 ) return 1;	// 1byte( 7bit)
-	if( us <      0x4000 ) return 2;	// 2byte(14bit)
-	if( us <    0x200000 ) return 3;	// 3byte(21bit)
-	if( us <  0x10000000 ) return 4;	// 4byte(28bit)
+	if( us <        0x80 ) return 1;    // 1byte( 7bit)
+	if( us <      0x4000 ) return 2;    // 2byte(14bit)
+	if( us <    0x200000 ) return 3;    // 3byte(21bit)
+	if( us <  0x10000000 ) return 4;    // 4byte(28bit)
 //	if( value < 0x800000000 ) return 5;	// 5byte(35bit)
 	if( us <= 0xffffffff ) return 5;
 

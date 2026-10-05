@@ -30,7 +30,7 @@ void ptConfig_cmb_quality_set(
 	}
 
 	switch( sps )
-	{				   
+	{
 	case 11025: SendDlgItemMessage( hdlg, id_sps,     CB_SETCURSEL, 0, 0 ); break;
 	case 22050: SendDlgItemMessage( hdlg, id_sps,     CB_SETCURSEL, 1, 0 ); break;
 	case 48000: SendDlgItemMessage( hdlg, id_sps,     CB_SETCURSEL, 3, 0 ); break;

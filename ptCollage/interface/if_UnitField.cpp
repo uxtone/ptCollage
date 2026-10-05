@@ -17,13 +17,13 @@ extern pxwDx09Draw *g_dxdraw;
 
 extern if_gen_Scroll g_ScrlUnitV;
 
-static uint32_t _color_unit_lane[ 2 ] = 
+static uint32_t _color_unit_lane[ 2 ] =
 {
 	0xff400070,
 	0xff200040,
 };
 
-static uint32_t _color_note[ 2 ] = 
+static uint32_t _color_note[ 2 ] =
 {
 	0xffF08000,
 	0xff804000,

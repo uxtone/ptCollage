@@ -19,7 +19,7 @@ void UnitFocus_Set( int32_t index, bool bOperated )
 int32_t UnitFocus_Get()
 {
 	int32_t num = g_pxtn->Unit_Num();
-	if( !num          ) return -1;    
+	if( !num          ) return -1;
 	if( _focus <    0 ) _focus =       0;
 	if( _focus >= num ) _focus = num - 1;
 	return _focus;
@@ -59,7 +59,7 @@ int32_t UnitFocus_CountFocusedOrOperated()
 		if( p_unit )
 		{
 			if( u == _focus || p_unit->get_operated() ) count++;
-		}	
+		}
 	}
 	return count;
 }

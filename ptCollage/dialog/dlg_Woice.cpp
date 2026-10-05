@@ -203,7 +203,7 @@ dlg_Woice( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

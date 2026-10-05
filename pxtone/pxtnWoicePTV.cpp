@@ -61,8 +61,8 @@ bool pxtnWoice::_Write_Wave( void* desc, const pxtnVOICEUNIT *p_vc, int32_t *p_t
 		if( !_io_write( desc, p_vc->p_pcm->get_p_buf(), 1, size )      ) goto term;
 		*p_total += size;
 		break;
-			
-		case pxtnVOICE_OggVorbis: goto term; // not support.
+
+	case pxtnVOICE_OggVorbis: goto term; // not support.
 	}
 
 	b_ret = true;
@@ -136,16 +136,16 @@ pxtnERR pxtnWoice::_Read_Wave( void* desc, pxtnVOICEUNIT *p_vc )
 	// p_vc->sampring. (7)
 	case pxtnVOICE_Sampling: return pxtnERR_fmt_unknown; // un-support
 
-		//if( !_data_r_v( desc, &p_vc->pcm.ch       ) ) goto term;
-		//if( !_data_r_v( desc, &p_vc->pcm.bps      ) ) goto term;
-		//if( !_data_r_v( desc, &p_vc->pcm.sps      ) ) goto term;
-		//if( !_data_r_v( desc, &p_vc->pcm.smp_head ) ) goto term;
-		//if( !_data_r_v( desc, &p_vc->pcm.smp_body ) ) goto term;
-		//if( !_data_r_v( desc, &p_vc->pcm.smp_tail ) ) goto term;
-		//size = ( p_vc->pcm.smp_head + p_vc->pcm.smp_body + p_vc->pcm.smp_tail ) * p_vc->pcm.ch * p_vc->pcm.bps / 8;
-		//if( !_malloc_zero( (void **)&p_vc->pcm.p_smp,    size )          ) goto term;
-		//if( !_io_read( desc,        p_vc->pcm.p_smp, 1, size ) ) goto term;
-		//break;
+	//if( !_data_r_v( desc, &p_vc->pcm.ch       ) ) goto term;
+	//if( !_data_r_v( desc, &p_vc->pcm.bps      ) ) goto term;
+	//if( !_data_r_v( desc, &p_vc->pcm.sps      ) ) goto term;
+	//if( !_data_r_v( desc, &p_vc->pcm.smp_head ) ) goto term;
+	//if( !_data_r_v( desc, &p_vc->pcm.smp_body ) ) goto term;
+	//if( !_data_r_v( desc, &p_vc->pcm.smp_tail ) ) goto term;
+	//size = ( p_vc->pcm.smp_head + p_vc->pcm.smp_body + p_vc->pcm.smp_tail ) * p_vc->pcm.ch * p_vc->pcm.bps / 8;
+	//if( !_malloc_zero( (void **)&p_vc->pcm.p_smp,    size )          ) goto term;
+	//if( !_io_read( desc,        p_vc->pcm.p_smp, 1, size ) ) goto term;
+	//break;
 
 	default: return pxtnERR_ptv_no_supported; // un-support
 	}
@@ -232,7 +232,7 @@ bool pxtnWoice::PTV_Write( void* desc, int32_t *p_total ) const
 	if( p_total ) *p_total = 16 + total;
 	b_ret  = true;
 term:
-	
+
 	return b_ret;
 }
 

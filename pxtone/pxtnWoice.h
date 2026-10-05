@@ -85,7 +85,7 @@ typedef struct
 	float             tuning     ;
 	uint32_t          voice_flags;
 	uint32_t          data_flags ;
-					  
+
 	pxtnVOICETYPE     type       ;
 	pxtnPulse_PCM     *p_pcm     ;
 	pxtnPulse_Noise   *p_ptn     ;
@@ -100,7 +100,7 @@ pxtnVOICEUNIT;
 
 typedef struct
 {
-	double  smp_pos    ;       
+	double  smp_pos    ;
 	float   offset_freq;
 	int32_t env_volume ;
 	int32_t life_count ;
@@ -119,75 +119,75 @@ pxtnVOICETONE;
 class pxtnWoice: public pxtnData
 {
 private:
-	void operator = (const pxtnWoice& src){}
-	pxtnWoice       (const pxtnWoice& src){}
+void operator = (const pxtnWoice& src){}
+pxtnWoice       (const pxtnWoice& src){}
 
-	int32_t            _voice_num;
+int32_t            _voice_num;
 
-	char               _name_buf[ pxtnMAX_TUNEWOICENAME + 1 ];
-	int32_t            _name_size    ;
+char               _name_buf[ pxtnMAX_TUNEWOICENAME + 1 ];
+int32_t            _name_size    ;
 
-	pxtnWOICETYPE      _type         ;
-	pxtnVOICEUNIT*     _voices       ;
-	pxtnVOICEINSTANCE* _voinsts      ;
+pxtnWOICETYPE      _type         ;
+pxtnVOICEUNIT*     _voices       ;
+pxtnVOICEINSTANCE* _voinsts      ;
 
-	float              _x3x_tuning   ;
-	int32_t            _x3x_basic_key; // tuning old-fmt when key-event
-
-
-
-	bool    _Write_Wave    ( void* desc, const pxtnVOICEUNIT *p_vc, int32_t *p_total ) const;
-	bool    _Write_Envelope( void* desc, const pxtnVOICEUNIT *p_vc, int32_t *p_total ) const;
-	pxtnERR _Read_Wave     ( void* desc, pxtnVOICEUNIT *p_vc );
-	pxtnERR _Read_Envelope ( void* desc, pxtnVOICEUNIT *p_vc );
-
-	void    _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, int32_t  sps, int32_t  bps );
+float              _x3x_tuning   ;
+int32_t            _x3x_basic_key; // tuning old-fmt when key-event
 
 
-public :
-	 pxtnWoice( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
-	~pxtnWoice();
 
-	int32_t              get_voice_num     () const;
-	float                get_x3x_tuning    () const;
-	int32_t              get_x3x_basic_key () const;
-	pxtnWOICETYPE        get_type          () const;
-	const pxtnVOICEUNIT* get_voice         ( int32_t idx ) const;
-	pxtnVOICEUNIT*       get_voice_variable( int32_t idx );
+bool    _Write_Wave    ( void* desc, const pxtnVOICEUNIT *p_vc, int32_t *p_total ) const;
+bool    _Write_Envelope( void* desc, const pxtnVOICEUNIT *p_vc, int32_t *p_total ) const;
+pxtnERR _Read_Wave     ( void* desc, pxtnVOICEUNIT *p_vc );
+pxtnERR _Read_Envelope ( void* desc, pxtnVOICEUNIT *p_vc );
 
-	const pxtnVOICEINSTANCE* get_instance  ( int32_t idx ) const;
+void    _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_t  ch, int32_t  sps, int32_t  bps );
 
-	bool        set_name_buf( const char *name_buf, int32_t    buf_size );
-	const char* get_name_buf(                       int32_t* p_buf_size ) const;
-	bool        is_name_buf () const;
 
-	bool Voice_Allocate( int32_t voice_num );
-	void Voice_Release ();
-	bool Copy( pxtnWoice *p_dst ) const;
-	void Slim();
+public:
+pxtnWoice( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
+~pxtnWoice();
 
-	pxtnERR read  ( void* desc, pxtnWOICETYPE type );
+int32_t              get_voice_num     () const;
+float                get_x3x_tuning    () const;
+int32_t              get_x3x_basic_key () const;
+pxtnWOICETYPE        get_type          () const;
+const pxtnVOICEUNIT* get_voice         ( int32_t idx ) const;
+pxtnVOICEUNIT*       get_voice_variable( int32_t idx );
 
-	bool    PTV_Write    ( void* desc, int32_t *p_total ) const;
-	pxtnERR PTV_Read     ( void* desc                   );
+const pxtnVOICEINSTANCE* get_instance  ( int32_t idx ) const;
 
-	bool    io_matePCM_w ( void* desc ) const;
-	pxtnERR io_matePCM_r ( void* desc );
+bool        set_name_buf( const char *name_buf, int32_t    buf_size );
+const char* get_name_buf(                       int32_t* p_buf_size ) const;
+bool        is_name_buf () const;
 
-	bool    io_matePTN_w ( void* desc ) const;
-	pxtnERR io_matePTN_r ( void* desc );
+bool Voice_Allocate( int32_t voice_num );
+void Voice_Release ();
+bool Copy( pxtnWoice *p_dst ) const;
+void Slim();
 
-	bool    io_matePTV_w ( void* desc ) const;
-	pxtnERR io_matePTV_r ( void* desc );
+pxtnERR read  ( void* desc, pxtnWOICETYPE type );
+
+bool    PTV_Write    ( void* desc, int32_t *p_total ) const;
+pxtnERR PTV_Read     ( void* desc                   );
+
+bool    io_matePCM_w ( void* desc ) const;
+pxtnERR io_matePCM_r ( void* desc );
+
+bool    io_matePTN_w ( void* desc ) const;
+pxtnERR io_matePTN_r ( void* desc );
+
+bool    io_matePTV_w ( void* desc ) const;
+pxtnERR io_matePTV_r ( void* desc );
 
 #ifdef  pxINCLUDE_OGGVORBIS
-	bool    io_mateOGGV_w( void* desc ) const;
-	pxtnERR io_mateOGGV_r( void* desc );
+bool    io_mateOGGV_w( void* desc ) const;
+pxtnERR io_mateOGGV_r( void* desc );
 #endif
 
-	pxtnERR Tone_Ready_sample  ( const pxtnPulse_NoiseBuilder *ptn_bldr  );
-	pxtnERR Tone_Ready_envelope( int32_t sps );
-	pxtnERR Tone_Ready         ( const pxtnPulse_NoiseBuilder *ptn_bldr, int32_t sps );
+pxtnERR Tone_Ready_sample  ( const pxtnPulse_NoiseBuilder *ptn_bldr  );
+pxtnERR Tone_Ready_envelope( int32_t sps );
+pxtnERR Tone_Ready         ( const pxtnPulse_NoiseBuilder *ptn_bldr, int32_t sps );
 };
 
 #endif

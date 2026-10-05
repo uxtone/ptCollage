@@ -167,7 +167,7 @@ void if_BaseField_Put_Grid()
 	rc.t = _rcField.t + TOOLPANEL_HEIGHT - 1;
 	rc.b = _rcField.t + TOOLPANEL_HEIGHT - 0;
 	g_dxdraw->FillRect_view( &rc, _color_scale2 );
-	
+
 	// 拍線
 	start = (int32_t)( offset + _FieldInfo.beat_w - 1 ) / _FieldInfo.beat_w;
 	end   = (int32_t)( offset + view_w                ) / _FieldInfo.beat_w;

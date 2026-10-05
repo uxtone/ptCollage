@@ -137,7 +137,7 @@ bool WoiceUnit::csv_attach( const TCHAR* path_csv )
 			if( !p_vc ) goto term;
 
 			p_vc->type      = pxtnVOICE_Coodinate;
-			
+
 			// clear.
 			p_vc->wave.num  = 1;
 			p_vc->wave.reso = ptvCOODINATERESOLUTION;

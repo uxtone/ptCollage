@@ -100,7 +100,7 @@ static BOOL CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 
-		default:return false;
+	default: return false;
 
 	}
 	return true;
@@ -113,7 +113,7 @@ static BOOL CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 pxwENTRY_POINT( hInst, hPrev, lpCmd, nCmd )
 {
-    pxwRuntime runtime;
+	pxwRuntime runtime;
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	pxwFilePath_GetModuleDirectory( g_dir_module );

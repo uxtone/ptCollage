@@ -9,16 +9,16 @@
 class ptConfig
 {
 public:
-	const pxFile2* _ref_app_file_profile;
+const pxFile2* _ref_app_file_profile;
 
-	ptConfig_Stream *strm;
-	ptConfig_Font   *font;
-	ptConfig_MIDI   *midi;
+ptConfig_Stream *strm;
+ptConfig_Font   *font;
+ptConfig_MIDI   *midi;
 
-	 ptConfig( const pxFile2* app_file_profile, int32_t sps, int32_t ch_num, float buf_sec );
-	~ptConfig();
+ptConfig( const pxFile2* app_file_profile, int32_t sps, int32_t ch_num, float buf_sec );
+~ptConfig();
 
-	void set_default();
-	bool save       () const;
-	bool load       ();
+void set_default();
+bool save       () const;
+bool load       ();
 };

@@ -59,7 +59,7 @@ term:
 
 pxOggVorbis::~pxOggVorbis()
 {
-	_release();	
+	_release();
 }
 
 bool pxOggVorbis::read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p_sps, int32_t *p_bps, int32_t *p_smp_num )
@@ -73,7 +73,7 @@ bool pxOggVorbis::read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p
 	if( ov_open( (FILE*)desc->get_file_r(),   (OggVorbis_File*)_vb_file, NULL, 0 ) < 0 ) goto term;
 	{
 		vorbis_info *p_info = ov_info         ( (OggVorbis_File*)_vb_file, -1 );
-		if( !(_smp_num = (int32_t)ov_pcm_total( (OggVorbis_File*)_vb_file, -1 ) ) )goto term;
+		if( !(_smp_num = (int32_t)ov_pcm_total( (OggVorbis_File*)_vb_file, -1 ) ) ) goto term;
 		_ch_num = p_info->channels;
 		_sps    = p_info->rate    ;
 	}
@@ -87,7 +87,7 @@ bool pxOggVorbis::read_header( pxDescriptor* desc, int32_t *p_ch_num, int32_t *p
 
 	_smp_r        =        0;
 	_ov_cur       =        0;
-			     
+
 	*p_ch_num     = _ch_num ;
 	*p_sps        = _sps    ;
 	*p_bps        = _bps    ;

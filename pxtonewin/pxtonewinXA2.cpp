@@ -25,7 +25,7 @@ pxtonewinXA2::pxtonewinXA2()
 	_vc_tones        = NULL ;
 	_vc_play_id_idx  =     1;
 	_vc_top          =     0;
-	_vc_smooth 		 =     0;
+	_vc_smooth       =     0;
 	_vc_max_tone     =     0;
 	_vc_sample_skip  =     1;
 	_vc_time_pan_idx =     0;

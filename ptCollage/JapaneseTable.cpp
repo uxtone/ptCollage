@@ -3,7 +3,7 @@
 
 #include "resource.h"
 
-JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] = 
+JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 {
 	{IDC_TEXT_ABOUTTITLE       , _T("≪このソフトウェアについて≫") },
 	{IDC_TEXT_CONFIGTITLE      , _T("≪環境設定≫"                ) },
@@ -17,7 +17,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_TEXT_DELAYTITLE       , _T("≪ディレイ設定≫"            ) },
 	{IDC_TEXT_HEARSELECT       , _T("≪音源の選択≫"              ) },// 10
 
-	{IDC_TEXT_NAME             , _T("名前"                        ) }, 
+	{IDC_TEXT_NAME             , _T("名前"                        ) },
 	{IDC_TEXT_TEMPO            , _T("ビートテンポ"                ) },
 	{IDC_TEXT_MEAS             , _T("小節"                        ) },
 	{IDC_TEXT_BEAT             , _T("拍子"                        ) },
@@ -40,7 +40,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_TEXT_UNIT2            , _T("ユニット"                    ) },
 	{IDC_TEXT_EVENT            , _T("イベント"                    ) },// 30
 
-	{IDC_TEXT_STATUS           , _T("情報"                        ) }, 
+	{IDC_TEXT_STATUS           , _T("情報"                        ) },
 	{IDC_TEXT_TOTALSAMPLE      , _T("サンプリングサイズ"          ) },
 	{IDC_TEXT_EVENTNUM         , _T("イベント数"                  ) },
 	{IDC_CHECK_BUILD           , _T("ビルドする"                  ) },
@@ -52,7 +52,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_ALLUNIT               , _T("全て"                        ) },
 	{IDC_RELOAD                , _T("読み直し"                    ) },// 40
 
-	{IDC_TEXT_COMMENTTITLE     , _T("≪コメント≫"                ) }, 
+	{IDC_TEXT_COMMENTTITLE     , _T("≪コメント≫"                ) },
 	{IDC_EXPORT                , _T("書き出し"                    ) },
 	{IDC_TEXT_TUNING           , _T("補正"                        ) },
 	{IDC_TEXT_BASICKEY         , _T("基本キー"                    ) },
@@ -64,7 +64,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_TEXT_DEVICE           , _T("デバイス"                    ) },
 	{IDC_DEFAULT               , _T("初期値"                      ) },// 50
 
-	{IDC_CHECK_BEATFIT         , _T("拍で補正"                    ) }, 
+	{IDC_CHECK_BEATFIT         , _T("拍で補正"                    ) },
 	{IDC_TEXT_OVERDRIVETITLE   , _T("≪オーバードライブ設定≫"    ) },
 	{IDC_CHECK_RENAME          , _T("ファイル名を採用"            ) },
 	{IDC_TEXT_GATE1            , _T("ゲート(-)"                   ) },
@@ -76,7 +76,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_TEXT_START            , _T("先頭"                        ) },
 	{IDC_TEXT_END              , _T("末尾"                        ) },// 60
 
-	{IDC_TEXT_SCOPE            , _T("≪選択範囲≫"                ) }, 
+	{IDC_TEXT_SCOPE            , _T("≪選択範囲≫"                ) },
 	{IDC_TEXT_VOICETITLE       , _T("≪音源設定≫"                ) },
 	{IDC_TEXT_TYPE             , _T("タイプ"                      ) },
 	{IDC_TEXT_VOICE            , _T("音源"                        ) },
@@ -88,7 +88,7 @@ JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 	{IDC_TEXT_BUILDOPTION      , _T("≪ビルド設定≫"              ) },
 	{IDC_TEXT_PLAYINFOMATION   , _T("演奏データ情報"              ) },// 70
 
-	{IDC_TEXT_SEC1             , _T("秒"                          ) }, 
+	{IDC_TEXT_SEC1             , _T("秒"                          ) },
 	{IDC_TEXT_SEC2             , _T("秒"                          ) },
 	{IDC_TEXT_SEC3             , _T("秒"                          ) },
 	{IDC_TEXT_SEC4             , _T("秒"                          ) },

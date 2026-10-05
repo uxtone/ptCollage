@@ -53,7 +53,7 @@ typedef struct
 
 }_FILERECORDSTRUCT;
 
-static 	vector <_FILERECORDSTRUCT> _v_record;
+static	vector <_FILERECORDSTRUCT> _v_record;
 
 static pxtonewinWoice* _woi = NULL;
 
@@ -592,7 +592,7 @@ static void _CloseDialog( HWND hDlg, HEARSELECTDIALOGSTRUCT *p_hear, bool bApply
 
 		Menu_History_Add( path );
 		_stprintf_s( p_hear->path_selected, MAX_PATH, _T("%s%s%s"), path,
-			pxwFilePath_IsDrive( path ) ? _T("") : _T("\\"), name );
+					 pxwFilePath_IsDrive( path ) ? _T("") : _T("\\"), name );
 	}
 	else
 	{
@@ -821,31 +821,31 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDC_COMBO_SORT: if( HIWORD( w ) == CBN_SELCHANGE                ) _RefreshList( hDlg  ); break;
 
 		case IDM_DIR_DESKTOP:
-			{
-				TCHAR path[ MAX_PATH ] = {0};
-				pxwFilePath_GetSpecial( path, SPECIALPATH_DESKTOP );
-				SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
-				_RefreshList( hDlg );
-			}
-			break;
+		{
+			TCHAR path[ MAX_PATH ] = {0};
+			pxwFilePath_GetSpecial( path, SPECIALPATH_DESKTOP );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			_RefreshList( hDlg );
+		}
+		break;
 
 		case IDM_DIR_MYCOMPUTER:
-			{
-				TCHAR path[ MAX_PATH ] = {0};
-				pxwFilePath_GetSpecial( path, SPECIALPATH_MYCOMPUTER );
-				SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
-				_RefreshList( hDlg );
-			}
-			break;
+		{
+			TCHAR path[ MAX_PATH ] = {0};
+			pxwFilePath_GetSpecial( path, SPECIALPATH_MYCOMPUTER );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			_RefreshList( hDlg );
+		}
+		break;
 
 		case IDM_DIR_MYDOCUMENT:
-			{
-				TCHAR path[ MAX_PATH ] = {0};
-				pxwFilePath_GetSpecial( path, SPECIALPATH_MYDOCUMENT );
-				SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
-				_RefreshList( hDlg );
-			}
-			break;
+		{
+			TCHAR path[ MAX_PATH ] = {0};
+			pxwFilePath_GetSpecial( path, SPECIALPATH_MYDOCUMENT );
+			SetDlgItemText( hDlg, IDC_DIRECTORYPATH, path );
+			_RefreshList( hDlg );
+		}
+		break;
 
 		case IDM_HISTORY_0:
 		case IDM_HISTORY_1:
@@ -867,7 +867,7 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	case WM_NOTIFY:
-        if( (int)w == IDC_LIST )
+		if( (int)w == IDC_LIST )
 		{
 			LPNMHDR pNtfy = (LPNMHDR)l;
 			switch( pNtfy->code ){
@@ -877,10 +877,10 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 				break;
 //			case NM_CLICK:
 			}
-        }
-        break;
+		}
+		break;
 
-    case WM_LBUTTONDOWN:
+	case WM_LBUTTONDOWN:
 		POINT pt;
 		RECT  rc;
 
@@ -910,7 +910,7 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-    case WM_LBUTTONUP:
+	case WM_LBUTTONUP:
 		if( _bCapture )
 		{
 			ReleaseCapture();
@@ -939,17 +939,17 @@ static INT_PTR CALLBACK _Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 	// minimum size
 	case WM_GETMINMAXINFO:
-		{
-			RECT rc_work;
-			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
+	{
+		RECT rc_work;
+		SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
-			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = _wnd_min_w      ; // min w
-			pmm->ptMinTrackSize.y = _wnd_min_h      ; // min h
-			pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
-			pmm->ptMaxTrackSize.y = rc_work.bottom  ; // max h
-		}
-		break;
+		MINMAXINFO* pmm = (MINMAXINFO*)l;
+		pmm->ptMinTrackSize.x = _wnd_min_w      ; // min w
+		pmm->ptMinTrackSize.y = _wnd_min_h      ; // min h
+		pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
+		pmm->ptMaxTrackSize.y = rc_work.bottom  ; // max h
+	}
+	break;
 	default:
 		return false;
 	}

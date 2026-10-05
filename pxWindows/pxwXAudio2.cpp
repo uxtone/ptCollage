@@ -28,8 +28,8 @@ pxwXAudio2::~pxwXAudio2()
 bool pxwXAudio2::init   ( int32_t unit_num )
 {
 #ifndef pxwXAUDIO2_ENABLE
-    // XAudio2Create is an undefined reference on this toolchain, can't deal
-    return true;
+	// XAudio2Create is an undefined reference on this toolchain, can't deal
+	return true;
 #endif
 
 	bool   b_ret      = false;
@@ -38,74 +38,74 @@ bool pxwXAudio2::init   ( int32_t unit_num )
 	if( _b_init ) return false;
 
 #ifdef pxwXAUDIO2_ENABLE
-    if( FAILED( XAudio2Create(&_xa2, 0, XAUDIO2_DEFAULT_PROCESSOR ) ) ) goto term;
+	if( FAILED( XAudio2Create(&_xa2, 0, XAUDIO2_DEFAULT_PROCESSOR ) ) ) goto term;
 #endif
 
-    // update for new XAudio2 device enumeration behavior
-    // if( FAILED( _xa2->GetDeviceCount( &device_num ) ) ) goto term;
+	// update for new XAudio2 device enumeration behavior
+	// if( FAILED( _xa2->GetDeviceCount( &device_num ) ) ) goto term;
 
-    static IMMDeviceEnumerator* enumerator;
-    enumerator = nullptr;
-    if (CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&enumerator) != S_OK) goto term;
+	static IMMDeviceEnumerator* enumerator;
+	enumerator = nullptr;
+	if (CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&enumerator) != S_OK) goto term;
 
-    static bool use_default; // TODO: hook up
-    use_default = true;
+	static bool use_default; // TODO: hook up
+	use_default = true;
 
-    static IMMDevice* device;
-    device = nullptr;
+	static IMMDevice* device;
+	device = nullptr;
 
-    if(use_default) {
-        if (enumerator->GetDefaultAudioEndpoint(eRender, eMultimedia, &device) != S_OK) goto term;
-    } else {
-        static IMMDeviceCollection* collection;
-        collection = nullptr;
-        if (enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &collection) != S_OK) goto term;
-        collection->GetCount(&device_num);
+	if(use_default) {
+		if (enumerator->GetDefaultAudioEndpoint(eRender, eMultimedia, &device) != S_OK) goto term;
+	} else {
+		static IMMDeviceCollection* collection;
+		collection = nullptr;
+		if (enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &collection) != S_OK) goto term;
+		collection->GetCount(&device_num);
 
-        if( device_num <= 0 ) goto term;
-        collection->Item(0, &device);
-    }
+		if( device_num <= 0 ) goto term;
+		collection->Item(0, &device);
+	}
 
-    //if( FAILED( _xa2->GetDeviceDetails( 0, &_device_detail ) ) ) goto term;
+	//if( FAILED( _xa2->GetDeviceDetails( 0, &_device_detail ) ) ) goto term;
 
-    static IPropertyStore* property_store;
-    property_store = nullptr;
-    if (FAILED(device->OpenPropertyStore(STGM_READ, &property_store))) goto term;
+	static IPropertyStore* property_store;
+	property_store = nullptr;
+	if (FAILED(device->OpenPropertyStore(STGM_READ, &property_store))) goto term;
 
-    static PROPVARIANT property;
-    property = {};
-    PropVariantInit(&property);
-    if (SUCCEEDED(property_store->GetValue(PKEY_Device_FriendlyName, &property)))
-    {
-        memset(_device_detail.DisplayName, 0x00, sizeof(_device_detail.DisplayName));
-        memcpy(_device_detail.DisplayName, property.pwszVal, lstrlenW(property.pwszVal) * sizeof(WCHAR));        PropVariantClear(&property);
-    }
-    {
-        LPWSTR device_id = nullptr;
-        if(FAILED(device->GetId(&device_id))) goto term;
-        lstrcpynW(_device_detail.DeviceID, device_id, sizeof(_device_detail.DeviceID) / sizeof(WCHAR));
-        CoTaskMemFree(device_id);
-    }
-    // if (SUCCEEDED(property_store->GetValue(PKEY_Device_InstanceId, &property)))
-    // {
-    //     memset(_device_detail.DeviceID, 0x00, sizeof(_device_detail.DisplayName));
-    //     memcpy(_device_detail.DeviceID, property.pwszVal, wcslen(property.pwszVal));
-    //     PropVariantClear(&property);
-    // }
-    _device_detail.Role = DefaultMultimediaDevice;
+	static PROPVARIANT property;
+	property = {};
+	PropVariantInit(&property);
+	if (SUCCEEDED(property_store->GetValue(PKEY_Device_FriendlyName, &property)))
+	{
+		memset(_device_detail.DisplayName, 0x00, sizeof(_device_detail.DisplayName));
+		memcpy(_device_detail.DisplayName, property.pwszVal, lstrlenW(property.pwszVal) * sizeof(WCHAR));        PropVariantClear(&property);
+	}
+	{
+		LPWSTR device_id = nullptr;
+		if(FAILED(device->GetId(&device_id))) goto term;
+		lstrcpynW(_device_detail.DeviceID, device_id, sizeof(_device_detail.DeviceID) / sizeof(WCHAR));
+		CoTaskMemFree(device_id);
+	}
+	// if (SUCCEEDED(property_store->GetValue(PKEY_Device_InstanceId, &property)))
+	// {
+	//     memset(_device_detail.DeviceID, 0x00, sizeof(_device_detail.DisplayName));
+	//     memcpy(_device_detail.DeviceID, property.pwszVal, wcslen(property.pwszVal));
+	//     PropVariantClear(&property);
+	// }
+	_device_detail.Role = DefaultMultimediaDevice;
 
-    static IAudioClient *client;
-    client = nullptr;
-    if (FAILED(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void **>(&client)))) goto term;
+	static IAudioClient *client;
+	client = nullptr;
+	if (FAILED(device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void **>(&client)))) goto term;
 
-    static WAVEFORMATEX *format;
-    if (FAILED(client->GetMixFormat(&format))) goto term;
-    if(format->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
-        memcpy(&_device_detail.OutputFormat, format, sizeof(_device_detail.OutputFormat));
-    }
-    // end surgery
+	static WAVEFORMATEX *format;
+	if (FAILED(client->GetMixFormat(&format))) goto term;
+	if(format->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
+		memcpy(&_device_detail.OutputFormat, format, sizeof(_device_detail.OutputFormat));
+	}
+	// end surgery
 
-    if( FAILED( _xa2->CreateMasteringVoice( &_voice_master, XAUDIO2_DEFAULT_CHANNELS, XAUDIO2_DEFAULT_SAMPLERATE, 0, 0, NULL ) ) ) goto term;
+	if( FAILED( _xa2->CreateMasteringVoice( &_voice_master, XAUDIO2_DEFAULT_CHANNELS, XAUDIO2_DEFAULT_SAMPLERATE, 0, 0, NULL ) ) ) goto term;
 
 	if( !pxMem_zero_alloc( (void**)(&_units), sizeof(pxwXA2unit*) * unit_num ) ) goto term;
 	_unit_num = unit_num;

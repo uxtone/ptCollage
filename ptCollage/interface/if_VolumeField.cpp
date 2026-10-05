@@ -23,7 +23,7 @@ extern if_gen_Scroll  g_ScrlEventH;
 static uint32_t _color_velocity[ 2 ] =
 {
 	0xff00F080,
-	0xff006060,	
+	0xff006060,
 };
 
 static fRECT _rcField = {0};
@@ -63,7 +63,7 @@ void if_VolumeField_Put()
 	float              x;
 	fRECT              rc;
 	fRECT              rcName        = {  0,  0,WOICENAME_WIDTH,   0 };
-		
+
 	static const fRECT rcScale      = {  0,192,240,320};
 
 	static const fRECT rcNote       = {  8,480, 12,496};
@@ -85,7 +85,7 @@ void if_VolumeField_Put()
 	int32_t            beat_w;
 	float              offset_x;
 	int32_t            beat_clock;
-		
+
 	VOLUMEMODE  volume_mode;
 
 	int32_t             u;
@@ -170,7 +170,7 @@ void if_VolumeField_Put()
 					if( y_next < y_now ) rc.t= y_next + 2;
 					else                 rc.b= y_next - 2;
 					g_dxdraw->FillRect_clip( &rc, _color_velocity[ 1 ], &_rcField );
-					
+
 					// 点
 					y_now = y_next;
 					rc.t  = y_now - 2;

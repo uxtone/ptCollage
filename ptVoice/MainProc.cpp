@@ -207,7 +207,7 @@ static void _Function_IDM_INITIALIZE( HWND hwnd )
 	if( Japanese_Is() ) _tcscpy_s( str, 32, _T("初期化します") );
 	else                _tcscpy_s( str, 32, _T("Initialize"  ) );
 
-    if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), hwnd, dlg_YesNo, (LPARAM)str ) ) return;
+	if( !DialogBoxParam( g_hInst, _T("DLG_YESNO"), hwnd, dlg_YesNo, (LPARAM)str ) ) return;
 
 	MainWindow_SetTitle( NULL );
 	g_path_dlg_ptv->last_filename_clear();
@@ -273,7 +273,7 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 
 	_cfg.load();
 
-    if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
+	if( !DialogBoxParam( g_hInst, _T("DLG_CONFIG"), hwnd, dlg_Config_Procedure, (LPARAM)&_cfg ) ) return false;
 
 	if( !_cfg.save() )
 	{
@@ -293,11 +293,11 @@ static bool _Function_IDM_CONFIG( HWND hwnd )
 		return false;
 	}
 
-    // if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
-    // {
-    // 	MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
-    // 	return false;
-    // }
+	// if( !g_strm_xa2->stream_start( _cfg.strm->ch_num, _cfg.strm->sps, _cfg.strm->buf_sec ) )
+	// {
+	// 	MessageBox( hwnd, _T("stream start."), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+	// 	return false;
+	// }
 
 	MidiInput_Reset( _cfg.midi->b_velo, _cfg.midi->key_tuning );
 	g_midi_in->Open( _cfg.midi->name, hwnd, NULL );
@@ -313,7 +313,7 @@ static bool _Function_IDM_OUTPUT_TEXT( HWND hwnd )
 	TCHAR exte    [    32    ] = {0};
 
 	if( !g_path_dlg_txt->get_last_path( path_dst, MAX_PATH ) &&
-		 g_path_dlg_ptv->get_last_path( path_dst, MAX_PATH ) )
+		g_path_dlg_ptv->get_last_path( path_dst, MAX_PATH ) )
 	{
 		PathRemoveExtension( path_dst );
 		if( !g_path_dlg_txt->extension_get( exte ) ) _tcscpy( exte, _T("txta") ); // joke.
@@ -425,16 +425,16 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	case WM_PAINT:
-		{
-			HDC         hdc;
-			PAINTSTRUCT ps ;
+	{
+		HDC         hdc;
+		PAINTSTRUCT ps ;
 
-			hdc = BeginPaint ( hwnd, &ps  );
-			_call_main_proc  ( hwnd, true );
-			EndPaint         ( hwnd, &ps  );
-			break;
-		}
+		hdc = BeginPaint ( hwnd, &ps  );
+		_call_main_proc  ( hwnd, true );
+		EndPaint         ( hwnd, &ps  );
 		break;
+	}
+	break;
 
 	case WM_ACTIVATE:
 
@@ -443,15 +443,15 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case WA_ACTIVE:
 		case WA_CLICKACTIVE:
 
-			{
-				WINDOWPLACEMENT place = {0};
-				place.length = sizeof(WINDOWPLACEMENT);
+		{
+			WINDOWPLACEMENT place = {0};
+			place.length = sizeof(WINDOWPLACEMENT);
 
-				if( GetWindowPlacement( hwnd, &place ) && place.showCmd != SW_SHOWMINIMIZED )
-				{
-					_call_main_proc( hwnd, true );
-				}
+			if( GetWindowPlacement( hwnd, &place ) && place.showCmd != SW_SHOWMINIMIZED )
+			{
+				_call_main_proc( hwnd, true );
 			}
+		}
 			_bInterfaceActive = true;
 			KeyControl_Clear();
 			break;
@@ -505,17 +505,17 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 
 	// minimum size
 	case WM_GETMINMAXINFO:
-		{
-			RECT rc_work;
-			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
+	{
+		RECT rc_work;
+		SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
-			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = g_client_min_w; // min w
-			pmm->ptMinTrackSize.y = g_client_min_h; // min h
-			pmm->ptMaxTrackSize.x = g_client_min_w; // max w
-			pmm->ptMaxTrackSize.y = rc_work.bottom; // max h
-		}
-		break;
+		MINMAXINFO* pmm = (MINMAXINFO*)l;
+		pmm->ptMinTrackSize.x = g_client_min_w; // min w
+		pmm->ptMinTrackSize.y = g_client_min_h; // min h
+		pmm->ptMaxTrackSize.x = g_client_min_w; // max w
+		pmm->ptMaxTrackSize.y = rc_work.bottom; // max h
+	}
+	break;
 
 	case WM_KEYDOWN    :
 	case WM_KEYUP      : KeyControl_WM_MESSAGE   ( hwnd, msg, w ); _call_main_proc( hwnd, true ); break;
@@ -552,7 +552,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 				ptConfig cfg( _ref_file_profile, ptvDEFAULT_SPS, ptvDEFAULT_CH_NUM , ptvDEFAULT_BUF_SEC );
 				cfg.load();
 				g_midi_in->Close();
-				if( g_midi_in->Open ( cfg.midi->name, g_hWnd_Main, NULL ) )g_midi_in->Input_Start();
+				if( g_midi_in->Open ( cfg.midi->name, g_hWnd_Main, NULL ) ) g_midi_in->Input_Start();
 			}
 			break;
 
@@ -563,5 +563,5 @@ LRESULT CALLBACK WindowProc_Main( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 	default: return DefWindowProc( hwnd, msg, w, l );
 	}
 
-    return 0;
+	return 0;
 }

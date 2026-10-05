@@ -94,7 +94,7 @@ static bool _Get( HWND hDlg, ADDUNITSTRUCT* p_addunit )
 }
 
 INT_PTR CALLBACK
-	dlg_AddUnit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
+dlg_AddUnit( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	static ADDUNITSTRUCT* p_addunit;
 
@@ -122,7 +122,7 @@ INT_PTR CALLBACK
 			break;
 
 		}
-		default:return false;
+	default: return false;
 	}
 	return true;
 }

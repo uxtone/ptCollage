@@ -8,19 +8,19 @@ void GetCompileDate( int32_t *year, int32_t *month, int32_t *day )
 	int32_t i;
 	char strMonth[ 16 ];
 
-	char *table[] = 
+	char *table[] =
 	{
 		"XXX",
 		"Jan","Feb","Mar","Apr",
 		"May","Jun","Jul","Aug",
-		"Sep","Oct","Nov","Dec" 
+		"Sep","Oct","Nov","Dec"
 	};
 
 	sscanf(__DATE__, "%s %d %d", strMonth, day, year );
 
-	for( i = 0; i < 12; i++) 
+	for( i = 0; i < 12; i++)
 	{
-		if( !memcmp( strMonth, table[i], 3 ) )break;
+		if( !memcmp( strMonth, table[i], 3 ) ) break;
 	}
 	*month = i;
 
@@ -36,7 +36,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 	DWORD            dummy;
 	DWORD            size;
 	VS_FIXEDFILEINFO *info;
-	UINT             vSize; 
+	UINT             vSize;
 	TCHAR            path[ MAX_PATH ] = {0};
 
 	int32_t v[ 4 ];
@@ -49,10 +49,10 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 )
 
 	GetModuleFileName( NULL, path, MAX_PATH );
 
-	size = GetFileVersionInfoSize( path, &dummy ); 
+	size = GetFileVersionInfoSize( path, &dummy );
 	if( !size ) goto End;
 
-	p = malloc( size ); 
+	p = malloc( size );
 	if( !p                                                ) goto End;
 	if( !GetFileVersionInfo( path, 0, size, p )           ) goto End;
 	if( !VerQueryValue( p, _T("\\"), (LPVOID*)&info, &vSize ) ) goto End;
@@ -131,24 +131,24 @@ bool IsShiftJIS( unsigned char c )
 {
 	if( c >= 0x81 && c <= 0x9F ) return true;
 	if( c >= 0xE0 && c <= 0xEF ) return true;
-	
+
 	return false;
 }
 
 //乱数の発生
 int32_t Random( int32_t min, int32_t max )
 {
-    int32_t range;
+	int32_t range;
 	int32_t a;
 
-    range = max - min + 1;
+	range = max - min + 1;
 
 	SYSTEMTIME st;
 	GetLocalTime( &st );
-	
+
 	for( a = 0; a < st.wSecond%10; a++ ) rand();
 
-    return( ( rand() % range ) + min );
+	return( ( rand() % range ) + min );
 }
 
 // 秒間描画フレーム数を取得（ループ内で呼ぶ）

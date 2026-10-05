@@ -39,72 +39,72 @@ class WoiceUnit
 {
 private:
 
-	bool               _b_init ;
-	uint32_t           _frame_alte_flags;
-	uint32_t           _frame_post_flags;
-	pxtnWoice*         _woice  ;
-	pxtonewinXA2*      _xa2    ;
+bool               _b_init ;
+uint32_t           _frame_alte_flags;
+uint32_t           _frame_post_flags;
+pxtnWoice*         _woice  ;
+pxtonewinXA2*      _xa2    ;
 
 
-	int32_t            _channel;
-	WOICEUNIT_MODE     _mode   ;
-	float              _zoom   ; // x1, x0.5, x0.1
+int32_t            _channel;
+WOICEUNIT_MODE     _mode   ;
+float              _zoom   ; // x1, x0.5, x0.1
 
-	bool               _b_sine_over;
-	bool               _mutes[ pxtnMAX_UNITCONTROLVOICE ];
+bool               _b_sine_over;
+bool               _mutes[ pxtnMAX_UNITCONTROLVOICE ];
 
-	void _envelope_default( pxtnVOICEENVELOPE* pe );
+void _envelope_default( pxtnVOICEENVELOPE* pe );
 
-public :
+public:
 
-	 WoiceUnit();
-	~WoiceUnit();
+WoiceUnit();
+~WoiceUnit();
 
-	bool    init             ( pxtonewinXA2* xa2 );
-	bool    IDM_INITIALIZE_  ();
-	void    data_reset       ();
+bool    init             ( pxtonewinXA2* xa2 );
+bool    IDM_INITIALIZE_  ();
+void    data_reset       ();
 
-	void	reset_overtone   ( pxtnVOICEWAVE *p_wave, int32_t index );
+void	reset_overtone   ( pxtnVOICEWAVE *p_wave, int32_t index );
 
-	void    default_coodinate( pxtnVOICEWAVE* p_wave, bool b_zero );
-	void    default_overtone ( pxtnVOICEWAVE* p_wave, bool b_zero );
+void    default_coodinate( pxtnVOICEWAVE* p_wave, bool b_zero );
+void    default_overtone ( pxtnVOICEWAVE* p_wave, bool b_zero );
 
-	bool    copy_ptv_voice   ( int32_t src_idx, int32_t dst_idx );
-	bool    copy_ptv_woice_to( WoiceUnit* p_dst                 ) const;
+bool    copy_ptv_voice   ( int32_t src_idx, int32_t dst_idx );
+bool    copy_ptv_woice_to( WoiceUnit* p_dst                 ) const;
 
-	bool    channel_set   ( int32_t ch );
-	int32_t channel_get   () const;
-	void    channel_switch();
+bool    channel_set   ( int32_t ch );
+int32_t channel_get   () const;
+void    channel_switch();
 
-	bool    zoom_set      ( float zoom );
-	float   zoom_get      () const;
+bool    zoom_set      ( float zoom );
+float   zoom_get      () const;
 
-	pxtnVOICEUNIT* get_voice( int32_t index );
-	pxtnVOICEUNIT* get_voice();
-	pxtnWoice*     get_woice();
+pxtnVOICEUNIT* get_voice( int32_t index );
+pxtnVOICEUNIT* get_voice();
+pxtnWoice*     get_woice();
 
-	void     frame_alte_set  ( uint32_t alte_flags, int32_t channel );
-	void     frame_alte_clear();
-	uint32_t frame_alte_get  () const;
+void     frame_alte_set  ( uint32_t alte_flags, int32_t channel );
+void     frame_alte_clear();
+uint32_t frame_alte_get  () const;
 
-	WOICEUNIT_MODE mode_get(                     ) const;
-	void           mode_set( WOICEUNIT_MODE mode );
+WOICEUNIT_MODE mode_get(                     ) const;
+void           mode_set( WOICEUNIT_MODE mode );
 
-	void     mute_switch( int32_t channel );
-	bool     mute_get   ( int32_t channel ) const;
+void     mute_switch( int32_t channel );
+bool     mute_get   ( int32_t channel ) const;
 
-	bool     strm_ready_sample  ();
-	bool     strm_ready_envelope();
-	bool     strm_ready         ();
+bool     strm_ready_sample  ();
+bool     strm_ready_envelope();
+bool     strm_ready         ();
 
-	int32_t  strm_ON     ( float freq_rate );
-	int32_t  strm_ON     ( float freq_rate, unsigned char velo );
-	void     strm_OFF    ( int32_t id, bool bForce );
-	void     strm_Off_All();
-	void     strm_CHANGE ( int32_t id, float freq_rate );
+int32_t  strm_ON     ( float freq_rate );
+int32_t  strm_ON     ( float freq_rate, unsigned char velo );
+void     strm_OFF    ( int32_t id, bool bForce );
+void     strm_Off_All();
+void     strm_CHANGE ( int32_t id, float freq_rate );
 
-	bool     csv_attach( const TCHAR* path_csv );
-	bool     csv_output( const TCHAR* path_csv ) const;
+bool     csv_attach( const TCHAR* path_csv );
+bool     csv_output( const TCHAR* path_csv ) const;
 };
 
 #endif

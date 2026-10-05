@@ -54,7 +54,7 @@ static const pxFile2*   _ref_file_profile = NULL;
 void if_Projector_RedrawName( const TCHAR* new_font_name )
 {
 	const char* p_name    = g_pxtn->text->get_name_buf( NULL );
-		
+
 	if( !p_name ) p_name  = _default_name;
 
 	if( new_font_name ) g_dxdraw->tex_glyph_another_font( SURF_PROJECTNAME, new_font_name, 12, false );

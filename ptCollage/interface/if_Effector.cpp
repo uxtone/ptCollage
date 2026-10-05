@@ -309,7 +309,7 @@ void if_Effector_Put()
 	fRECT rc_per    = {240,200,248,208};
 	fRECT rc_played = {296,152,312,168};
 	fRECT rc_amp    = {248,200,272,208};
-	
+
 	fRECT rc_delay_type[] =
 	{
 		{240,168,272,176},
@@ -354,7 +354,7 @@ void if_Effector_Put()
 		if( p_delay->get_played() ) g_dxdraw->tex_Put_View( x, y, &rc_played, SURF_DIALOGS );
 
 		y = _effector.y + _DELAY_Y + _PADDING_Y + _RECORD_H * e;
-		
+
 		x = _effector.x + _RECORD_X + _GROUP_X;
 		if_gen_num6(  x, y, p_delay->get_group(), 2 );
 
@@ -382,7 +382,7 @@ void if_Effector_Put()
 		if( p_ovdrv->get_played() ) g_dxdraw->tex_Put_View( x, y, &rc_played, SURF_DIALOGS );
 
 		y = _effector.y + _OVERDRIVE_Y + _PADDING_Y + _RECORD_H * e;
-		
+
 		x = _effector.x + _RECORD_X + _GROUP_X;
 		if_gen_num6( x, y, p_ovdrv->get_group(), 2 );
 

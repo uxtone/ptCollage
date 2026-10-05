@@ -23,7 +23,7 @@ static void _GetMousePointer( HWND hWnd, float *px, float *py )
 {
 	POINT pt;
 	GetCursorPos  (       &pt );
-	ScreenToClient( hWnd, &pt );	
+	ScreenToClient( hWnd, &pt );
 	*px = (float)pt.x / g_dxdraw->get_screen_mag();
 	*py = (float)pt.y / g_dxdraw->get_screen_mag();
 }
@@ -72,7 +72,7 @@ void Interface_Process( HWND hWnd, bool bDraw )
 		rc_view.b = (float)rc.bottom / g_dxdraw->get_screen_mag();
 	}
 	g_dxdraw->SetViewport( rc_view.l, rc_view.t, rc_view.r, rc_view.b, 0, 0 );
- 
+
 	// Make Rect ====================================================
 	if_Player_SetRect( &rc_view );
 
@@ -104,10 +104,10 @@ void Interface_Process( HWND hWnd, bool bDraw )
 	switch( ptp_sign )
 	{
 	case PTP_SIGN_SelectFile:
-		{
-			Tune_SelectAndPlay( hWnd );
-		}
-		break;
+	{
+		Tune_SelectAndPlay( hWnd );
+	}
+	break;
 	}
 }
 

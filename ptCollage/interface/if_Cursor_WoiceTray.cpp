@@ -83,7 +83,7 @@ static bool _ActionFree( float cur_x, float cur_y )
 			}
 		}
 
-	// ユニットメニュー
+		// ユニットメニュー
 	}
 	else if( KeyControl_IsClickRightTrigger() )
 	{

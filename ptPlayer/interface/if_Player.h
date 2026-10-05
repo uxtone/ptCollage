@@ -30,15 +30,15 @@ void    if_Player_SetCommButtonAnime( int32_t no );
 int32_t if_Player_GetStatusFlag();
 void    if_Player_PushOneStatusFlag( int32_t flag );
 int32_t if_Player_IsStatusButton( float x, float y );
-	  
+
 bool    if_Player_Callback_Sampled( void* user, const pxtnService* pxtn );
 bool    if_Player_StartDraw ();
 void    if_Player_OnMutePlay(); // プロジェクトを読んだり初期化した時
 bool    if_Player_StartPlay ();
 void    if_Player_StopPlay  ();
 void    if_Player_ZeroSampleOffset();
-	    
+
 void    if_Player_RedrawName( const TCHAR* new_font_name );
-	    
+
 bool    if_Player_IsVolume         ( float x, float y );
 void    if_Player_SetVolume_cur_pos( float x, float y );

@@ -91,22 +91,22 @@ fPOINT;
 
 typedef struct
 {
-    int32_t x;
-    int32_t y;
+	int32_t x;
+	int32_t y;
 }
 sPOINT;
 
 typedef struct
 {
-    int32_t w;
-    int32_t h;
+	int32_t w;
+	int32_t h;
 }
 sSIZE;
 
 typedef struct
 {
-    float w;
-    float h;
+	float w;
+	float h;
 }
 fSIZE;
 

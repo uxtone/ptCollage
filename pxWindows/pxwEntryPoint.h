@@ -49,14 +49,14 @@ static inline LPWSTR pxwEntryPoint_wide_args( void )
 }
 
 #define pxwENTRY_POINT( h_inst, h_prev, cmd, n_show )                                  \
-	int WINAPI wWinMain( HINSTANCE, HINSTANCE, LPWSTR, int );                          \
-	int WINAPI WinMain( HINSTANCE px_h, HINSTANCE px_p, LPSTR, int px_n )              \
-	{ return wWinMain( px_h, px_p, pxwEntryPoint_wide_args(), px_n ); }               \
-	int WINAPI wWinMain( HINSTANCE h_inst, HINSTANCE h_prev, LPWSTR cmd, int n_show )
+		int WINAPI wWinMain( HINSTANCE, HINSTANCE, LPWSTR, int );                          \
+		int WINAPI WinMain( HINSTANCE px_h, HINSTANCE px_p, LPSTR, int px_n )              \
+		{ return wWinMain( px_h, px_p, pxwEntryPoint_wide_args(), px_n ); }               \
+		int WINAPI wWinMain( HINSTANCE h_inst, HINSTANCE h_prev, LPWSTR cmd, int n_show )
 
 #else
 
 #define pxwENTRY_POINT( h_inst, h_prev, cmd, n_show )                                  \
-	int WINAPI WinMain( HINSTANCE h_inst, HINSTANCE h_prev, LPSTR cmd, int n_show )
+		int WINAPI WinMain( HINSTANCE h_inst, HINSTANCE h_prev, LPSTR cmd, int n_show )
 
 #endif

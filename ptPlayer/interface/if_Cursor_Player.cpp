@@ -49,7 +49,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 	g_cursor.p_field_rect = p_field_rect;
 	g_cursor.drag_xpos[0] = cur_x;
 	g_cursor.drag_ypos    = cur_y;
-	
+
 
 	// 左クリック
 	if(       KeyControl_IsClickLeftTrigger()  )
@@ -68,14 +68,14 @@ static bool _Action_Free( float cur_x, float cur_y )
 		{
 			g_cursor.action = 1;
 			g_cursor.focus  = ifCurFocus_Player;
-			if_Player_SetFileButtonAnime( 1 ); 
+			if_Player_SetFileButtonAnime( 1 );
 			_drag_mode = enum_DragMode_FileButton;
 		}
 		else if( Tune_IsComment() && if_Player_IsCommButton( cur_x, cur_y ) )
 		{
 			g_cursor.action = 1;
 			g_cursor.focus  = ifCurFocus_Player;
-			if_Player_SetCommButtonAnime( 1 ); 
+			if_Player_SetCommButtonAnime( 1 );
 			_drag_mode = enum_DragMode_CommButton;
 		}
 		else if( if_Player_IsStatusButton( cur_x, cur_y ) & IF_PLAYER_STATUS_LOOP )
@@ -92,7 +92,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 			if_Player_SetVolume_cur_pos( cur_x, cur_y );
 			_drag_mode = enum_DragMode_Volume;
 		}
-	
+
 	}else{
 		return false;
 	}

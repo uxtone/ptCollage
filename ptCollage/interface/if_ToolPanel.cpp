@@ -140,7 +140,7 @@ enum_ToolButton if_ToolPanel_GetHitButton( float cur_x, float cur_y )
 void if_ToolPanel_SetMode_W(){ _mode = enum_ToolMode_W; _bKeyOnly = false; if_WoiceTray_JustScroll();                           }
 void if_ToolPanel_SetMode_U(){ _mode = enum_ToolMode_U; _bKeyOnly = false; if_UnitTray_JustScroll( );                           }
 void if_ToolPanel_SetMode_K(){ _mode = enum_ToolMode_K; _bKeyOnly = false; if_UnitTray_JustScroll( ); if_KeyField_JustScroll(); }
-									 
+
 bool if_ToolPanel_SetHitButton( enum_ToolButton button )
 {
 	bool bDraw = false;

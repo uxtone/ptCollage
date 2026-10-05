@@ -7,16 +7,16 @@
 class pxMutex
 {
 private:
-	void *_mtx;
+void *_mtx;
 
-public :
-	 pxMutex();
-	~pxMutex();
+public:
+pxMutex();
+~pxMutex();
 
-	bool init   ();
-	void lock   ();
-	bool trylock();
-	void unlock ();
+bool init   ();
+void lock   ();
+bool trylock();
+void unlock ();
 };
 
 #endif

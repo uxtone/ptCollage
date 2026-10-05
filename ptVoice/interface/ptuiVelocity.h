@@ -11,31 +11,31 @@ class ptuiVelocity: public ptui
 {
 private:
 
-	bool      _b_init      ;
-	int32_t   _start_volume;
-	ptuiKnob* _knob        ;
+bool      _b_init      ;
+int32_t   _start_volume;
+ptuiKnob* _knob        ;
 
-	bool _cursor_free      ( ptuiCursor* p_cur ) override;
-	bool _cursor_drag_unit ( ptuiCursor* p_cur ) override;
-	bool _cursor_click_hold( ptuiCursor* p_cur ) override;
-	void _put        ( const ptuiCursor* p_cur ) const override;
+bool _cursor_free      ( ptuiCursor* p_cur ) override;
+bool _cursor_drag_unit ( ptuiCursor* p_cur ) override;
+bool _cursor_click_hold( ptuiCursor* p_cur ) override;
+void _put        ( const ptuiCursor* p_cur ) const override;
 
 
-	bool _search_button    ( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
+bool _search_button    ( const ptuiCursor* p_cur, int32_t* p_tgt_id ) const;
 
-	bool _get_volume_int   ( int32_t* p_volume ) const;
-	bool _set_volume_int   ( int32_t    volume );
+bool _get_volume_int   ( int32_t* p_volume ) const;
+bool _set_volume_int   ( int32_t    volume );
 
-	bool _set_volume_default();
+bool _set_volume_default();
 
-	void _release();
+void _release();
 
-public :
+public:
 
-	 ptuiVelocity();
-	~ptuiVelocity();
+ptuiVelocity();
+~ptuiVelocity();
 
-	bool init();
+bool init();
 
 };
 

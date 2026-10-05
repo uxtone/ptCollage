@@ -3,7 +3,7 @@
 extern pxwDx09Draw*  g_dxdraw  ;
 
 #include <pxtonewinXA2.h>
-extern pxtonewinXA2* g_strm_xa2; 
+extern pxtonewinXA2* g_strm_xa2;
 
 #include "../../Generic/KeyControl.h"
 
@@ -38,7 +38,7 @@ bool if_Cursor_Action( float cur_x, float cur_y, PTP_SIGN *p_ptp_sign )
 			break;
 		}
 
-	// ビジー ========================================
+		// ビジー ========================================
 	}else{
 		bool bDrag = false;
 

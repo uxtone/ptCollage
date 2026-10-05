@@ -8,24 +8,24 @@
 class pxTText
 {
 private:
-    const TCHAR* _p_text_t;
+const TCHAR* _p_text_t;
 
-	wchar_t*     _p_wide  ;
-	char   *     _p_sjis  ;
+wchar_t*     _p_wide  ;
+char   *     _p_sjis  ;
 
-	void _clear();
+void _clear();
 
-public :
+public:
 
-	 pxTText();
-	~pxTText();
+pxTText();
+~pxTText();
 
-	bool set_sjis_to_t    ( const char * text );
-	bool set_UTF8_to_t    ( const char * text );
-	bool set_TCHAR_to_sjis( const TCHAR* text );
+bool set_sjis_to_t    ( const char * text );
+bool set_UTF8_to_t    ( const char * text );
+bool set_TCHAR_to_sjis( const TCHAR* text );
 
-	const TCHAR* tchr() const;
-	const char*  sjis() const;
+const TCHAR* tchr() const;
+const char*  sjis() const;
 };
 
 #endif

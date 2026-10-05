@@ -68,7 +68,7 @@ bool pxtnWoice::is_name_buf () const
 }
 
 static void _Voice_Release( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi )
-{							
+{
 	if( p_vc )
 	{
 		SAFE_DELETE( p_vc->p_pcm  );
@@ -218,22 +218,22 @@ pxtnERR pxtnWoice::read( void* desc, pxtnWOICETYPE type )
 	{
 	// PCM
 	case pxtnWOICE_PCM:
-		{
-			pxtnVOICEUNIT *p_vc; if( !Voice_Allocate( 1 ) ) goto term; p_vc = &_voices[ 0 ]; p_vc->type = pxtnVOICE_Sampling;
-			res = p_vc->p_pcm->read( desc ); if( res != pxtnOK ) goto term;
-			// if under 0.005 sec, set LOOP.
-			if(p_vc->p_pcm->get_sec() < 0.005f ) p_vc->voice_flags |=  PTV_VOICEFLAG_WAVELOOP;
-			else                                 p_vc->voice_flags &= ~PTV_VOICEFLAG_WAVELOOP;
-			_type      = pxtnWOICE_PCM;
-		}
-		break;
+	{
+		pxtnVOICEUNIT *p_vc; if( !Voice_Allocate( 1 ) ) goto term; p_vc = &_voices[ 0 ]; p_vc->type = pxtnVOICE_Sampling;
+		res = p_vc->p_pcm->read( desc ); if( res != pxtnOK ) goto term;
+		    // if under 0.005 sec, set LOOP.
+		if(p_vc->p_pcm->get_sec() < 0.005f ) p_vc->voice_flags |=  PTV_VOICEFLAG_WAVELOOP;
+		else                                 p_vc->voice_flags &= ~PTV_VOICEFLAG_WAVELOOP;
+		_type      = pxtnWOICE_PCM;
+	}
+	break;
 
 	// PTV
 	case pxtnWOICE_PTV:
-		{
-			res = PTV_Read( desc ); if( res != pxtnOK ) goto term;
-		}
-		break;
+	{
+		res = PTV_Read( desc ); if( res != pxtnOK ) goto term;
+	}
+	break;
 
 	// PTN
 	case pxtnWOICE_PTN:
@@ -287,7 +287,7 @@ void pxtnWoice::_UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, in
 	osci.ReadyGetSample( p_vc->wave.points, p_vc->wave.num, p_vc->volume, p_vi->smp_body_w, p_vc->wave.reso );
 
 	if( p_vc->type == pxtnVOICE_Overtone ) b_ovt = true ;
-	else                                   b_ovt = false; 
+	else                                   b_ovt = false;
 
 	p_vi->b_sine_over = false;
 
@@ -309,7 +309,7 @@ void pxtnWoice::_UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, in
 			}
 		}
 
-	// 16bit
+		// 16bit
 	}
 	else
 	{
@@ -384,25 +384,25 @@ pxtnERR pxtnWoice::Tone_Ready_sample( const pxtnPulse_NoiseBuilder *ptn_bldr )
 
 		case pxtnVOICE_Overtone :
 		case pxtnVOICE_Coodinate:
-			{
-				p_vi->smp_body_w =  400;
-				int32_t size = p_vi->smp_body_w * ch * bps / 8;
-				if( !( p_vi->p_smp_w = (uint8_t*)malloc( size ) ) ){ res = pxtnERR_memory; goto term; }
-				memset( p_vi->p_smp_w, 0x00, size );
-				_UpdateWavePTV( p_vc, p_vi, ch, sps, bps );
-				break;
-			}
+		{
+			p_vi->smp_body_w =  400;
+			int32_t size = p_vi->smp_body_w * ch * bps / 8;
+			if( !( p_vi->p_smp_w = (uint8_t*)malloc( size ) ) ){ res = pxtnERR_memory; goto term; }
+			memset( p_vi->p_smp_w, 0x00, size );
+			_UpdateWavePTV( p_vc, p_vi, ch, sps, bps );
+			break;
+		}
 
 		case pxtnVOICE_Noise:
-			{
-				pxtnPulse_PCM *p_pcm = NULL;
-				if( !ptn_bldr ){ res = pxtnERR_ptn_init; goto term; }
-				if( !( p_pcm = ptn_bldr->BuildNoise( p_vc->p_ptn, ch, sps, bps ) ) ){ res = pxtnERR_ptn_build; goto term; }
-				p_vi->p_smp_w    = (uint8_t*)p_pcm->Devolve_SamplingBuffer();
-				p_vi->smp_body_w = p_vc->p_ptn->get_smp_num_44k();
-				delete p_pcm;
-				break;
-			}
+		{
+			pxtnPulse_PCM *p_pcm = NULL;
+			if( !ptn_bldr ){ res = pxtnERR_ptn_init; goto term; }
+			if( !( p_pcm = ptn_bldr->BuildNoise( p_vc->p_ptn, ch, sps, bps ) ) ){ res = pxtnERR_ptn_build; goto term; }
+			p_vi->p_smp_w    = (uint8_t*)p_pcm->Devolve_SamplingBuffer();
+			p_vi->smp_body_w = p_vc->p_ptn->get_smp_num_44k();
+			delete p_pcm;
+			break;
+		}
 		}
 	}
 
@@ -475,9 +475,9 @@ pxtnERR pxtnWoice::Tone_Ready_envelope( int32_t sps )
 				if(    e < head_num )
 				{
 					p_vi->p_env[ s ] = (uint8_t)(
-												start.y + ( p_point[ e ].y - start.y ) *
-												(              s - start.x ) /
-												( p_point[ e ].x - start.x ) );
+						start.y + ( p_point[ e ].y - start.y ) *
+						(              s - start.x ) /
+						( p_point[ e ].x - start.x ) );
 				}
 				else
 				{
@@ -492,7 +492,7 @@ pxtnERR pxtnWoice::Tone_Ready_envelope( int32_t sps )
 		{
 			p_vi->env_release = (int32_t)( (double)p_enve->points[ p_enve->head_num ].x * sps / p_enve->fps );
 		}
-		else 
+		else
 		{
 			p_vi->env_release = 0;
 		}

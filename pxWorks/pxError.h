@@ -8,7 +8,7 @@
 
 bool        pxError_init       ();
 void        pxError_reset      ();
-void        pxError_release    ();	
+void        pxError_release    ();
 bool        pxError_is_error   ();
 const char* pxError_get_message();
 const char* pxError_get_date   ();

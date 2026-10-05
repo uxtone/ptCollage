@@ -86,7 +86,7 @@ BOOL ProjectFile_Save( const char *path, char *err_msg )
 	// version -------
 	fwrite( _code_Version,  1, _VERSIONSIZE, fp );
 
-	// project	
+	// project
 	fwrite( _code_Project,  1,    _CODESIZE, fp );
 	if( !Project_WriteFile( fp ) ){ strcpy( err_msg, "error: output project" ); return FALSE; }
 
@@ -161,7 +161,7 @@ BOOL ProjectFile_Load( const char *path, char *err_msg )
 	if( fread(  code,    1, _CODESIZE,    fp ) != _CODESIZE    ){ strcpy( err_msg, "error: read file" ); goto xxxExit; }
 
 	if( !Project_ReadFile( fp ) ){ strcpy( err_msg, "error: read file" ); goto xxxExit; }
-	
+
 	/// 音源より先にそれに対応するユニットがなければならない ///
 	while( !bEnd ){
 

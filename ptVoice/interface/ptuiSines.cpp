@@ -125,7 +125,7 @@ bool ptuiSines::_search_button( const ptuiCursor* p_cur, int32_t* p_tgt_id ) con
 
 	p_cur->get_pos( &fx, &fy );
 
-	_pos_make( NULL, &idx, 0, fy );	
+	_pos_make( NULL, &idx, 0, fy );
 	if( idx < 0 || idx >= ptvFIXNUM_WAVE_POINT ) return false;
 
 	int32_t knob_x = _rect.l + _VOLUMEZERO_X + p_vc->wave.points[ idx ].y/_VOLUME_RATE;

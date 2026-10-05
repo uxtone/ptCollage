@@ -13,7 +13,7 @@ int32_t GetCompileVersion( int32_t *p1, int32_t *p2, int32_t *p3, int32_t *p4 );
 void    GetCompileDate   ( int32_t *year, int32_t *month, int32_t *day     );
 
 INT_PTR CALLBACK
-	dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
+dlg_About( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
 	{
@@ -21,15 +21,15 @@ INT_PTR CALLBACK
 	//ダイアログ起動
 	case WM_INITDIALOG:
 
-		{
-			TCHAR   str[64] = {0};
-			int32_t y, m, d;
-			int32_t v1,v2,v3,v4;
-			GetCompileDate( &y, &m, &d );
-			GetCompileVersion( &v1, &v2, &v3, &v4 );
-			_stprintf_s( str, 64, gStrVersion, v1, v2, v3, v4, y, m, d );
-			SetDlgItemText( hDlg, IDC_VERSION, str );
-		}
+	{
+		TCHAR   str[64] = {0};
+		int32_t y, m, d;
+		int32_t v1,v2,v3,v4;
+		GetCompileDate( &y, &m, &d );
+		GetCompileVersion( &v1, &v2, &v3, &v4 );
+		_stprintf_s( str, 64, gStrVersion, v1, v2, v3, v4, y, m, d );
+		SetDlgItemText( hDlg, IDC_VERSION, str );
+	}
 
 		SetDlgItemText( hDlg, IDC_MESSAGE, _T("beta test") );
 
@@ -53,7 +53,7 @@ INT_PTR CALLBACK
 			break;
 		}
 
-		default:return false;
+	default: return false;
 
 	}
 	return true;

@@ -116,7 +116,7 @@ void pxtnUnit::Tone_Pan_Volume( int32_t ch, int32_t  pan )
 	_pan_vols[ 1 ] = 64;
 	if( ch == 2 )
 	{
-		if( pan >= 64 )_pan_vols[ 0 ] = 128 - pan;
+		if( pan >= 64 ) _pan_vols[ 0 ] = 128 - pan;
 		else           _pan_vols[ 1 ] =       pan;
 	}
 }
@@ -303,7 +303,7 @@ pxtnVOICETONE *pxtnUnit::get_tone( int32_t voice_idx )
 }
 
 
-// v1x (20byte) ================= 
+// v1x (20byte) =================
 typedef struct
 {
 	char     name[ pxtnMAX_TUNEUNITNAME ];

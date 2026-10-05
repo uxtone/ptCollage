@@ -125,20 +125,20 @@ TCHAR* g_posted_path = NULL;
 // ウインドウクラスの登録
 static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfnWndProc )
 {
-    WNDCLASSEX wc;
+	WNDCLASSEX wc;
 
 	memset( &wc, 0, sizeof(WNDCLASSEX) );
 
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.lpszClassName = class_name;
+	wc.cbSize        = sizeof(WNDCLASSEX);
+	wc.lpszClassName = class_name;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc   = lpfnWndProc;
-    wc.hInstance     = hInst;        //インスタンス
-    wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//(HBRUSH)(COLOR_APPWORKSPACE + 1);
-    wc.hIcon         = LoadIcon( hInst, _T("0") );
-    wc.hCursor       = LoadCursor( NULL, IDC_ARROW       );
+	wc.lpfnWndProc   = lpfnWndProc;
+	wc.hInstance     = hInst;        //インスタンス
+	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//(HBRUSH)(COLOR_APPWORKSPACE + 1);
+	wc.hIcon         = LoadIcon( hInst, _T("0") );
+	wc.hCursor       = LoadCursor( NULL, IDC_ARROW       );
 
-    if( !RegisterClassEx( &wc ) ) return false;
+	if( !RegisterClassEx( &wc ) ) return false;
 
 	return true;
 }
@@ -212,7 +212,7 @@ void GetCompileDate( int32_t *year, int32_t *month, int32_t *day );
 
 pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 {
-    pxwRuntime runtime;
+	pxwRuntime runtime;
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
@@ -257,7 +257,7 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 	// ウインドウクラスを定義
 	if( !_RegistWindowClass( hInst, _class_name, WindowProc_Main ) ) goto term;
 
-    g_hMenu_Main = LoadMenu( hInst, _T("MENU_MAIN") );
+	g_hMenu_Main = LoadMenu( hInst, _T("MENU_MAIN") );
 
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
@@ -324,11 +324,11 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 			goto term;
 		}
 
-        if( !g_strm_xa2->stream_start( cfg.strm->ch_num, cfg.strm->sps, cfg.strm->buf_sec ) )
-        {
-            MessageBox( NULL, _T("stream start"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
-            goto term;
-        }
+		if( !g_strm_xa2->stream_start( cfg.strm->ch_num, cfg.strm->sps, cfg.strm->buf_sec ) )
+		{
+			MessageBox( NULL, _T("stream start"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			goto term;
+		}
 
 		g_strm_woi = new pxtonewinWoice();
 		if( !g_strm_woi->init( g_strm_xa2 ) )
@@ -346,27 +346,27 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 
 			g_path_dlg_ptv = new pxwPathDialog();
 			if( !g_path_dlg_ptv->init( _app_file_profile,
-				_T("ptvoice {*.ptvoice}\0*.ptvoice*\0All files {*.*}\0*.*\0\0"),
-				_T("ptvoice"     ),
-				_T("ptv-ptv.path"),
-				title_save, title_load, NULL ) ) goto term;
+									   _T("ptvoice {*.ptvoice}\0*.ptvoice*\0All files {*.*}\0*.*\0\0"),
+									   _T("ptvoice"     ),
+									   _T("ptv-ptv.path"),
+									   title_save, title_load, NULL ) ) goto term;
 
 			g_path_dlg_wav = new pxwPathDialog();
 			if( !g_path_dlg_wav->init( _app_file_profile,
-				_T("wav {*.wav}\0*.wav\0All files {*.*}\0*.*\0\0"),
-				_T("wav"     ),
-				_T("ptv-wav.path"),
-				_T("Save wav file"), _T("Load wav file"), NULL ) ) goto term;
+									   _T("wav {*.wav}\0*.wav\0All files {*.*}\0*.*\0\0"),
+									   _T("wav"     ),
+									   _T("ptv-wav.path"),
+									   _T("Save wav file"), _T("Load wav file"), NULL ) ) goto term;
 
 			if( Japanese_Is() ){ title_save = _title_oput_txt_j; }
 			else               { title_save = _title_oput_txt_e; }
 
 			g_path_dlg_txt = new pxwPathDialog();
 			if( !g_path_dlg_txt->init( _app_file_profile,
-				_T("text[*.txt}\0*.txt\0All files {*.*}\0*.*\0\0"),
-				_T("txt"     ),
-				_T("ptv-txt.path"),
-				title_save, title_load, NULL ) ) goto term;
+									   _T("text[*.txt}\0*.txt\0All files {*.*}\0*.*\0\0"),
+									   _T("txt"     ),
+									   _T("ptv-txt.path"),
+									   title_save, title_load, NULL ) ) goto term;
 		}
 
 		g_alte = new pxwAlteration(); g_alte->set_window( g_hWnd_Main );

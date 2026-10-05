@@ -70,7 +70,7 @@ int32_t pxPalette::find_or_add_color( uint32_t rgba )
 bool pxPalette::get_color( int32_t idx, int32_t* p_r, int32_t* p_g, int32_t* p_b, int32_t* p_a ) const
 {
 	if( !_tbl || idx < 0 || idx >= _num ) return false;
-	uint32_t w = _tbl[ idx ];		
+	uint32_t w = _tbl[ idx ];
 	if( p_r ) *p_r = ( (w&0x000000ff) >>  0 );
 	if( p_g ) *p_g = ( (w&0x0000ff00) >>  8 );
 	if( p_b ) *p_b = ( (w&0x00ff0000) >> 16 );

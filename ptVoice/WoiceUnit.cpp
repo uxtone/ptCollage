@@ -204,7 +204,7 @@ static bool _copy_voice( pxtnVOICEUNIT* p_dst, const pxtnVOICEUNIT* p_src )
 	p_dst->basic_key         = p_src->basic_key        ;
 	p_dst->pan               = p_src->pan              ;
 	p_dst->volume            = p_src->volume           ;
-								   
+
 	p_dst->envelope.fps      = p_src->envelope.fps     ;
 	p_dst->envelope.head_num = p_src->envelope.head_num;
 	p_dst->envelope.body_num = p_src->envelope.body_num;
@@ -214,9 +214,9 @@ static bool _copy_voice( pxtnVOICEUNIT* p_dst, const pxtnVOICEUNIT* p_src )
 	for( int i = 0; i < ptvFIXNUM_WAVE_POINT; i++ ) p_dst->wave    .points[ i ] = p_src->wave    .points[ i ];
 	for( int i = 0; i < ptvFIXNUM_ENVE_POINT; i++ ) p_dst->envelope.points[ i ] = p_src->envelope.points[ i ];
 
-	 p_dst->p_pcm->copy_from( p_src->p_pcm ); // pcm isn't used on this version.
+	p_dst->p_pcm->copy_from( p_src->p_pcm ); // pcm isn't used on this version.
 
-	 return true;
+	return true;
 }
 
 bool WoiceUnit::copy_ptv_voice( int32_t src_idx, int32_t dst_idx )

@@ -36,7 +36,7 @@ bool Tune_LoadAndPlay( HWND hwnd, const TCHAR *path )
 
 	FILE* fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
 	res = g_pxtn->read( fp );
-	if( res != pxtnOK )goto term;
+	if( res != pxtnOK ) goto term;
 	fclose( fp ); fp = NULL;
 
 	res = g_pxtn->tones_ready();
@@ -91,7 +91,7 @@ bool Tune_IsComment()
 
 typedef struct
 {
-    const char *title  ;
+	const char *title  ;
 	char *comment;
 	HWND hwnd;
 }

@@ -6,4 +6,4 @@
 ADDUNITSTRUCT;
 
 INT_PTR CALLBACK
-	dlg_AddUnit( HWND hDlg, UINT msg, WPARAM w, LPARAM l );
+dlg_AddUnit( HWND hDlg, UINT msg, WPARAM w, LPARAM l );

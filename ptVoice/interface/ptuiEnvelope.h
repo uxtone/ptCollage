@@ -19,42 +19,42 @@ class ptuiEnvelope: public ptuiMap
 {
 private:
 
-	bool           _b_init;
-	WoiceUnit*     _woice ;
-	if_gen_Scroll* _scrl_h;
+bool           _b_init;
+WoiceUnit*     _woice ;
+if_gen_Scroll* _scrl_h;
 
-	void _pos_make        ( int32_t *px, int32_t *py, int32_t cur_x, int32_t cur_y ) const;
-						  
-	bool _point_search    ( const ptuiCursor* p_cur, int32_t* p_idx ) const;
-	bool _point_add       ( const ptuiCursor* p_cur, int32_t* p_idx );
-	bool _point_drag      ( const ptuiCursor* p_cur );
+void _pos_make        ( int32_t *px, int32_t *py, int32_t cur_x, int32_t cur_y ) const;
 
-	bool _point_get       ( int32_t idx, int32_t* px, int32_t* py ) const;
-	bool _point_set       ( int32_t idx, int32_t   x, int32_t   y );
-	bool _point_delete    ( int32_t idx );
+bool _point_search    ( const ptuiCursor* p_cur, int32_t* p_idx ) const;
+bool _point_add       ( const ptuiCursor* p_cur, int32_t* p_idx );
+bool _point_drag      ( const ptuiCursor* p_cur );
 
-	bool _proc_begin_sub  () override;
-	bool _cursor_free     (       ptuiCursor* p_cur ) override;
-	bool _cursor_drag_unit(       ptuiCursor* p_cur ) override;
-	bool _cursor_scroll_h (       ptuiCursor* p_cur ) override;
+bool _point_get       ( int32_t idx, int32_t* px, int32_t* py ) const;
+bool _point_set       ( int32_t idx, int32_t   x, int32_t   y );
+bool _point_delete    ( int32_t idx );
 
-	bool _keyctrl_move    ( int32_t idx, int32_t mv_x, int32_t mv_y ) override;
-	bool _keyctrl_tab     ( bool b_back                             ) override;
+bool _proc_begin_sub  () override;
+bool _cursor_free     (       ptuiCursor* p_cur ) override;
+bool _cursor_drag_unit(       ptuiCursor* p_cur ) override;
+bool _cursor_scroll_h (       ptuiCursor* p_cur ) override;
 
-	bool _try_update      (                         )       override;
-	void _put             ( const ptuiCursor* p_cur ) const override;
+bool _keyctrl_move    ( int32_t idx, int32_t mv_x, int32_t mv_y ) override;
+bool _keyctrl_tab     ( bool b_back                             ) override;
 
-	void _release();
+bool _try_update      (                         )       override;
+void _put             ( const ptuiCursor* p_cur ) const override;
+
+void _release();
 
 
-	void _put_time_value() const;
+void _put_time_value() const;
 
 public:
 
-	 ptuiEnvelope();
-	~ptuiEnvelope();
+ptuiEnvelope();
+~ptuiEnvelope();
 
-	bool init( WoiceUnit* woice );
+bool init( WoiceUnit* woice );
 };
 
 #endif

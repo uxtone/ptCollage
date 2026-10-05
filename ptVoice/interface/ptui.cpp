@@ -135,7 +135,7 @@ bool ptui::_cursor_scroll_v( ptuiCursor* p_cur )
 
 bool ptui::show_set( bool b )
 {
-	if( !_b_base_init )return false;
+	if( !_b_base_init ) return false;
 	_b_show = b;
 	return true;
 }

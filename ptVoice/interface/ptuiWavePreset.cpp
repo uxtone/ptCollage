@@ -167,14 +167,14 @@ void ptuiWavePreset::_put( const ptuiCursor *p_cur ) const
 
 static int32_t _Random( int32_t min, int32_t max )
 {
-    int32_t    range = max - min + 1;
+	int32_t    range = max - min + 1;
 	SYSTEMTIME st    = { 0 };
 
 	GetLocalTime( &st );
-	
+
 	for( int a = 0; a < st.wSecond%10; a++ ) rand();
 
-    return( ( rand() % range ) + min );
+	return( ( rand() % range ) + min );
 }
 
 bool ptuiWavePreset::_module_overtone ( pxtnVOICEUNIT *p_vc, ptvWAVEPRESET index )
@@ -330,7 +330,7 @@ void ptuiWavePreset::_do_preset( ptvWAVEPRESET index )
 	pxtnVOICEUNIT *p_vc = _woice->get_voice();
 
 	if( !p_vc ) return;
-	
+
 	switch( p_vc->type )
 	{
 	case pxtnVOICE_Coodinate: _module_coodinate( p_vc, index ); break;

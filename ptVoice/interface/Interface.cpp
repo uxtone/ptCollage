@@ -43,16 +43,16 @@ void Interface::_release()
 	SAFE_DELETE( _rack_1    );
 	SAFE_DELETE( _rack_1_wa );
 	SAFE_DELETE( _rack_1_en );
-						    
+
 	SAFE_DELETE( _wavetbl   );
 	SAFE_DELETE( _wavehead  );
 	SAFE_DELETE( _sines     );
 	SAFE_DELETE( _wavepre   );
-						    
+
 	SAFE_DELETE( _envehead  );
 	SAFE_DELETE( _envetbl   );
 	SAFE_DELETE( _rlstime   );
-						    
+
 	SAFE_DELETE( _organkey  );
 	SAFE_DELETE( _velocity  );
 }
@@ -81,7 +81,7 @@ bool Interface::init()
 
 	_header    = new ptuiHeader     (); if( !_header   ->init( g_vunit    ) ) goto term; _ptuis[ _ptui_num ] = _header   ; _ptui_num++;
 	_worktemp  = new ptuiWorkTemp   (); if( !_worktemp ->init(            ) ) goto term; _ptuis[ _ptui_num ] = _worktemp ; _ptui_num++;
-			   												 															 
+
 	_organkey  = new ptuiOrganKey   (); if( !_organkey ->init( g_vunit    ) ) goto term; _ptuis[ _ptui_num ] = _organkey ; _ptui_num++;
 	_velocity  = new ptuiVelocity   (); if( !_velocity ->init(            ) ) goto term; _ptuis[ _ptui_num ] = _velocity ; _ptui_num++;
 
@@ -130,7 +130,7 @@ static void _GetMousePointer( HWND hWnd, float *x, float *y )
 {
 	POINT pt;
 	GetCursorPos  ( &pt );
-	ScreenToClient( hWnd, &pt );	
+	ScreenToClient( hWnd, &pt );
 	*x = (float)pt.x / g_dxdraw->get_screen_mag();
 	*y = (float)pt.y / g_dxdraw->get_screen_mag();
 }

@@ -57,36 +57,36 @@ pxNOISEDESIGN_UNIT;
 class pxtnPulse_Noise: public pxtnData
 {
 private:
-	void operator = (const pxtnPulse_Noise& src){}
-	pxtnPulse_Noise (const pxtnPulse_Noise& src){}
+void operator = (const pxtnPulse_Noise& src){}
+pxtnPulse_Noise (const pxtnPulse_Noise& src){}
 
-	int32_t             _smp_num_44k;
-	int32_t             _unit_num   ;
-	pxNOISEDESIGN_UNIT* _units      ;
+int32_t             _smp_num_44k;
+int32_t             _unit_num   ;
+pxNOISEDESIGN_UNIT* _units      ;
 
-	bool     _WriteOscillator( const pxNOISEDESIGN_OSCILLATOR *p_osc, void* desc, int32_t *p_add ) const;
-	pxtnERR  _ReadOscillator ( pxNOISEDESIGN_OSCILLATOR *p_osc, void* desc );
-	uint32_t _MakeFlags      ( const pxNOISEDESIGN_UNIT *pU ) const;
+bool     _WriteOscillator( const pxNOISEDESIGN_OSCILLATOR *p_osc, void* desc, int32_t *p_add ) const;
+pxtnERR  _ReadOscillator ( pxNOISEDESIGN_OSCILLATOR *p_osc, void* desc );
+uint32_t _MakeFlags      ( const pxNOISEDESIGN_UNIT *pU ) const;
 
 public:
-	 pxtnPulse_Noise    ( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
-	~pxtnPulse_Noise    ();
+pxtnPulse_Noise    ( pxtnIO_r io_read, pxtnIO_w io_write, pxtnIO_seek io_seek, pxtnIO_pos io_pos );
+~pxtnPulse_Noise    ();
 
-	bool    write       ( void* desc, int32_t *p_add ) const;
-	pxtnERR read        ( void* desc );
-					    
-	void Release        ( );
-	bool Allocate       ( int32_t unit_num, int32_t envelope_num );
-	bool copy_from      ( const pxtnPulse_Noise *src );
-	int32_t Compare     ( const pxtnPulse_Noise *src ) const;
-	void Fix();
+bool    write       ( void* desc, int32_t *p_add ) const;
+pxtnERR read        ( void* desc );
 
-	void set_smp_num_44k( int32_t num );
+void Release        ( );
+bool Allocate       ( int32_t unit_num, int32_t envelope_num );
+bool copy_from      ( const pxtnPulse_Noise *src );
+int32_t Compare     ( const pxtnPulse_Noise *src ) const;
+void Fix();
 
-	int32_t get_unit_num   () const;
-	int32_t get_smp_num_44k() const;
-	float   get_sec        () const;
-	pxNOISEDESIGN_UNIT *get_unit( int32_t u );
+void set_smp_num_44k( int32_t num );
+
+int32_t get_unit_num   () const;
+int32_t get_smp_num_44k() const;
+float   get_sec        () const;
+pxNOISEDESIGN_UNIT *get_unit( int32_t u );
 };
 
 #endif

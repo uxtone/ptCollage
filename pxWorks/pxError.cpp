@@ -62,25 +62,25 @@ static void _set_date()
 
 	GetLocalTime( &_st );
 	sprintf( _str_date, "%04d/%02d/%02d,%02d:%02d:%02d",
-				 _st.wYear , _st.wMonth , _st.wDay,
-				 _st.wHour , _st.wMinute, _st.wSecond );
+			 _st.wYear , _st.wMonth , _st.wDay,
+			 _st.wHour , _st.wMinute, _st.wSecond );
 
 #elif defined pxSCE
 
-    time_t longtime;
-    longtime = time(NULL);
-    localtime_s( &longtime, &_t );
+	time_t longtime;
+	longtime = time(NULL);
+	localtime_s( &longtime, &_t );
 	sprintf( _str_date, "%04d/%02d/%02d,%02d:%02d:%02d",
-			_t.tm_year + 1900, _t.tm_mon + 1, _t.tm_mday,
-			_t.tm_hour       , _t.tm_min    , _t.tm_sec );
+			 _t.tm_year + 1900, _t.tm_mon + 1, _t.tm_mday,
+			 _t.tm_hour       , _t.tm_min    , _t.tm_sec );
 
-#else	
+#else
 	time_t    tt;
 	time(    &tt );
 	localtime_r( &tt, &_t );
 	sprintf( _str_date, "%04d/%02d/%02d,%02d:%02d:%02d",
-			_t.tm_year + 1900, _t.tm_mon + 1, _t.tm_mday,
-			_t.tm_hour       , _t.tm_min    , _t.tm_sec );
+			 _t.tm_year + 1900, _t.tm_mon + 1, _t.tm_mday,
+			 _t.tm_hour       , _t.tm_min    , _t.tm_sec );
 #endif
 }
 
@@ -94,7 +94,7 @@ bool pxerr( const char *fmt, ... )
 {
 	if( !_buf  ) return false;
 	if( _b_err ) return false;
-	
+
 	_set_date();
 
 	va_list ap; va_start( ap, fmt ); vsprintf    ( _buf,                 fmt, ap ); va_end( ap );
@@ -107,7 +107,7 @@ bool pxerr_t( const char* text1, const TCHAR* text_t )
 {
 	if( !_buf  ) return false;
 	if( _b_err ) return false;
-	
+
 	_set_date();
 
 	strcpy( _buf, text1 );

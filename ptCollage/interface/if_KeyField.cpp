@@ -176,7 +176,7 @@ static void _PutKeyEvent2( int32_t u, bool bActive )
 	fRECT     rc    ;
 	int32_t   y_now ;
 	int32_t   y_next;
-	int32_t   depth = 2; // 0: key 1:on 2:off 
+	int32_t   depth = 2; // 0: key 1:on 2:off
 	int32_t   x_head;
 	int32_t   x_tail;
 
@@ -199,7 +199,7 @@ static void _PutKeyEvent2( int32_t u, bool bActive )
 			rc.b = y_now;
 
 			x_head    = p_eve->clock * _beat_w / _beat_clock;
-			
+
 			// ON 区間
 			if( x_head >= x_tail )
 			{
@@ -300,7 +300,7 @@ void if_KeyField_JustScroll()
 
 	// 表示領域を更新
 	if_KeyField_SetRect( NULL );
-	
+
 	if( int32_t eve_num = if_BaseField_Event_get_View_KeyField( u, &p_eve ) )
 	{
 		for( int32_t e = 0; e < eve_num; e++, p_eve++ )

@@ -307,7 +307,7 @@ bool pxFile2_delete( const TCHAR *path )
 #ifdef pxPLATFORM_windows
 	return pxwFile_delete( path );
 #elif defined pxPLATFORM_iOS
-    return false;
+	return false;
 #elif defined pxSCE
 	return false;
 #else
@@ -317,15 +317,15 @@ bool pxFile2_delete( const TCHAR *path )
 
 bool pxFile2_get_size( FILE* fp, int32_t* p_size )
 {
-    if( !fp || !p_size ) return false;
+	if( !fp || !p_size ) return false;
 
 	long t = ftell( fp );
 	fpos_t sz;
 
 	fseek  ( fp, 0, SEEK_END );
-    fgetpos( fp, &sz );
+	fgetpos( fp, &sz );
 
-    *p_size = pxFPOS_OFFSET(sz);
-    fseek  ( fp, t, SEEK_SET );
+	*p_size = pxFPOS_OFFSET(sz);
+	fseek  ( fp, t, SEEK_SET );
 	return true;
 }

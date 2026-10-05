@@ -61,7 +61,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 		g_cursor.action = 1;
 	else if( KeyControl_IsClickRightTrigger() )
 		g_cursor.action = 2;
-	
+
 	return true;
 }
 

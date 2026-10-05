@@ -73,7 +73,7 @@ int pxStr_csv_ReadAlloc( const char *p_src, char **pp_dst, int size_dst, unsigne
 {
 	const char *p  = p_src;
 	int        len =     0;
-	
+
 	while( len < size_dst )
 	{
 		if( pxStr_sjis_is_2byte( *p ) ){ len++; p++; }
@@ -84,7 +84,7 @@ int pxStr_csv_ReadAlloc( const char *p_src, char **pp_dst, int size_dst, unsigne
 	if( !(  *pp_dst = (char*)malloc( len + 1 ) ) ) return 0;
 	memcpy( *pp_dst, p_src, len );
 	*( *pp_dst + len ) = 0;
-	
+
 	return len;
 }
 
@@ -92,7 +92,7 @@ int pxStr_csv_Read( const char *p_src, char *p_dst, int size_dst, unsigned char 
 {
 	const char *p  = p_src;
 	int        len =     0;
-	
+
 	while( len < size_dst )
 	{
 		if( pxStr_sjis_is_2byte( *p ) ){ len++; p++; }
@@ -108,10 +108,12 @@ int pxStr_csv_Read( const char *p_src, char *p_dst, int size_dst, unsigned char 
 bool pxStr_copy_allocate( char** p_dst, const char *str )
 {
 	if( !str ) {
-		pxerr( "** pxSTR-z **" ); return false; }
+		pxerr( "** pxSTR-z **" ); return false;
+	}
 	int  buf_size = strlen( str ) + 1;
 	if( !(*p_dst = (char*)malloc( buf_size ) ) ){
-		pxerr( "** pxSTR **" ); return false; }
+		pxerr( "** pxSTR **" ); return false;
+	}
 	if( buf_size > 1 ) memcpy( *p_dst, str, buf_size );
 	else               *p_dst = 0;
 	return true;

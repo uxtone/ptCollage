@@ -128,41 +128,41 @@ enum_WoiceMenu if_Menu_Woice_GetMenu( float x, float y )
 		y >= _menu.y + _BUTTON_CHANGE_Y                  &&
 		y <  _menu.y + _BUTTON_CHANGE_Y + _BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_WoiceMenu_Change;
+		_menu.menu = enum_WoiceMenu_Change;
 
 	}
-	else if( 
+	else if(
 		x >= _menu.x + _BUTTON_EDIT_X                  &&
 		x <  _menu.x + _BUTTON_EDIT_X + _BUTTON_WIDTH  &&
 		y >= _menu.y + _BUTTON_EDIT_Y                  &&
 		y <  _menu.y + _BUTTON_EDIT_Y + _BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_WoiceMenu_Edit;
+		_menu.menu = enum_WoiceMenu_Edit;
 
 	}
-	else if( 
+	else if(
 		x >= _menu.x + _BUTTON_REMOVE_X                  &&
 		x <  _menu.x + _BUTTON_REMOVE_X + _BUTTON_WIDTH  &&
 		y >= _menu.y + _BUTTON_REMOVE_Y                  &&
 		y <  _menu.y + _BUTTON_REMOVE_Y + _BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_WoiceMenu_Remove;
+		_menu.menu = enum_WoiceMenu_Remove;
 
 	}
-	else if( 
+	else if(
 		x >= _menu.x + _BUTTON_EXPORT_X                  &&
 		x <  _menu.x + _BUTTON_EXPORT_X + _BUTTON_WIDTH  &&
 		y >= _menu.y + _BUTTON_EXPORT_Y                  &&
 		y <  _menu.y + _BUTTON_EXPORT_Y + _BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_WoiceMenu_Export;
+		_menu.menu = enum_WoiceMenu_Export;
 
 	}
 	else
 	{
 		_menu.menu = enum_WoiceMenu_None;
 	}
-	return 	_menu.menu;
+	return	_menu.menu;
 }
 
 void if_Menu_Woice_Put()

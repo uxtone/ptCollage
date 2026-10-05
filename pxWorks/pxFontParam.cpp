@@ -15,9 +15,9 @@ pxFontParam::pxFontParam()
 	font_name  = NULL;
 	table_file = NULL;
 	flags      =    0;
-	
+
 	height     =   16;
-	
+
 	grid_w     =   16;
 	grid_h     =   16;
 	width_byte =    8;
@@ -25,7 +25,7 @@ pxFontParam::pxFontParam()
 	width_mwMW =    8;
 	interval_x =    1;
 	interval_y =    4;
-	
+
 	color_R    = 0xff;
 	color_G    = 0xff;
 	color_B    = 0xff;

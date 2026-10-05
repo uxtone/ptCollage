@@ -21,7 +21,7 @@
 
 
 void    if_Copier_AllCheck     ();
-	    
+
 void    if_Copier_init         ( HWND hWnd, const pxFile2* file_profile );
 bool    if_Copier_SavePosition ();
 void    if_Copier_SetPosition  ( float x,   float y   );

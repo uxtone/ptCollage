@@ -102,7 +102,7 @@ void *pxwFile_open( const TCHAR *dir_name, const TCHAR *name, const TCHAR *mode,
 
 	if( !_path_dir_master_base )
 	{
-        if( dir_name ) _stprintf_s( path, MAX_PATH, _T("%s\\%s\\%s"), _path_dir_master_base, dir_name, name );
+		if( dir_name ) _stprintf_s( path, MAX_PATH, _T("%s\\%s\\%s"), _path_dir_master_base, dir_name, name );
 		else           _stprintf_s( path, MAX_PATH, _T("%s\\%s"    ), _path_dir_master_base,           name );
 		if( ret = pxwFile_open_by_path( path, mode, p_size ) ) return ret;
 	}

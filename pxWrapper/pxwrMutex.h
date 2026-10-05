@@ -6,16 +6,16 @@
 class pxwrMutex
 {
 private:
-	void *_mtx;
+void *_mtx;
 
-public :
-	 pxwrMutex();
-	~pxwrMutex();
+public:
+pxwrMutex();
+~pxwrMutex();
 
-	bool init   ();
-	void lock   ();
-	bool trylock();
-	void unlock ();
+bool init   ();
+void lock   ();
+bool trylock();
+void unlock ();
 };
 
 #endif

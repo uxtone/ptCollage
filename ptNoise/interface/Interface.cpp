@@ -32,7 +32,7 @@ static void _GetMousePointer( HWND hWnd, float* p_cur_x, float* p_cur_y )
 
 	GetCursorPos  ( &pt );
 	ScreenToClient( hWnd, &pt );
-	
+
 	*p_cur_x = (float)pt.x / g_dxdraw->get_screen_mag();
 	*p_cur_y = (float)pt.y / g_dxdraw->get_screen_mag();
 }
@@ -128,7 +128,7 @@ void Interface_Process( HWND hWnd, bool bDraw )
 
 bool Interface_init( HWND hWnd, const pxFile2* file_profile )
 {
-	g_ScrlPCM_H.Initialize( g_dxdraw, SURF_PARTS, false ); 
+	g_ScrlPCM_H.Initialize( g_dxdraw, SURF_PARTS, false );
 
 	if_Cursor_Initialize  ( );
 	if_PcmTable_Initialize( );

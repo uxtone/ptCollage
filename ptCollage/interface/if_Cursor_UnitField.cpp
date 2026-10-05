@@ -25,7 +25,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 	int32_t beat_w;
 	int32_t offset_x;
 	int32_t offset_y;
-		
+
 	int32_t unit_num;
 	int32_t u;
 	fRECT*  p_field_rect;
@@ -94,11 +94,11 @@ static bool _Action_Drag( float cur_x, float cur_y, bool bDelete )
 	int32_t clock1, clock2;
 
 	if( if_Cursor_DragAction( cur_x, cur_y, &clock1, &clock2 ) ){
-	
+
 		int32_t           count = 0;
 		unsigned char  u = (unsigned char)g_cursor.tgt_id;
 
-        // アンドゥ
+		// アンドゥ
 		UndoEvent_SetOrderClock( clock1, clock2 );
 		UndoEvent_SetOrderUnit( u          );
 		UndoEvent_Push( true );

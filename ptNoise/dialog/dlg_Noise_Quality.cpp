@@ -19,8 +19,8 @@ static void _SetParameter( HWND hDlg, SAMPLINGQUALITY *p_c )
 {
 
 	ptConfig_cmb_quality_set( hDlg,
-		IDC_COMBO_CHANNEL, p_c->ch ,
-		IDC_COMBO_SPS    , p_c->sps );
+							  IDC_COMBO_CHANNEL, p_c->ch ,
+							  IDC_COMBO_SPS    , p_c->sps );
 }
 
 static bool _GetInputParameter( HWND hDlg, SAMPLINGQUALITY *p_c )
@@ -28,8 +28,8 @@ static bool _GetInputParameter( HWND hDlg, SAMPLINGQUALITY *p_c )
 	memset( p_c, 0, sizeof(SAMPLINGQUALITY) );
 
 	ptConfig_cmb_quality_get( hDlg,
-		IDC_COMBO_CHANNEL, &p_c->ch ,
-		IDC_COMBO_SPS    , &p_c->sps );
+							  IDC_COMBO_CHANNEL, &p_c->ch ,
+							  IDC_COMBO_SPS    , &p_c->sps );
 
 	return true;
 }
@@ -61,15 +61,15 @@ dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 
 		switch( LOWORD( w ) ){
 		case IDOK:
+		{
+			SAMPLINGQUALITY config;
+			if( _GetInputParameter( hDlg, &config ) )
 			{
-				SAMPLINGQUALITY config;
-				if( _GetInputParameter( hDlg, &config ) )
-				{
-					*_p_config = config;
-					EndDialog( hDlg, true );
-				}
+				*_p_config = config;
+				EndDialog( hDlg, true );
 			}
-			break;
+		}
+		break;
 
 		case IDCANCEL:
 			_bInit = false;
@@ -77,17 +77,17 @@ dlg_NoiseDesign_Quality( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 
 		case IDC_DEFAULT:
-			{
-				SAMPLINGQUALITY config;
-				NoiseTable_SetDefaultQuality( &config );
-				_SetParameter( hDlg,          &config );
-			}
-			break;
+		{
+			SAMPLINGQUALITY config;
+			NoiseTable_SetDefaultQuality( &config );
+			_SetParameter( hDlg,          &config );
+		}
+		break;
 
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

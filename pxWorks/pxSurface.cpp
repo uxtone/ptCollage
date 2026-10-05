@@ -301,8 +301,8 @@ bool pxSurface::blt_rgba(
 	if( dst_y < 0 ){ rc_s.b -= dst_y; dst_y = 0; }
 
 	{
-		int32_t over_x = ( dst_x + rc_s.w() ) - _w; if( over_x > 0 ) rc_s.r -= over_x; 
-		int32_t over_y = ( dst_y + rc_s.h() ) - _h; if( over_y > 0 ) rc_s.b -= over_y; 
+		int32_t over_x = ( dst_x + rc_s.w() ) - _w; if( over_x > 0 ) rc_s.r -= over_x;
+		int32_t over_y = ( dst_y + rc_s.h() ) - _h; if( over_y > 0 ) rc_s.b -= over_y;
 	}
 
 	if( rc_s.w() <= 0 ) return false;
@@ -328,74 +328,74 @@ bool pxSurface::blt_rgba(
 		break;
 
 	case pxALPHABLEND_zero:
+	{
+		uint32_t        uv        =     0;
+		for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
 		{
-			uint32_t        uv        =     0;
-			for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
+			p_s = p_src_row;
+			p_d = p_dst_row;
+			for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
 			{
-				p_s = p_src_row;
-				p_d = p_dst_row;
-				for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
-				{
-					uv = *p_s;
-					if( uv & 0xff000000 ) *p_d = uv;
-				}
-				p_src_row += src_rgba->_w;
-				p_dst_row +=           _w;
+				uv = *p_s;
+				if( uv & 0xff000000 ) *p_d = uv;
 			}
+			p_src_row += src_rgba->_w;
+			p_dst_row +=           _w;
 		}
-		break;
+	}
+	break;
 
 	case pxALPHABLEND_to_white:
+	{
+		int32_t work_s = 0;
+		int32_t work_a = 0;
+		int32_t r, g, b;
+		for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
 		{
-			int32_t work_s = 0;
-			int32_t work_a = 0;
-			int32_t r, g, b;
-			for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
+			p_s = p_src_row;
+			p_d = p_dst_row;
+			for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
 			{
-				p_s = p_src_row;
-				p_d = p_dst_row;
-				for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
-				{
-					work_a = (*p_s & 0xff000000) >> 24;
-					b      = (*p_d & 0x00ff0000) >> 16; work_s = (*p_s & 0x00ff0000) >> 16; b += work_s * work_a / 0xff; if( b > 0xff ) b = 0xff;
-					g      = (*p_d & 0x0000ff00) >>  8; work_s = (*p_s & 0x0000ff00) >>  8; g += work_s * work_a / 0xff; if( g > 0xff ) g = 0xff;
-					r      = (*p_d & 0x000000ff) >>  0; work_s = (*p_s & 0x000000ff) >>  0; r += work_s * work_a / 0xff; if( r > 0xff ) r = 0xff;
-					*p_d   = (*p_d & 0xff000000) + (b<<16) + (g<<8) + (r<<0);
-				}
-				p_src_row += src_rgba->_w;
-				p_dst_row +=           _w;
+				work_a = (*p_s & 0xff000000) >> 24;
+				b      = (*p_d & 0x00ff0000) >> 16; work_s = (*p_s & 0x00ff0000) >> 16; b += work_s * work_a / 0xff; if( b > 0xff ) b = 0xff;
+				g      = (*p_d & 0x0000ff00) >>  8; work_s = (*p_s & 0x0000ff00) >>  8; g += work_s * work_a / 0xff; if( g > 0xff ) g = 0xff;
+				r      = (*p_d & 0x000000ff) >>  0; work_s = (*p_s & 0x000000ff) >>  0; r += work_s * work_a / 0xff; if( r > 0xff ) r = 0xff;
+				*p_d   = (*p_d & 0xff000000) + (b<<16) + (g<<8) + (r<<0);
 			}
+			p_src_row += src_rgba->_w;
+			p_dst_row +=           _w;
 		}
-		break;
+	}
+	break;
 
 	case pxALPHABLEND_middle:
-		{
-			int32_t s_a;
-			int32_t r, g, b;
-			int32_t work_s;
+	{
+		int32_t s_a;
+		int32_t r, g, b;
+		int32_t work_s;
 
-			for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
+		for( int src_y = rc_s.t; src_y < rc_s.b; src_y++ )
+		{
+			p_s = p_src_row;
+			p_d = p_dst_row;
+			for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
 			{
-				p_s = p_src_row;
-				p_d = p_dst_row;
-				for( int src_x = rc_s.l; src_x < rc_s.r; src_x++, p_s++, p_d++ )
+				s_a    = (*p_s & 0xff000000) >> 24;
+				if     ( s_a == 0xff ) *p_d = *p_s;
+				else if( s_a == 0x00 ){}
+				else
 				{
-					s_a    = (*p_s & 0xff000000) >> 24;
-					if     ( s_a == 0xff ) *p_d = *p_s;
-					else if( s_a == 0x00 ){}
-					else
-					{
-						b      = (*p_d & 0x00ff0000) >> 16; work_s = (*p_s & 0x00ff0000) >> 16; b += (work_s - b) * s_a / 0xff; if( b > 0xff ) b = 0xff;
-						g      = (*p_d & 0x0000ff00) >>  8; work_s = (*p_s & 0x0000ff00) >>  8; g += (work_s - g) * s_a / 0xff; if( g > 0xff ) g = 0xff;
-						r      = (*p_d & 0x000000ff) >>  0; work_s = (*p_s & 0x000000ff) >>  0; r += (work_s - r) * s_a / 0xff; if( r > 0xff ) r = 0xff;
-						*p_d   = (*p_d & 0xff000000) + (b<<16) + (g<<8) + (r<<0);
-					}
+					b      = (*p_d & 0x00ff0000) >> 16; work_s = (*p_s & 0x00ff0000) >> 16; b += (work_s - b) * s_a / 0xff; if( b > 0xff ) b = 0xff;
+					g      = (*p_d & 0x0000ff00) >>  8; work_s = (*p_s & 0x0000ff00) >>  8; g += (work_s - g) * s_a / 0xff; if( g > 0xff ) g = 0xff;
+					r      = (*p_d & 0x000000ff) >>  0; work_s = (*p_s & 0x000000ff) >>  0; r += (work_s - r) * s_a / 0xff; if( r > 0xff ) r = 0xff;
+					*p_d   = (*p_d & 0xff000000) + (b<<16) + (g<<8) + (r<<0);
 				}
-				p_src_row += src_rgba->_w;
-				p_dst_row +=           _w;
 			}
+			p_src_row += src_rgba->_w;
+			p_dst_row +=           _w;
 		}
-		break;
+	}
+	break;
 	}
 
 	edit_unique_update();

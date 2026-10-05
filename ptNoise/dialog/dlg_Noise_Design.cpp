@@ -564,14 +564,14 @@ dlg_NoiseDesign_Design( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		switch(LOWORD(w))
 		{
 		case IDC_BUILD:
-			{
-				if( !_GetInputParameter( hDlg ) ) break;
-				_p_noise->Fix();
-				dlg_History_Push( _p_noise );
-				_SetParameter( hDlg, _u );
-				PcmTable_BuildAndPlay( _p_noise, &_quality );
-			}
-			break;
+		{
+			if( !_GetInputParameter( hDlg ) ) break;
+			_p_noise->Fix();
+			dlg_History_Push( _p_noise );
+			_SetParameter( hDlg, _u );
+			PcmTable_BuildAndPlay( _p_noise, &_quality );
+		}
+		break;
 
 		case IDCANCEL:
 			_b_init       = false;
@@ -580,19 +580,19 @@ dlg_NoiseDesign_Design( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			break;
 
 		case IDC_SAMPLENUM:
-	        if( _b_init && HIWORD( w ) == EN_CHANGE ) _UpdateSec( hDlg );
+			if( _b_init && HIWORD( w ) == EN_CHANGE ) _UpdateSec( hDlg );
 			break;
 
 		case IDC_CHECK_ENABLE:
-			{
-				TC_ITEM item;
-				memset( &item, 0, sizeof(TC_ITEM) );
-				item.mask       = TCIF_IMAGE;
-				item.iImage     = IsDlgButtonChecked( hDlg, IDC_CHECK_ENABLE ) ? 1 : 0;
-				SendDlgItemMessage( hDlg, IDC_TAB, TCM_SETITEM, _u, (LPARAM)&item );
-			}
+		{
+			TC_ITEM item;
+			memset( &item, 0, sizeof(TC_ITEM) );
+			item.mask       = TCIF_IMAGE;
+			item.iImage     = IsDlgButtonChecked( hDlg, IDC_CHECK_ENABLE ) ? 1 : 0;
+			SendDlgItemMessage( hDlg, IDC_TAB, TCM_SETITEM, _u, (LPARAM)&item );
+		}
 
-			break;
+		break;
 		case IDM_QUALITY_DIALOG: _IDM_QUALITY_DIALOG( hDlg        ); break;
 		case IDM_LOAD          : _IDM_LOAD(           hDlg        ); break;
 		case IDM_SAVE          : _IDM_SAVE(           hDlg, false ); break;
@@ -620,7 +620,7 @@ dlg_NoiseDesign_Design( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		pxwWindowRect_save( hDlg, _rect_name );
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

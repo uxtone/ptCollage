@@ -7,20 +7,20 @@ class pxMidiIn
 {
 private:
 
-	HMIDIIN _h;
-	int     _dev_id;
+HMIDIIN _h;
+int     _dev_id;
 
 
 public:
-	 pxMidiIn();
-	~pxMidiIn();
+pxMidiIn();
+~pxMidiIn();
 
-    bool Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func );
-	void Close();
+bool Open( const TCHAR *device_name, HWND hwnd, pxMIDIIN_CALLBACK func );
+void Close();
 
-	bool Input_Start();
-	bool Input_Stop ();
-	bool Input_Reset();
+bool Input_Start();
+bool Input_Stop ();
+bool Input_Reset();
 
 };
 

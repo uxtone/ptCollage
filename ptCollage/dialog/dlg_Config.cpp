@@ -46,18 +46,18 @@ static bool _PreviewFont( HWND hDlg )
 
 	if( _hFont ){ DeleteObject( _hFont ); _hFont = NULL; }
 	_hFont = CreateFont( 12, 0,
-		0,              // 角度
-		0,
-		FW_NORMAL,
-		false,          // Italic
-		false,          // Underline
-		false,          // StrikeOut
-		DEFAULT_CHARSET,
-		OUT_TT_PRECIS,
-		CLIP_DEFAULT_PRECIS,
-		DEFAULT_QUALITY,
-		FIXED_PITCH,
-		p );
+						 0,              // 角度
+						 0,
+						 FW_NORMAL,
+						 false,          // Italic
+						 false,          // Underline
+						 false,          // StrikeOut
+						 DEFAULT_CHARSET,
+						 OUT_TT_PRECIS,
+						 CLIP_DEFAULT_PRECIS,
+						 DEFAULT_QUALITY,
+						 FIXED_PITCH,
+						 p );
 
 	if( _hFont ) SendMessage( GetDlgItem( hDlg, IDC_FONTSAMPLE ), WM_SETFONT, (WPARAM)_hFont, true );
 
@@ -109,8 +109,8 @@ static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 	}
 
 	ptConfig_cmb_quality_set( hDlg,
-		IDC_COMBO_CHANNEL, p_c->strm->ch_num,
-		IDC_COMBO_SPS    , p_c->strm->sps   );
+							  IDC_COMBO_CHANNEL, p_c->strm->ch_num,
+							  IDC_COMBO_SPS    , p_c->strm->sps   );
 
 	// font..
 	{
@@ -147,8 +147,8 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 	}
 
 	ptConfig_cmb_quality_get( hDlg,
-		IDC_COMBO_CHANNEL, &p_c->strm->ch_num,
-		IDC_COMBO_SPS    , &p_c->strm->sps   );
+							  IDC_COMBO_CHANNEL, &p_c->strm->ch_num,
+							  IDC_COMBO_SPS    , &p_c->strm->sps   );
 
 	{
 		GetDlgItemText( hDlg, IDC_COMBO_FONT, p_c->font->name, BUFSIZE_FONTNAME );
@@ -224,7 +224,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

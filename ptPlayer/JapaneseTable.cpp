@@ -4,7 +4,7 @@
 #include "resource.h"
 
 
-JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] = 
+JAPANESETEXTSTRUCT_DLGITEM _DlgItem_table[] =
 {
 	{IDC_TEXT_ABOUTTITLE    , _T("≪このソフトウェアについて≫") },
 	{IDC_TEXT_CONFIGTITLE   , _T("≪環境設定≫"                ) },

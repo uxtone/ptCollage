@@ -133,7 +133,7 @@ static DWORD WINAPI _BuildThread( LPVOID lpParam )
 	{
 	case BUILDTUNESCOPE_TOPLAST:
 		sample_total = (uint32_t)( (double)sps * 60 * (double)(meas_num * beat_num) / (double)beat_tempo ) +
-			 sample_extrafade;
+			sample_extrafade;
 		break;
 	case BUILDTUNESCOPE_BYTIME:
 		sample_total = (int32_t)( p_build->sec_playtime * sps ) + sample_extrafade;
@@ -266,7 +266,7 @@ dlg_BuildProgress( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			EnableWindow( GetDlgItem( hDlg, IDCANCEL ), false );
 			break;
 		}
-		default:return false;
+	default: return false;
 
 	}
 	return true;

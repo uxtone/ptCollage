@@ -74,7 +74,7 @@ bool ptuiOrganKey::init( WoiceUnit* woice )
 	_scrl_v->SetSize  ( ORGANKEY_KEYHEIGHT * ptvORGANKEY_KEYNUM );
 	_scrl_v->SetMove  ( ORGANKEY_KEYHEIGHT, ORGANKEY_KEYHEIGHT  );
 	_scrl_v->SetOffset( ORGANKEY_KEYHEIGHT * 36 / 2  );
-	
+
 	if( !pxMem_zero_alloc( (void**)&_keys, sizeof(ptuiORGKEY) * _MAX_KEYTOUCH ) ) goto term;
 
 	for( int32_t k = 0; k < _MAX_KEYTOUCH; k++ ) _keys[ k ].code = _key_table[ k ];
@@ -117,7 +117,7 @@ bool ptuiOrganKey::key_proc( WoiceUnit* woice )
 			}
 		}
 	}
-	
+
 	return bDraw;
 }
 
@@ -169,7 +169,7 @@ void ptuiOrganKey::_put( const ptuiCursor* p_cur) const
 	int32_t offset_y = _scrl_v->GetOffset();
 	float   y        = 0;
 
-	fRECT rc_oct = {256,256,336,352}; 
+	fRECT rc_oct = {256,256,336,352};
 
 	if_gen_tile_v ( &_rect, &rc_oct, 1, offset_y, SURF_PARTS ); // keyboard.
 
@@ -227,7 +227,7 @@ void ptuiOrganKey::_put( const ptuiCursor* p_cur) const
 	{
 		g_dxdraw->tex_Put_Clip( _rect.l + 14, key * ORGANKEY_KEYHEIGHT - offset_y + _rect.t + 96 * i, &rcTouch[ i ], SURF_PARTS, &_rect );
 	}
-	
+
 	// 選択
 	if( _selected_octave != -1 )
 	{

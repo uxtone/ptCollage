@@ -236,33 +236,33 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 
 	if( !_woice->Voice_Allocate( 1 ) ) goto term;
 
-    static pxtnVOICEUNIT* p_vc;
-    p_vc    = _woice->get_voice_variable( 0 );//&p_w->p_vcs[ 0 ];
+	static pxtnVOICEUNIT* p_vc;
+	p_vc    = _woice->get_voice_variable( 0 );//&p_w->p_vcs[ 0 ];
 	p_vc->type = pxtnVOICE_OggVorbis;
 
-    static pxDescriptor *desc = nullptr;
+	static pxDescriptor *desc = nullptr;
 	{
-        static FILE* fp;
-        fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
+		static FILE* fp;
+		fp = _tfopen( path, _T("rb") ); if( !fp ) goto term;
 
-        if(desc != nullptr)
-            delete desc;
+		if(desc != nullptr)
+			delete desc;
 
-        desc = new pxDescriptor;
+		desc = new pxDescriptor;
 
-        desc->set_file_r( fp );
-        if( !desc->set_file_r( fp ) || p_vc->p_oggv->ogg_read( &desc ) != pxtnOK ) goto term;
+		desc->set_file_r( fp );
+		if( !desc->set_file_r( fp ) || p_vc->p_oggv->ogg_read( &desc ) != pxtnOK ) goto term;
 	}
 
 	p_name = PathFindFileName( path );
 
-    static int ch, smp_num, sps;
-    ch = {}; smp_num = {}; sps = {};
+	static int ch, smp_num, sps;
+	ch = {}; smp_num = {}; sps = {};
 
 	if( !p_vc->p_oggv->GetInfo( &ch, &sps, &smp_num ) ) goto term;
 
-    static float sec;
-    sec = (float)smp_num / (float)sps;
+	static float sec;
+	sec = (float)smp_num / (float)sps;
 	if( ch == 1 ) _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Mono\r\n %d Hz\r\n %0.2f sec"  ), p_name, sps, sec );
 	else          _stprintf_s( _status_text, MAX_PATH, _T("%s\r\n Stereo\r\n %d Hz\r\n %0.2f sec"), p_name, sps, sec );
 
@@ -286,8 +286,8 @@ bool pxtonewinWoice::_load_and_play_OGGV( const TCHAR* path, bool b_loop, int ke
 
 	b_ret = true;
 term:
-    if(desc)
-        delete desc;
+	if(desc)
+		delete desc;
 
 	return b_ret;
 }

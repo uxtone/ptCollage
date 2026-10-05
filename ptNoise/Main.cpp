@@ -106,20 +106,20 @@ void MainProc_set_file_profile( const pxFile2* file_profile );
 // ウインドウクラスの登録
 static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfnWndProc )
 {
-    WNDCLASSEX wc;
+	WNDCLASSEX wc;
 
 	memset( &wc, 0, sizeof(WNDCLASSEX) );
 
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.lpszClassName = class_name;
+	wc.cbSize        = sizeof(WNDCLASSEX);
+	wc.lpszClassName = class_name;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc   = lpfnWndProc;
-    wc.hInstance     = hInst;        //インスタンス
-    wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//(HBRUSH)(COLOR_APPWORKSPACE + 1);
-    wc.hIcon         = LoadIcon( hInst, _T("0") );
-    wc.hCursor       = LoadCursor( NULL, IDC_ARROW       );
+	wc.lpfnWndProc   = lpfnWndProc;
+	wc.hInstance     = hInst;        //インスタンス
+	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);//(HBRUSH)(COLOR_APPWORKSPACE + 1);
+	wc.hIcon         = LoadIcon( hInst, _T("0") );
+	wc.hCursor       = LoadCursor( NULL, IDC_ARROW       );
 
-    if( !RegisterClassEx( &wc ) ) return false;
+	if( !RegisterClassEx( &wc ) ) return false;
 
 	return true;
 }
@@ -185,7 +185,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l );
 
 pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 {
-    pxwRuntime runtime;
+	pxwRuntime runtime;
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
@@ -228,7 +228,7 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 	// window class..
 	if( !_RegistWindowClass( hInst, _class_name, WindowProc_Main ) ) goto term;
 
-    g_hMenu_Main = LoadMenu( hInst, _T("MENU_MAIN") );
+	g_hMenu_Main = LoadMenu( hInst, _T("MENU_MAIN") );
 
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
@@ -285,17 +285,17 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 		ptConfig cfg( _app_file_profile, ptnDEFAULT_SPS, ptnDEFAULT_CH_NUM, ptnDEFAULT_BUF_SEC );
 		cfg.load();
 
-        g_strm_xa2 = new pxtonewinXA2();
-        if( !g_strm_xa2->init( g_pxtn, pxtnMAX_STREAMINGVOICE, pxtnMAX_STREAMINGVOICE ) )
-        {
-            Japanese_MessageBox( NULL, _T("Streaming Init"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
-            goto term;
-        }
-        if( !g_strm_xa2->stream_start( cfg.strm->ch_num, cfg.strm->sps, cfg.strm->buf_sec ) )
-        {
-            Japanese_MessageBox( NULL, _T("Streaming Init"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
-            goto term;
-        }
+		g_strm_xa2 = new pxtonewinXA2();
+		if( !g_strm_xa2->init( g_pxtn, pxtnMAX_STREAMINGVOICE, pxtnMAX_STREAMINGVOICE ) )
+		{
+			Japanese_MessageBox( NULL, _T("Streaming Init"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			goto term;
+		}
+		if( !g_strm_xa2->stream_start( cfg.strm->ch_num, cfg.strm->sps, cfg.strm->buf_sec ) )
+		{
+			Japanese_MessageBox( NULL, _T("Streaming Init"), _T("error"), MB_OK|MB_ICONEXCLAMATION );
+			goto term;
+		}
 
 		g_strm_woi = new pxtonewinWoice();
 		if( !g_strm_woi->init( g_strm_xa2 ) )
@@ -314,20 +314,20 @@ pxwENTRY_POINT( hInst, hPrevInst, args, nWinMode )
 
 			g_path_dlg_ptn = new pxwPathDialog();
 			if( !g_path_dlg_ptn->init( _app_file_profile,
-				_T("ptnoise {*.ptnoise}\0*.ptnoise*\0All files {*.*}\0*.*\0\0"   ),
-				_T("ptnoise" ),
-				_T("ptn-ptn.path"),
-				title_save, title_load, NULL ) ) goto term;
+									   _T("ptnoise {*.ptnoise}\0*.ptnoise*\0All files {*.*}\0*.*\0\0"   ),
+									   _T("ptnoise" ),
+									   _T("ptn-ptn.path"),
+									   title_save, title_load, NULL ) ) goto term;
 
 			if( Japanese_Is() ){ title_save = _title_save_wav_j; title_load = _title_load_wav_j; }
 			else               { title_save = _title_save_wav_e; title_load = _title_load_wav_e; }
 
 			g_path_dlg_wav = new pxwPathDialog();
 			if( !g_path_dlg_wav->init( _app_file_profile,
-				_T("wav {*.wav}\0*.wav*\0") _T("All files {*.*}\0*.*\0\0"),
-				_T("wav"),
-				_T("ptn-wav.path"),
-				title_save, title_load, NULL ) ) goto term;
+									   _T("wav {*.wav}\0*.wav*\0") _T("All files {*.*}\0*.*\0\0"),
+									   _T("wav"),
+									   _T("ptn-wav.path"),
+									   title_save, title_load, NULL ) ) goto term;
 		}
 
 

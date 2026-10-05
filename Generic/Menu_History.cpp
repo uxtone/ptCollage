@@ -133,9 +133,9 @@ bool Menu_History_Save()
 		if( !GetMenuString( _hMenu, i, path, MAX_PATH, MF_BYPOSITION ) ) break;
 		pxMem_free( (void**)&p_dst );
 		#ifdef UNICODE
-		    if( !pxwUTF8_wide_to_utf8( path, &p_dst, NULL ) ) goto term;
+		if( !pxwUTF8_wide_to_utf8( path, &p_dst, NULL ) ) goto term;
 		#else
-			if( !pxwUTF8_sjis_to_utf8( path, &p_dst, NULL ) ) goto term;
+		if( !pxwUTF8_sjis_to_utf8( path, &p_dst, NULL ) ) goto term;
 		#endif
 
 		if( !desc->w_arg_asfile( "%s\r\n", p_dst ) ) goto term;

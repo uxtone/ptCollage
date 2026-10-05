@@ -36,7 +36,7 @@ bool ptConfig_MIDI::read( pxDescriptor *desc )
 {
 	bool b_ret    = false;
 	bool b_old    = false;
- 	char code[64] = { 0 };
+	char code[64] = { 0 };
 
 	if( !desc->r(  code, sizeof(char), _code_size ) ) goto End;
 	if( memcmp( code, _code,            _code_size     ) )

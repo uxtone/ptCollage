@@ -35,61 +35,61 @@ class ptui
 {
 private:
 
-	void operator = (const ptui& src){}
-	ptui            (const ptui& src){}
+void operator = (const ptui& src){}
+ptui            (const ptui& src){}
 
 protected:
 
-	bool       _b_base_init  ;
-	bool       _b_show       ;
+bool       _b_base_init  ;
+bool       _b_show       ;
 
-	int32_t    _id           ;
+int32_t    _id           ;
 
-	ptuiANCHOR _anchor       ;
-	fRECT      _rect         ;
+ptuiANCHOR _anchor       ;
+fRECT      _rect         ;
 
-	bool       _b_cur_on     ;
+bool       _b_cur_on     ;
 
-	int32_t    _ani_no_num   ;
-	int32_t*   _ani_nos      ;
+int32_t    _ani_no_num   ;
+int32_t*   _ani_nos      ;
 
-	int32_t    _cur_last_x   ;
-	int32_t    _cur_last_y   ;
-	int32_t    _drag_start_x ;
-	int32_t    _drag_start_y ;
+int32_t    _cur_last_x   ;
+int32_t    _cur_last_y   ;
+int32_t    _drag_start_x ;
+int32_t    _drag_start_y ;
 
-						    
-	bool _unit_anime_set( int32_t idx, int32_t no );
 
-	// override as needed
-	virtual bool _proc_begin_sub    ();
-	virtual bool _cursor_free       ( ptuiCursor* p_cur );
-	virtual bool _cursor_drag_unit  ( ptuiCursor* p_cur );
-	virtual bool _cursor_click_hold ( ptuiCursor* p_cur );
-	virtual bool _cursor_click_hold2( ptuiCursor* p_cur );
-	virtual bool _cursor_key_hold   ( ptuiCursor* p_cur );
-	virtual bool _cursor_keyboard   ( ptuiCursor* p_cur );
-	virtual bool _cursor_scroll_h   ( ptuiCursor* p_cur );
-	virtual bool _cursor_scroll_v   ( ptuiCursor* p_cur );
+bool _unit_anime_set( int32_t idx, int32_t no );
 
-	virtual void _put              ( const ptuiCursor* p_cur ) const = 0;
-	
-	bool _base_init   ( const ptuiANCHOR* p_anchor, int32_t ani_no_num );
-	void _base_release();
+    // override as needed
+virtual bool _proc_begin_sub    ();
+virtual bool _cursor_free       ( ptuiCursor* p_cur );
+virtual bool _cursor_drag_unit  ( ptuiCursor* p_cur );
+virtual bool _cursor_click_hold ( ptuiCursor* p_cur );
+virtual bool _cursor_click_hold2( ptuiCursor* p_cur );
+virtual bool _cursor_key_hold   ( ptuiCursor* p_cur );
+virtual bool _cursor_keyboard   ( ptuiCursor* p_cur );
+virtual bool _cursor_scroll_h   ( ptuiCursor* p_cur );
+virtual bool _cursor_scroll_v   ( ptuiCursor* p_cur );
+
+virtual void _put              ( const ptuiCursor* p_cur ) const = 0;
+
+bool _base_init   ( const ptuiANCHOR* p_anchor, int32_t ani_no_num );
+void _base_release();
 
 public:
 
-	ptui();
-	virtual ~ptui();
+ptui();
+virtual ~ptui();
 
-	bool check_on_map( const ptuiCursor* p_cur );
-	void proc_begin  ( const fRECT *rc_vw );
+bool check_on_map( const ptuiCursor* p_cur );
+void proc_begin  ( const fRECT *rc_vw );
 
-	bool cursor_action(       ptuiCursor* p_cur );
+bool cursor_action(       ptuiCursor* p_cur );
 
-	void put          ( const ptuiCursor* p_cur ) const;	 
+void put          ( const ptuiCursor* p_cur ) const;
 
-	bool show_set     ( bool b_show );
+bool show_set     ( bool b_show );
 };
 
 #endif

@@ -37,7 +37,7 @@ static bool _is_ignore_text( const TCHAR* p_t )
 }
 
 bool pxwTextOverride::_find_original_to_tt( pxTText* tt_ovr, const TCHAR* t_src )
-{ 
+{
 	bool        b_ret      = false;
 	char*       utf8_src   = NULL ;
 	int32_t     r          =     0;
@@ -45,9 +45,9 @@ bool pxwTextOverride::_find_original_to_tt( pxTText* tt_ovr, const TCHAR* t_src 
 
 	// -> utf8
 #ifdef UNICODE
-		if( !pxwUTF8_wide_to_utf8( t_src, &utf8_src, NULL ) ) goto term;
+	if( !pxwUTF8_wide_to_utf8( t_src, &utf8_src, NULL ) ) goto term;
 #else
-		if( !pxwUTF8_sjis_to_utf8( t_src, &utf8_src, NULL ) ) goto term;
+	if( !pxwUTF8_sjis_to_utf8( t_src, &utf8_src, NULL ) ) goto term;
 #endif
 
 	if( !_csv->find_value     ( &r, 0, utf8_src   ) ) goto term; // find
@@ -210,7 +210,7 @@ bool pxwTextOverride::_override_menu( HMENU hmenu )
 				{
 					if( _find_original_to_tt( &tt_dst, p_src ) )
 					{
-                        ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, (uintptr_t)h_sub, tt_dst.tchr() );
+						ModifyMenu( hmenu, i, MF_BYPOSITION|MFT_STRING, (uintptr_t)h_sub, tt_dst.tchr() );
 					}
 					_override_menu( h_sub ); // 再帰！！
 				}

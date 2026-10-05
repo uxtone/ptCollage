@@ -43,8 +43,8 @@ bool _EnableDialog( HWND hDlg )
 
 	if( !tt.set_TCHAR_to_sjis( buf_ctrl ) ) goto term;
 
-    static int32_t comment_size;
-    comment_size = 0;
+	static int32_t comment_size;
+	comment_size = 0;
 	pxShiftJIS_check_size( tt.sjis(), &comment_size, true );
 
 	if( !g_pxtn->text->set_comment_buf( tt.sjis(), comment_size ) ) goto term;
@@ -85,7 +85,7 @@ dlg_Comment( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 			EndDialog( hDlg, false );
 			break;
 		}
-		default:return false;
+	default: return false;
 
 	}
 	return true;

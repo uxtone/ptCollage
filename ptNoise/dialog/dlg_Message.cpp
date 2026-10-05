@@ -27,7 +27,7 @@ dlg_Message( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 			EndDialog( hWnd, true );
 			break;
 		}
-		default:return false;
+	default: return false;
 
 	}
 	return true;

@@ -73,7 +73,7 @@ void if_SubWindows_SetFocus( SUBWINDOWSTRUCT* handle )
 			{
 				SUBWINDOWSTRUCT* work = _handles[ i - 1 ];
 				_handles[ i - 1 ]     = _handles[ i ];
-				_handles[ i ]         = work; 
+				_handles[ i ]         = work;
 			}
 			return;
 		}

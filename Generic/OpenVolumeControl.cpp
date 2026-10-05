@@ -17,7 +17,7 @@ bool OpenVolumeControl( HWND hWnd )
 
 	hShell1 = ShellExecute( hWnd,_T("open"),path1,NULL,NULL,SW_SHOW);
 	hShell2 = ShellExecute( hWnd,_T("open"),path2,NULL,NULL,SW_SHOW);
-    if( (uintptr_t)hShell1 <= 32 && (uintptr_t)hShell2 <= 32 ) return false;
+	if( (uintptr_t)hShell1 <= 32 && (uintptr_t)hShell2 <= 32 ) return false;
 
 	return true;
 }

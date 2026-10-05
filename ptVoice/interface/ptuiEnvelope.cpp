@@ -517,7 +517,7 @@ void ptuiEnvelope::_put( const ptuiCursor* p_cur ) const
 			int32_t cx, cy;
 			_pos_make(  &cx, &cy, _cur_last_x, _cur_last_y );
 //			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4    , cx );
-//			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4 + 8, cy );	
+//			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4 + 8, cy );
 		}
 	}
 }
@@ -554,7 +554,7 @@ bool ptuiEnvelope::_cursor_free( ptuiCursor* p_cur )
 		if( !_point_get( idx, &_drag_start_x, &_drag_start_y ) ) return false;
 
 		p_cur->set_action( this, ptuiCURACT_drag_unit, idx );
-	
+
 		_unit_anime_set( idx, 2 );
 
 		g_curkey->set( CursorKey_envelope, idx, this );

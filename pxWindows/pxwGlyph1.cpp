@@ -84,7 +84,7 @@ bool pxwGlyph1::init( const pxGLYPH_PARAM1 *p_prm, float gen_mag )
 	}
 
 	if( !pxMem_zero_alloc( (void**)&_p_glp_buf, _glp_buf_byte ) ) goto term;
-	
+
 	_surf_temp = new pxSurface();
 	if( !_surf_temp->create( (int32_t)( (float)p_prm->grid_x * gen_mag ), (int32_t)( (float)p_prm->grid_y * gen_mag ) ) ) goto term;
 
@@ -133,8 +133,8 @@ bool pxwGlyph1::generate( uint32_t code, bool b_wide_chaset, const pxSurface** p
 	HDC          hdc      = NULL;
 	HFONT        font_old = NULL;
 	TEXTMETRIC   tm;
-	GLYPHMETRICS gm; 
-	MAT2         mat = {{0,1}, {0,0}, {0,0}, {0,1}}; 
+	GLYPHMETRICS gm;
+	MAT2         mat = {{0,1}, {0,0}, {0,0}, {0,1}};
 	DWORD        glyph_size ;
 	UINT         ggo_mode   ;
 	int32_t      gm_pitch   ;
@@ -144,13 +144,13 @@ bool pxwGlyph1::generate( uint32_t code, bool b_wide_chaset, const pxSurface** p
 
 	hdc = CreateCompatibleDC ( NULL );
 	if( !hdc )
-    {
+	{
 		DWORD err = GetLastError();
 		err = err;
 
-		LPTSTR lpBuffer = NULL;  
+		LPTSTR lpBuffer = NULL;
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), LANG_USER_DEFAULT, (LPTSTR)&lpBuffer, 0, NULL );
-		LocalFree(lpBuffer);  
+		LocalFree(lpBuffer);
 	}
 	font_old = (HFONT)SelectObject( hdc, _h_font );
 	if( !GetTextMetrics( hdc, &tm ) ) goto term;
@@ -177,8 +177,8 @@ bool pxwGlyph1::generate( uint32_t code, bool b_wide_chaset, const pxSurface** p
 
 	uint32_t sample, a, r, g, b;
 
-    static uint32_t* p_dst_row;
-    p_dst_row = _surf_temp->get_buf_vari();// >get_buf_pointer_rgba();// _p_tmp_buf;
+	static uint32_t* p_dst_row;
+	p_dst_row = _surf_temp->get_buf_vari();// >get_buf_pointer_rgba();// _p_tmp_buf;
 
 	switch( _prm.type )
 	{
@@ -332,6 +332,6 @@ term:
 		if( font_old ) SelectObject( hdc, font_old );
 		DeleteDC( hdc );
 	}
-	
+
 	return b_ret;
 }

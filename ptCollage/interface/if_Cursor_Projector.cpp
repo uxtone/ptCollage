@@ -32,7 +32,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 	g_cursor.p_field_rect = p_field_rect;
 	g_cursor.drag_xpos[0] = cur_x;
 	g_cursor.drag_ypos    = cur_y;
-	
+
 	// 左クリック
 	if(       KeyControl_IsClickLeftTrigger()  )
 	{
@@ -58,7 +58,7 @@ static bool _Action_Free( float cur_x, float cur_y )
 
 static bool _Action_Drag( float cur_x, float cur_y )
 {
-		
+
 	fRECT* p_field_rect;
 	bool bDrag = false;
 

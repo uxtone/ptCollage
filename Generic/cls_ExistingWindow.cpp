@@ -54,7 +54,7 @@ bool cls_EXISTINGWINDOW::Check( const TCHAR  *mutex_name, const TCHAR *mapping_n
 	// マテックスが無ければ生成して終わり
 	_hMutex = OpenMutex( MUTEX_ALL_ACCESS, false, mutex_name );
 	if( !_hMutex ){
-        _hMutex = CreateMutex( nullptr, 0, mutex_name );
+		_hMutex = CreateMutex( nullptr, 0, mutex_name );
 		if( !_hMutex ) return false;
 		return true;
 	}
@@ -65,10 +65,10 @@ bool cls_EXISTINGWINDOW::Check( const TCHAR  *mutex_name, const TCHAR *mapping_n
 
 bool cls_EXISTINGWINDOW::Mapping( const TCHAR  *mutex_name, const TCHAR *mapping_name, HWND hWnd )
 {
-    _hMutex = CreateMutex(NULL, 0, mutex_name );
+	_hMutex = CreateMutex(NULL, 0, mutex_name );
 	if( !_hMutex     ) return false;
 
-    _hMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
+	_hMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(HWND), mapping_name );
 	if( !_hMapping   ){
 		ReleaseMutex(    _hMutex     ); _hMutex = NULL;
 		return false;

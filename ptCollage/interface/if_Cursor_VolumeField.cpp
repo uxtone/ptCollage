@@ -62,12 +62,12 @@ static bool _Action_Free( float cur_x, float cur_y )
 		switch( if_GetVolumeMode() )
 		{
 		case VOLUMEMODE_Velocity :
-		case VOLUMEMODE_Volume   :    
+		case VOLUMEMODE_Volume   :
 		case VOLUMEMODE_Pan_Volume   :
 		case VOLUMEMODE_Pan_Time  :
 			g_cursor.scope   = enum_ScopeMode_Scope;
 			break;
-		case VOLUMEMODE_Portament: 
+		case VOLUMEMODE_Portament:
 		case VOLUMEMODE_GroupNo  :
 		case VOLUMEMODE_VoiceNo  :
 		case VOLUMEMODE_Tuning   :
@@ -129,11 +129,11 @@ static bool _Action_Drag( float cur_x, float cur_y, bool bDelete )
 		switch( if_GetVolumeMode() )
 		{
 		case VOLUMEMODE_Velocity:// ベロシティ
-			{
-				if( value > 128 ) value = 128;
-				count += g_pxtn->evels->Record_Value_Set( clock1, clock2, u, EVENTKIND_VELOCITY, value );
-			}
-			break;
+		{
+			if( value > 128 ) value = 128;
+			count += g_pxtn->evels->Record_Value_Set( clock1, clock2, u, EVENTKIND_VELOCITY, value );
+		}
+		break;
 
 		case VOLUMEMODE_Pan_Volume:// パン
 			if( bDelete )
@@ -214,7 +214,7 @@ static bool _Action_Drag( float cur_x, float cur_y, bool bDelete )
 
 		if( count < 1 ) UndoEvent_Back();
 		else            UndoEvent_ReleaseRedo();
-		
+
 	}
 	else
 	{

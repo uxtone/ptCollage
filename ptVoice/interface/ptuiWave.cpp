@@ -462,7 +462,7 @@ void ptuiWave::_put( const ptuiCursor* p_cur ) const
 			if( _ani_nos[ i ] || (g_curkey->get( &idx ) == CursorKey_wave && idx == i ) )
 			{
 				ptv_put_value( x + 8, y - 16, pp->x );
-   				ptv_put_value( x + 8, y -  8, pp->y );
+				ptv_put_value( x + 8, y -  8, pp->y );
 			}
 		}
 
@@ -471,7 +471,7 @@ void ptuiWave::_put( const ptuiCursor* p_cur ) const
 			int32_t cx, cy;
 			_pos_make(  &cx, &cy, _cur_last_x, _cur_last_y );
 			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4    , cx );
-			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4 + 8, cy );	
+			ptv_put_value( _rect.r - 4 * 4, _rect.t + 4 + 8, cy );
 		}
 	}
 }

@@ -116,7 +116,7 @@ enum_PlayMenu if_Menu_Play_GetMenu( float x, float y )
 		y >= _menu.y + BUTTON_SETREPEAT_Y                 &&
 		y <  _menu.y + BUTTON_SETREPEAT_Y + BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_PlayMenu_SetRepeat;
+		_menu.menu = enum_PlayMenu_SetRepeat;
 	}
 	else if(
 		x >= _menu.x + BUTTON_SETLAST_X                 &&
@@ -124,29 +124,29 @@ enum_PlayMenu if_Menu_Play_GetMenu( float x, float y )
 		y >= _menu.y + BUTTON_SETLAST_Y                 &&
 		y <  _menu.y + BUTTON_SETLAST_Y + BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_PlayMenu_SetLast;
+		_menu.menu = enum_PlayMenu_SetLast;
 	}
-	else if( 
+	else if(
 		x >= _menu.x + BUTTON_CUTREPEAT_X                 &&
 		x <  _menu.x + BUTTON_CUTREPEAT_X + BUTTON_WIDTH  &&
 		y >= _menu.y + BUTTON_CUTREPEAT_Y                 &&
 		y <  _menu.y + BUTTON_CUTREPEAT_Y + BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_PlayMenu_CutRepeat;
+		_menu.menu = enum_PlayMenu_CutRepeat;
 	}
-	else if( 
+	else if(
 		x >= _menu.x + BUTTON_CUTLAST_X                 &&
 		x <  _menu.x + BUTTON_CUTLAST_X + BUTTON_WIDTH  &&
 		y >= _menu.y + BUTTON_CUTLAST_Y                 &&
 		y <  _menu.y + BUTTON_CUTLAST_Y + BUTTON_HEIGHT )
 	{
-			_menu.menu = enum_PlayMenu_CutLast;
+		_menu.menu = enum_PlayMenu_CutLast;
 	}
 	else
 	{
 		_menu.menu = enum_PlayMenu_None;
 	}
-	return 	_menu.menu;
+	return	_menu.menu;
 }
 
 void if_Menu_Play_Put()

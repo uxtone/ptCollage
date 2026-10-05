@@ -27,7 +27,7 @@ void  pxPath_setMode( pxPathMode mode   )
 #else
 		_mode = pxPathMode_UTF8    ;
 #endif
-			
+
 	}
 	else
 	{
@@ -46,7 +46,7 @@ static TCHAR *_find_last_c( const TCHAR *path, TCHAR c )
 		const char* p     = (const char*)path;
 		int32_t     bytes =    0;
 		int32_t     size  =    0;
-		
+
 		uint32_t    code  =    0;
 
 		if( !pxUTF8_check_size( p, &size, false ) ) return NULL;
@@ -62,7 +62,7 @@ static TCHAR *_find_last_c( const TCHAR *path, TCHAR c )
 	{
 		const char* p     = (const char*)path;
 		int32_t     bytes =    0;
-		int32_t     size  =    0; 
+		int32_t     size  =    0;
 		uint32_t    code  =    0;
 
 		if( !pxShiftJIS_check_size( p, &size, false ) ) return NULL;

@@ -24,8 +24,8 @@ static void _SetParameter( HWND hDlg, ptConfig *p_c )
 	}
 
 	ptConfig_cmb_quality_set( hDlg,
-		IDC_COMBO_AT_CHANNEL, p_c->strm->ch_num,
-		IDC_COMBO_AT_SPS    , p_c->strm->sps );
+							  IDC_COMBO_AT_CHANNEL, p_c->strm->ch_num,
+							  IDC_COMBO_AT_SPS    , p_c->strm->sps );
 }
 
 static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
@@ -35,8 +35,8 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 	TCHAR str[ 10 ]; GetDlgItemText( hDlg, IDC_AT_BUFFER, str, 10 ); p_c->strm->buf_sec = (float)_ttof( str );
 
 	ptConfig_cmb_quality_get( hDlg,
-		IDC_COMBO_AT_CHANNEL, &p_c->strm->ch_num,
-		IDC_COMBO_AT_SPS    , &p_c->strm->sps );
+							  IDC_COMBO_AT_CHANNEL, &p_c->strm->ch_num,
+							  IDC_COMBO_AT_SPS    , &p_c->strm->sps );
 
 	return true;
 }
@@ -93,7 +93,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

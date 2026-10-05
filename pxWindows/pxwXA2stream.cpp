@@ -16,7 +16,7 @@ static void _set_pcm_format_16bps( WAVEFORMATEX* p_fmt, int32_t ch_num, int32_t 
 
 void pxwXA2strm_callback::OnBufferEnd( void * buf_cntx )
 {
-	SetEvent( h_bufend );	
+	SetEvent( h_bufend );
 }
 
 pxwXA2stream::pxwXA2stream()
@@ -53,9 +53,9 @@ pxwXA2stream::~pxwXA2stream()
 bool pxwXA2stream::init( IXAudio2 *p_xa2, int32_t ch_num, int32_t sps, float buf_sec )
 {
 	if( _b_init ) return false;
-		
+
 	bool b_ret = false;
-	
+
 	_def_byte = 0x00; // 16bit;
 
 	if( !(_th_stream      = new pxwThread()) || !_th_stream     ->init() ) goto term;

@@ -128,12 +128,12 @@ void if_gen_Scroll::SetRect( fRECT *vw_rect )
 		_rcBtn1.r = vw_rect->r  + SCROLLBUTTONSIZE;
 		_rcBtn1.t = vw_rect->t;
 		_rcBtn1.b = vw_rect->t  + SCROLLBUTTONSIZE;
-				  
+
 		_rcBtn2.l = _vw_rect.r;
 		_rcBtn2.r = _vw_rect.r + SCROLLBUTTONSIZE;
 		_rcBtn2.t = _vw_rect.b - SCROLLBUTTONSIZE;
 		_rcBtn2.b = _vw_rect.b;
-				  
+
 		_rcKnob.l = _vw_rect.r;
 		_rcKnob.r = _vw_rect.r  + SCROLLBUTTONSIZE;
 		_rcKnob.t = _vw_rect.t  + SCROLLBUTTONSIZE + knob_offset              -1;
@@ -208,7 +208,7 @@ bool if_gen_Scroll::Action( int32_t cur_x, int32_t cur_y, bool b_l_clk, bool b_l
 
 			// ←
 			if(       cur_x >= _rcBtn1.l && cur_x <  _rcBtn1.r &&
-				      cur_y >= _rcBtn1.t && cur_y <  _rcBtn1.b )
+					  cur_y >= _rcBtn1.t && cur_y <  _rcBtn1.b )
 			{
 				_act_no    = SCROLLACTION_LEFT;
 				_ani_no    =  2;
@@ -424,5 +424,5 @@ void if_gen_Scroll::Put()
 		_dxdraw->tex_Put_View( _rcBtn1.l, _rcBtn1.t, &rc_up  [_ani_no], _surf );
 		_dxdraw->tex_Put_View( _rcBtn2.l, _rcBtn2.t, &rc_down[_ani_no], _surf );
 	}
-	
+
 }

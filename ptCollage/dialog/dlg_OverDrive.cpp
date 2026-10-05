@@ -67,12 +67,12 @@ dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDC_PRESS:
 		case IDC_AMP  :
 
-            if( HIWORD( w ) == EN_SETFOCUS )
+			if( HIWORD( w ) == EN_SETFOCUS )
 			{
 				HIMC hImc = ImmGetContext( hDlg );
-                ImmSetOpenStatus( hImc, false );
-                ImmReleaseContext( hDlg, hImc );
-            }
+				ImmSetOpenStatus( hImc, false );
+				ImmReleaseContext( hDlg, hImc );
+			}
 			break;
 		}
 		break;
@@ -121,7 +121,7 @@ dlg_OverDrive_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

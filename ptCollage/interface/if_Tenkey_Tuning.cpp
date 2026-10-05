@@ -135,7 +135,7 @@ bool if_Tenkey_Tuning_ButtonDown( float x, float y )
 	if( _tenkey.button == enum_TenkeyButton_none ) return false;
 
 	return true;
-} 
+}
 
 bool if_Tenkey_Tuning_ButtonUp()
 {
@@ -195,7 +195,7 @@ void if_Tenkey_Tuning_Put()
 			{ 8,56}, {32,56}, {56,56},
 			{ 8,40}, {32,40}, {56,40},
 			{ 8,24}, {32,24}, {56,24},
-					{32,72}, {56,72},
+			{32,72}, {56,72},
 		};
 
 		g_dxdraw->tex_Put_View(

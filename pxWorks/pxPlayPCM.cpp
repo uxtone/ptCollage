@@ -10,7 +10,7 @@ pxPlayPCM::pxPlayPCM()
 {
 	_b_init        = false;
 	_fmt_type      = pxPLAYPCMFMT_unknown;
-	
+
 	_fp            = NULL ;
 	_desc          = NULL ;
 	_riff_wav      = NULL ;
@@ -127,7 +127,7 @@ bool pxPlayPCM::sampling_wrapper( void *user, void *p1, int *p_req_size, int *p_
 bool pxPlayPCM::set_smp_r( int32_t r, bool b_loop )
 {
 	if( _fmt_type == pxPLAYPCMFMT_unknown ) return false;
-	
+
 	_sq_smp_r  = (double)r;
 	_sq_flags &= ~_SQ_FLAG_SAMPLING_END;
 	if( b_loop ) _sq_flags |=  _SQ_FLAG_LOOP;
@@ -327,8 +327,8 @@ bool pxPlayPCM::pcm_open( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type )
 	if( !(_fp = _tfopen( path, _T("rb") ) ) ) goto term;
 	if( !_desc->set_file_r( _fp )           ) goto term;
 
-    static int32_t bps;
-    bps = 0;
+	static int32_t bps;
+	bps = 0;
 
 	switch( fmt_type )
 	{
@@ -415,7 +415,7 @@ bool pxPlayPCM::pcm_save( const TCHAR *path, pxPLAYPCMFMTTYPE fmt_type ) const
 	case pxPLAYPCMFMT_ogg: return false;
 	default              : return false;
 	}
-	return true;	
+	return true;
 }
 
 bool pxPlayPCM::triming_by_sq  ()
@@ -426,8 +426,8 @@ bool pxPlayPCM::triming_by_sq  ()
 	void *p    = NULL ;
 	if( _fmt_type == pxPLAYPCMFMT_unknown || !_p_src ) goto End;
 
-    static int32_t trimmed_smp_num;
-    trimmed_smp_num = _sq_pos_tmns - _sq_pos_top;
+	static int32_t trimmed_smp_num;
+	trimmed_smp_num = _sq_pos_tmns - _sq_pos_top;
 
 	if( !( p = malloc( trimmed_smp_num * _src_byte_per_smp ) ) ) goto End;
 
@@ -463,7 +463,7 @@ bool pxPlayPCM::set_sample_16bps( int32_t ch_num, int32_t sps, const void* p_src
 	_sq_pos_tmns      = _smp_num;
 
 	int32_t buf_size = _src_byte_per_smp * _smp_num;
-	
+
 	if( !pxMem_zero_alloc( &_p_src, buf_size ) ) goto term;
 
 	memcpy( _p_src, p_src, buf_size );
@@ -493,7 +493,7 @@ bool pxPlayPCM::make_test_sample_16bps( int32_t ch_num, int32_t sps, float sec )
 	_smp_num    = (int32_t)( (float)sps * sec );
 
 	int32_t buf_size = pxBITPERSAMPLE16 / 8 * ch_num * _smp_num;
-	
+
 	if( !( _p_src = malloc( buf_size ) ) ) return false;
 
 	{

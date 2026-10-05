@@ -49,8 +49,8 @@ static void _SetParameter( HWND hDlg, const ptConfig *p_c )
 	}
 
 	ptConfig_cmb_quality_set( hDlg,
-		IDC_COMBO_AT_CHANNEL, p_c->strm->ch_num,
-		IDC_COMBO_AT_SPS    , p_c->strm->sps   );
+							  IDC_COMBO_AT_CHANNEL, p_c->strm->ch_num,
+							  IDC_COMBO_AT_SPS    , p_c->strm->sps   );
 
 	if( _b_midi_devices )
 	{
@@ -77,8 +77,8 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 	}
 
 	ptConfig_cmb_quality_get( hDlg,
-		IDC_COMBO_AT_CHANNEL, &p_c->strm->ch_num,
-		IDC_COMBO_AT_SPS    , &p_c->strm->sps   );
+							  IDC_COMBO_AT_CHANNEL, &p_c->strm->ch_num,
+							  IDC_COMBO_AT_SPS    , &p_c->strm->sps   );
 
 	// midi..
 	GetDlgItemText( hDlg, IDC_COMBO_MIDIDEVICE, p_c->midi->name, BUFSIZE_MIDIDEVICENAME );
@@ -141,7 +141,7 @@ dlg_Config_Procedure( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

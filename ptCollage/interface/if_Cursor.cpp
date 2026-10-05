@@ -160,7 +160,7 @@ void if_Cursor_SetActiveTone_Woice( int32_t w )
 	}
 	g_cursor.active_tone_id = ActiveTone_set_woice( w );
 	if( g_cursor.active_tone_id != -1 ) g_cursor.active_tone_on = true;
-	
+
 }
 
 void if_Cursor_ChangeActiveTone( float freq_rate )
@@ -309,7 +309,7 @@ bool if_Cursor_Action( float cur_x, float cur_y )
 
 
 				if( g_strm_xa2->tune_is_sampling()                    ) break;
-												 
+
 				if( if_Cursor_Action_KeyField(       cur_x, cur_y ) ) break;
 				if( if_Cursor_Action_PlayField(      cur_x, cur_y ) ) break;
 				if( if_Cursor_Action_ScopeField(     cur_x, cur_y ) ) break;
@@ -432,7 +432,7 @@ void if_Cursor_Put()
 		{
 			int32_t u = g_cursor.tgt_id;
 
-			g_dxdraw->tex_Put_View( g_cursor.rect.l, g_cursor.rect.t, &rc_drag_frame, SURF_FIELDS );  
+			g_dxdraw->tex_Put_View( g_cursor.rect.l, g_cursor.rect.t, &rc_drag_frame, SURF_FIELDS );
 
 			rect.t = (float)( (u       % 10) * UNITNAME_HEIGHT );
 			rect.b = (float)( rect.t + UNITNAME_HEIGHT - 2     );
@@ -451,7 +451,7 @@ void if_Cursor_Put()
 		{
 			int32_t w = g_cursor.tgt_id;
 
-			g_dxdraw->tex_Put_View( g_cursor.rect.l, g_cursor.rect.t, &rc_drag_frame, SURF_FIELDS );  
+			g_dxdraw->tex_Put_View( g_cursor.rect.l, g_cursor.rect.t, &rc_drag_frame, SURF_FIELDS );
 			rect.t    = (float)( (w % 10) * WOICENAME_HEIGHT   );
 			rect.b    = (float)( rect.t + WOICENAME_HEIGHT - 2 );
 			rect.l    = 0;

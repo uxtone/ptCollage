@@ -113,18 +113,18 @@ enum_UnitMenu if_Menu_Unit_GetMenu( float x, float y )
 		x <  _menu.x + _BUTTON_EDIT_X + _BUTTON_WIDTH    &&
 		y >= _menu.y + _BUTTON_EDIT_Y                    &&
 		y <  _menu.y + _BUTTON_EDIT_Y + _BUTTON_HEIGHT   ){
-			_menu.menu = enum_UnitMenu_Edit;
+		_menu.menu = enum_UnitMenu_Edit;
 
-	}else if( 
+	}else if(
 		x >= _menu.x + _BUTTON_REMOVE_X                  &&
 		x <  _menu.x + _BUTTON_REMOVE_X + _BUTTON_WIDTH  &&
 		y >= _menu.y + _BUTTON_REMOVE_Y                  &&
 		y <  _menu.y + _BUTTON_REMOVE_Y + _BUTTON_HEIGHT ){
-			_menu.menu = enum_UnitMenu_Remove;
+		_menu.menu = enum_UnitMenu_Remove;
 	}else{
 		_menu.menu = enum_UnitMenu_None;
 	}
-	return 	_menu.menu;
+	return	_menu.menu;
 }
 
 void if_Menu_Unit_Put()

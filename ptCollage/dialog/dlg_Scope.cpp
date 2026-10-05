@@ -70,11 +70,11 @@ dlg_Scope( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		case IDC_FROMMEAS2:
 		case IDC_FROMCLOCK2:
 
-            if( HIWORD( w ) == EN_SETFOCUS ){
+			if( HIWORD( w ) == EN_SETFOCUS ){
 				HIMC hImc = ImmGetContext( hDlg );
-                ImmSetOpenStatus( hImc, false );
-                ImmReleaseContext( hDlg, hImc );
-            }
+				ImmSetOpenStatus( hImc, false );
+				ImmReleaseContext( hDlg, hImc );
+			}
 			break;
 		}
 		break;
@@ -114,7 +114,7 @@ dlg_Scope( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

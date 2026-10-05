@@ -10,12 +10,12 @@ private:
 
 public:
 
-	ptConfig_MIDI();
-	TCHAR   name[ BUFSIZE_MIDIDEVICENAME ];
-	bool    b_velo    ;
-	float   key_tuning;
+ptConfig_MIDI();
+TCHAR   name[ BUFSIZE_MIDIDEVICENAME ];
+bool    b_velo    ;
+float   key_tuning;
 
-	void set_default();
-	bool write( pxDescriptor* desc ) const;
-	bool read ( pxDescriptor* desc );
+void set_default();
+bool write( pxDescriptor* desc ) const;
+bool read ( pxDescriptor* desc );
 };

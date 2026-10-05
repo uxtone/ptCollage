@@ -562,25 +562,25 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 	case WM_CREATE: _WM_CREATE( hWnd ); break;
 	case WM_CLOSE : _WM_CLOSE ( hWnd ); break;
 
-/*
-	case WM_PAINT:
+	/*
+		case WM_PAINT:
 
-		if( _bInterfaceActive )
-			Interface_Process( hWnd, true );
-		break;
-		*/
+			if( _bInterfaceActive )
+				Interface_Process( hWnd, true );
+			break;
+			*/
 	case WM_PAINT:
-		{
-			HDC         hdc;
-			PAINTSTRUCT ps ;
-			hdc = BeginPaint ( hWnd, &ps  );
-			Interface_Process( hWnd, true );
-			EndPaint         ( hWnd, &ps  );
+	{
+		HDC         hdc;
+		PAINTSTRUCT ps ;
+		hdc = BeginPaint ( hWnd, &ps  );
+		Interface_Process( hWnd, true );
+		EndPaint         ( hWnd, &ps  );
 //			_bInterfaceActive = _bInterfaceActive;
-		}
-		break;
+	}
+	break;
 
-    case WM_ERASEBKGND:
+	case WM_ERASEBKGND:
 		break; // Direct2Dが自前で背景の描画を行うので、このメッセージを無効に
 
 	case WM_ACTIVATE:
@@ -698,17 +698,17 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 
 	// minimum size
 	case WM_GETMINMAXINFO:
-		{
-			RECT rc_work;
-			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
+	{
+		RECT rc_work;
+		SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
-			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = g_MinimizeWidth ; // min w
-			pmm->ptMinTrackSize.y = g_MinimizeHeight; // min h
-			pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
-			pmm->ptMaxTrackSize.y = rc_work.bottom  ; // max h
-		}
-		break;
+		MINMAXINFO* pmm = (MINMAXINFO*)l;
+		pmm->ptMinTrackSize.x = g_MinimizeWidth ; // min w
+		pmm->ptMinTrackSize.y = g_MinimizeHeight; // min h
+		pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
+		pmm->ptMaxTrackSize.y = rc_work.bottom  ; // max h
+	}
+	break;
 
 	case WM_KEYDOWN    :
 	case WM_KEYUP      :
@@ -750,7 +750,7 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 				ptConfig cfg( _ref_file_profile, ptcDEFAULT_SPS, ptcDEFAULT_CH_NUM, ptcDEFAULT_BUF_SEC );
 				cfg.load();
 				g_midi_in->Close();
-				if( g_midi_in->Open ( cfg.midi->name, g_hWnd_Main, NULL ) )g_midi_in->Input_Start();
+				if( g_midi_in->Open ( cfg.midi->name, g_hWnd_Main, NULL ) ) g_midi_in->Input_Start();
 			}
 			break;
 
@@ -761,5 +761,5 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 	default: return DefWindowProc( hWnd, msg, w, l );
 	}
 
-    return 0;
+	return 0;
 }

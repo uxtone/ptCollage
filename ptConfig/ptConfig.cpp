@@ -36,12 +36,12 @@ bool ptConfig::save() const
 
 	if( !_ref_app_file_profile->open_w( &desc, _dir_name, _name_strm_operate, NULL ) ) goto term;
 	if( !strm->write( desc ) ) goto term;
-	SAFE_DELETE( desc ); 
+	SAFE_DELETE( desc );
 
 	if( !_ref_app_file_profile->open_w( &desc, _dir_name, _name_font        , NULL ) ) goto term;
 	if( !font->write( desc ) ) goto term;
-	SAFE_DELETE( desc ); 
-								           
+	SAFE_DELETE( desc );
+
 	if( !_ref_app_file_profile->open_w( &desc, _dir_name, _name_midi        , NULL ) ) goto term;
 	if( !midi->write( desc ) ) goto term;
 	SAFE_DELETE( desc );

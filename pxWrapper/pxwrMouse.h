@@ -9,31 +9,31 @@ class pxwrMouse
 {
 private:
 
-	void*   _hwnd     ;
-	bool    _b_capture;
+void*   _hwnd     ;
+bool    _b_capture;
 
-	int     _x;
-	int     _y;
+int     _x;
+int     _y;
 
-	uint8_t _flags_now ;
-	uint8_t _flags_old ;
-	uint8_t _flags_trg ;
-	uint8_t _flags_ntrg;
+uint8_t _flags_now ;
+uint8_t _flags_old ;
+uint8_t _flags_trg ;
+uint8_t _flags_ntrg;
 
-public :
-	pxwrMouse( void *hwnd );
+public:
+pxwrMouse( void *hwnd );
 
-	bool set_position();
-	void set_click_l ( bool b );
-	void set_click_r ( bool b );
+bool set_position();
+void set_click_l ( bool b );
+void set_click_r ( bool b );
 
-	void    trigger_update();
+void    trigger_update();
 
-	int     get_x   () const;
-	int     get_y   () const;
-	uint8_t get_now () const;
-	uint8_t get_trg () const;
-	uint8_t get_ntrg() const;
+int     get_x   () const;
+int     get_y   () const;
+uint8_t get_now () const;
+uint8_t get_trg () const;
+uint8_t get_ntrg() const;
 };
 
 #endif

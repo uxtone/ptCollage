@@ -157,7 +157,7 @@ void if_PlayField_SetStartMeas( int32_t meas, bool bExistingDelete )
 	max_meas = g_pxtn->master->get_meas_num();
 	if( meas >= max_meas ) meas = max_meas - 1;
 	if( meas < 0         ) meas = 0;
-	
+
 	_info.start_meas = meas;
 
 	if( _info.end_meas != -1 && _info.end_meas <= _info.start_meas )
@@ -182,7 +182,7 @@ void if_PlayField_SetEndMeas( int32_t meas, bool bExistingDelete )
 	max_meas = g_pxtn->master->get_meas_num();
 	if( meas >  max_meas ) meas = max_meas;
 	if( meas < 1         ) meas = 1;
-	
+
 	_info.end_meas = meas;
 
 	if( _info.start_meas != -1 && _info.start_meas >= _info.end_meas )

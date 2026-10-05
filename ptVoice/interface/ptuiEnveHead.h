@@ -18,33 +18,33 @@ class ptuiEnveHead: public ptui
 {
 private:
 
-	enum _BTNID
-	{
-		_BTNID_01 ,
-		_BTNID_05 ,
-		_BTNID_10 ,
+enum _BTNID
+{
+	_BTNID_01 ,
+	_BTNID_05 ,
+	_BTNID_10 ,
 
-		_BTNID_close,
-		_BTNID_num,
-	};
+	_BTNID_close,
+	_BTNID_num,
+};
 
-	bool         _b_init;
-	WoiceUnit*   _woice ;
-	ptuiSwitch** _btns  ;
+bool         _b_init;
+WoiceUnit*   _woice ;
+ptuiSwitch** _btns  ;
 
 
-	bool _search_a_button  ( const ptuiCursor* p_cur, int32_t* p_idx );
-	bool _cursor_free      (       ptuiCursor* p_cur ) override;
-	bool _cursor_click_hold(       ptuiCursor* p_cur ) override;
-	void _put              ( const ptuiCursor *p_cur ) const override;
+bool _search_a_button  ( const ptuiCursor* p_cur, int32_t* p_idx );
+bool _cursor_free      (       ptuiCursor* p_cur ) override;
+bool _cursor_click_hold(       ptuiCursor* p_cur ) override;
+void _put              ( const ptuiCursor *p_cur ) const override;
 
-	void _release();
+void _release();
 
 public:
-	 ptuiEnveHead();
-	~ptuiEnveHead();
+ptuiEnveHead();
+~ptuiEnveHead();
 
-	bool init( WoiceUnit* woice );
+bool init( WoiceUnit* woice );
 };
 
 #endif

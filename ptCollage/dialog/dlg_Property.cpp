@@ -17,23 +17,23 @@ dlg_Property( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 
 	//ダイアログ起動
 	case WM_INITDIALOG:
-		{
-			int32_t max, num;
-			num = g_pxtn->evels->get_Count(); //TuneData_Unit_Event_CountAll();
-			max = pxtnMAX_EVENTNUM;
-			SetDlgItemInt( hWnd, IDC_EVENTNUM, num, true );
-			SetDlgItemInt( hWnd, IDC_EVENTMAX, max, true );
+	{
+		int32_t max, num;
+		num = g_pxtn->evels->get_Count(); //TuneData_Unit_Event_CountAll();
+		max = pxtnMAX_EVENTNUM;
+		SetDlgItemInt( hWnd, IDC_EVENTNUM, num, true );
+		SetDlgItemInt( hWnd, IDC_EVENTMAX, max, true );
 
-			num = g_pxtn->Unit_Num();
-			max = pxtnMAX_TUNEUNITSTRUCT;
-			SetDlgItemInt( hWnd, IDC_UNITNUM , num, true );
-			SetDlgItemInt( hWnd, IDC_UNITMAX , max, true );
+		num = g_pxtn->Unit_Num();
+		max = pxtnMAX_TUNEUNITSTRUCT;
+		SetDlgItemInt( hWnd, IDC_UNITNUM , num, true );
+		SetDlgItemInt( hWnd, IDC_UNITMAX , max, true );
 
-			num = g_pxtn->Woice_Num();
-			max = pxtnMAX_TUNEWOICESTRUCT;
-			SetDlgItemInt( hWnd, IDC_WOICENUM, num, true );
-			SetDlgItemInt( hWnd, IDC_WOICEMAX, max, true );
-		}
+		num = g_pxtn->Woice_Num();
+		max = pxtnMAX_TUNEWOICESTRUCT;
+		SetDlgItemInt( hWnd, IDC_WOICENUM, num, true );
+		SetDlgItemInt( hWnd, IDC_WOICEMAX, max, true );
+	}
 
 		pxwWindowRect_center( hWnd );
 		Japanese_DialogItem_Change( hWnd );
@@ -50,7 +50,7 @@ dlg_Property( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 			break;
 		}
 
-		default:return false;
+	default: return false;
 
 	}
 	return true;

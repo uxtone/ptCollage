@@ -41,12 +41,12 @@ dlg_NoiseDesign_Copy( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		switch( LOWORD( w ) )
 		{
 		case IDOK:
-			{
-				int32_t from, to;
-				from = SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_FROM, CB_GETCURSEL, 0, 0 );
-				to   = SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_TO  , CB_GETCURSEL, 0, 0 );
-				dlg_Noise_Design_CopyUnit( from, to );
-			}
+		{
+			int32_t from, to;
+			from = SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_FROM, CB_GETCURSEL, 0, 0 );
+			to   = SendDlgItemMessage( hDlg, IDC_COMBO_UNIT_TO  , CB_GETCURSEL, 0, 0 );
+			dlg_Noise_Design_CopyUnit( from, to );
+		}
 			EndDialog( hDlg, true  );
 			break;
 
@@ -56,7 +56,7 @@ dlg_NoiseDesign_Copy( HWND hDlg, UINT msg, WPARAM w, LPARAM l )
 		}
 		break;
 
-	default:return false;
+	default: return false;
 
 	}
 	return true;

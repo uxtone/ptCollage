@@ -7,7 +7,7 @@
 
 
 INT_PTR CALLBACK
-	dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
+dlg_YesNo( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 {
 	switch( msg )
 	{
@@ -26,7 +26,7 @@ INT_PTR CALLBACK
 		case IDOK    : EndDialog( hWnd, true  ); break;
 		}
 
-		default:return false;
+	default: return false;
 	}
 	return true;
 }

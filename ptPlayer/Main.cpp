@@ -120,20 +120,20 @@ static void _RestoredWindow()
 // ウインドウクラスの登録
 static bool _RegistWindowClass( HINSTANCE hInst, TCHAR *class_name, WNDPROC lpfnWndProc )
 {
-    WNDCLASSEX wc;
+	WNDCLASSEX wc;
 
 	memset( &wc, 0, sizeof(WNDCLASSEX) );
 
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.lpszClassName = class_name;
+	wc.cbSize        = sizeof(WNDCLASSEX);
+	wc.lpszClassName = class_name;
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc   = lpfnWndProc;
-    wc.hInstance     = hInst;        //インスタンス
-    wc.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE + 1);
-    wc.hIcon         = LoadIcon( hInst, _T("0") );
-    wc.hCursor       = LoadCursor( NULL, IDC_ARROW    );
+	wc.lpfnWndProc   = lpfnWndProc;
+	wc.hInstance     = hInst;        //インスタンス
+	wc.hbrBackground = (HBRUSH)(COLOR_APPWORKSPACE + 1);
+	wc.hIcon         = LoadIcon( hInst, _T("0") );
+	wc.hCursor       = LoadCursor( NULL, IDC_ARROW    );
 
-    if( !RegisterClassEx( &wc ) ) return false;
+	if( !RegisterClassEx( &wc ) ) return false;
 
 	return true;
 }
@@ -399,14 +399,14 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	case WM_PAINT:
-		{
-			HDC         hdc;
-			PAINTSTRUCT ps ;
-			hdc = BeginPaint ( hwnd, &ps  );
-			Interface_Process( hwnd, true );
-			EndPaint         ( hwnd, &ps  );
-		}
-		break;
+	{
+		HDC         hdc;
+		PAINTSTRUCT ps ;
+		hdc = BeginPaint ( hwnd, &ps  );
+		Interface_Process( hwnd, true );
+		EndPaint         ( hwnd, &ps  );
+	}
+	break;
 
 	case WM_ACTIVATE:
 		switch( LOWORD( w ) )
@@ -414,13 +414,13 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case WA_ACTIVE     :
 		case WA_CLICKACTIVE:
 
-			{
-				WINDOWPLACEMENT place = {0};
-				place.length = sizeof(WINDOWPLACEMENT);
+		{
+			WINDOWPLACEMENT place = {0};
+			place.length = sizeof(WINDOWPLACEMENT);
 
-				if( !GetWindowPlacement( hwnd, &place ) ) break;
-				if( place.showCmd != SW_SHOWMINIMIZED ) Interface_Process( g_hWnd_Main, true );
-			}
+			if( !GetWindowPlacement( hwnd, &place ) ) break;
+			if( place.showCmd != SW_SHOWMINIMIZED ) Interface_Process( g_hWnd_Main, true );
+		}
 
 			_bInterfaceActive = true;
 			KeyControl_Clear();
@@ -445,14 +445,14 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 		case IDM_VOLUMEDIALOG    : OpenVolumeControl   ( hwnd       );  break;
 		case IDM_EXPORTWAV       : _Function_IDM_BUILD(  hwnd );  break;
 		case IDM_PTCOLLAGE       :
-			{
-				static TCHAR path[ MAX_PATH ] = {0};
-				memset( path, 0, sizeof(path) );
-				if( !g_path_dlg_tune->get_last_path( path, MAX_PATH ) ) break;
-				if_Player_StopPlay();
-				Call_ptCollage( hwnd, path );
-			}
-			break;
+		{
+			static TCHAR path[ MAX_PATH ] = {0};
+			memset( path, 0, sizeof(path) );
+			if( !g_path_dlg_tune->get_last_path( path, MAX_PATH ) ) break;
+			if_Player_StopPlay();
+			Call_ptCollage( hwnd, path );
+		}
+		break;
 		case IDM_TEST_FADEOUT    :
 			g_strm_xa2->tune_order_stop( 1.0f );  break;
 
@@ -475,21 +475,21 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 
 	// 起動後ファイルドロップ
 	case WM_DROPFILES:
-		{
-			TCHAR path[ MAX_PATH ] = {0};
-			if( _GetDroppedPath_Window( hwnd, w, path ) ) Tune_LoadAndPlay( hwnd, path );
-			Interface_Process( hwnd, true );
-		}
-		break;
+	{
+		TCHAR path[ MAX_PATH ] = {0};
+		if( _GetDroppedPath_Window( hwnd, w, path ) ) Tune_LoadAndPlay( hwnd, path );
+		Interface_Process( hwnd, true );
+	}
+	break;
 
 	// 起動後関連ファイル
 	case WM_USER_RELATEDFILE:
-		{
-			TCHAR path[ MAX_PATH ] = {0};
-			if( _posted_path ) Tune_LoadAndPlay( hwnd, _posted_path );
-			Interface_Process( hwnd, true );
-		}
-		break;
+	{
+		TCHAR path[ MAX_PATH ] = {0};
+		if( _posted_path ) Tune_LoadAndPlay( hwnd, _posted_path );
+		Interface_Process( hwnd, true );
+	}
+	break;
 
 	case WM_MOVE:
 		pxwWindowRect_save( hwnd, _rect_name );
@@ -505,21 +505,21 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 			break;
 		case SIZE_MAXIMIZED:
 		case SIZE_RESTORED:
-			{
-				WINDOWPLACEMENT place;
-				place.length = sizeof(WINDOWPLACEMENT);
-				if( !GetWindowPlacement( hwnd, &place ) ) return false;
+		{
+			WINDOWPLACEMENT place;
+			place.length = sizeof(WINDOWPLACEMENT);
+			if( !GetWindowPlacement( hwnd, &place ) ) return false;
 
-				if( g_dxdraw ) g_dxdraw->WindowMode_mag( hwnd, 0, LOWORD(l), HIWORD(l) );
+			if( g_dxdraw ) g_dxdraw->WindowMode_mag( hwnd, 0, LOWORD(l), HIWORD(l) );
 
-				RECT rc;
-				GetClientRect(  hwnd, &rc );
-				InvalidateRect( hwnd, &rc, false );
-				UpdateWindow(   hwnd );
-				_RestoredWindow();
-			}
+			RECT rc;
+			GetClientRect(  hwnd, &rc );
+			InvalidateRect( hwnd, &rc, false );
+			UpdateWindow(   hwnd );
+			_RestoredWindow();
+		}
 
-			break;
+		break;
 		}
 
 		break;
@@ -546,23 +546,23 @@ static LRESULT CALLBACK _WindowProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 
 	// minimum size
 	case WM_GETMINMAXINFO:
-		{
-			RECT rc_work;
-			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
+	{
+		RECT rc_work;
+		SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
-			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = _VIEW_WIDTH  * pxwDx09Draw_system_mag(); // min w
-			pmm->ptMinTrackSize.y = _VIEW_HEIGHT * pxwDx09Draw_system_mag(); // min h
-			pmm->ptMaxTrackSize.x = rc_work.right ; // max w
-			pmm->ptMaxTrackSize.y = rc_work.bottom; // max h
-		}
-		break;
+		MINMAXINFO* pmm = (MINMAXINFO*)l;
+		pmm->ptMinTrackSize.x = _VIEW_WIDTH  * pxwDx09Draw_system_mag(); // min w
+		pmm->ptMinTrackSize.y = _VIEW_HEIGHT * pxwDx09Draw_system_mag(); // min h
+		pmm->ptMaxTrackSize.x = rc_work.right ; // max w
+		pmm->ptMaxTrackSize.y = rc_work.bottom; // max h
+	}
+	break;
 
 	default://上記スイッチ記述のないものはWindowsに処理を委ねる
 		return DefWindowProc( hwnd, msg, w, l );
 	}
 
-    return 0;
+	return 0;
 }
 
 bool _SystemTask()
@@ -636,7 +636,7 @@ static bool _io_pos( void* user, int32_t* p_pos )
 
 pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 {
-    pxwRuntime runtime;
+	pxwRuntime runtime;
 	{ int rc; if( !runtime.init( _app_name_t_en, &rc ) ) return rc; }
 
 	cls_EXISTINGWINDOW existing_window;
@@ -691,9 +691,9 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 	_path_dlg_build = new pxwPathDialog();
 
 	if( !_path_dlg_build->init( _app_file_profile,
-		_T("wav {*.wav}\0*.wav*\0") _T("All Files {*.*}\0*.*\0\0"),
-		_T("wav"), _T("ptp-build.path"), Japanese_Is() ? _title_save_wav_j : _title_save_wav_e,
-		NULL, NULL ) )
+								_T("wav {*.wav}\0*.wav*\0") _T("All Files {*.*}\0*.*\0\0"),
+								_T("wav"), _T("ptp-build.path"), Japanese_Is() ? _title_save_wav_j : _title_save_wav_e,
+								NULL, NULL ) )
 	{
 		MessageBox( NULL, _T("RESOURCE ERROR"), _app_name_t_en, MB_OK|MB_ICONERROR );
 		goto term;
@@ -702,7 +702,7 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 	// ウインドウクラスを定義
 	if( !_RegistWindowClass( hInst, _class_name, _WindowProc ) ) return false;
 
-    g_hMenu_Main   = LoadMenu( hInst, _T("MENU_MAIN") );
+	g_hMenu_Main   = LoadMenu( hInst, _T("MENU_MAIN") );
 	Japanese_MenuItem_Change( g_hMenu_Main );
 
 	{
@@ -762,8 +762,8 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 
 	g_path_dlg_tune = new pxwPathDialog();
 	if( !g_path_dlg_tune->init( _app_file_profile,
-		_T("pttune {*.pttune;*.ptcop}\0*.pttune;*.ptcop*\0") _T("All files {*.*}\0*.*\0\0"),
-		_T("*"), _T("ptp-tune.path"), _T("Save File"), _T("Load File"), NULL ) ) goto term;
+								_T("pttune {*.pttune;*.ptcop}\0*.pttune;*.ptcop*\0") _T("All files {*.*}\0*.*\0\0"),
+								_T("*"), _T("ptp-tune.path"), _T("Save File"), _T("Load File"), NULL ) ) goto term;
 
 	{// LOADING..表示
 
@@ -800,11 +800,11 @@ pxwENTRY_POINT( hInst, hPrevInst, lpszArgs, nWinMode )
 		// pxtone
 		g_pxtn->set_sampled_callback( if_Player_Callback_Sampled, g_hWnd_Main );
 
-        if( !g_strm_xa2->stream_start( cfg_ptp.strm->ch_num, cfg_ptp.strm->sps, cfg_ptp.strm->buf_sec ) )
-        {
-            Japanese_MessageBox( g_hWnd_Main, _T("ready pxtone"), _app_name_t_en, MB_OK|MB_ICONEXCLAMATION );
-            return false;
-        }
+		if( !g_strm_xa2->stream_start( cfg_ptp.strm->ch_num, cfg_ptp.strm->sps, cfg_ptp.strm->buf_sec ) )
+		{
+			Japanese_MessageBox( g_hWnd_Main, _T("ready pxtone"), _app_name_t_en, MB_OK|MB_ICONEXCLAMATION );
+			return false;
+		}
 
 		if_Player_RedrawName( cfg_ptp.font->name );
 

@@ -299,7 +299,7 @@ term:
 
 static void pxCSVUTF8ROW_free( pxCSVUTF8ROW* p_r )
 {
-	if( !p_r->strs )return;
+	if( !p_r->strs ) return;
 	for( int s = 0; s < p_r->str_num; s++ ) pxStr_free( &p_r->strs[ s ] );
 	pxMem_free( (void**)&p_r->strs );
 	p_r->str_num = 0;
@@ -339,7 +339,7 @@ bool pxCSV2::prepare_strs( int32_t row, const char* name, float value )
 bool pxCSV2::read( pxDescriptor* desc, bool b_UTF8 )
 {
 	_release();
-	
+
 	bool    b_ret     = false;
 	char*   p_data    = NULL ;
 	int32_t data_size =     0;
@@ -511,10 +511,14 @@ bool pxCSV2::find_value( int32_t* p_row, int32_t column, const char* find_text )
 			res = 0;
 			if( _b_UTF8 ){
 				if( pxUTF8_compare( &res, _rows[ r ].strs[ column ], find_text ) && !res ){
-					*p_row = r; return true; } }
+					*p_row = r; return true;
+				}
+			}
 			else         {
 				if( !strcmp       (       _rows[ r ].strs[ column ], find_text )         ){
-					*p_row = r; return true; } }
+					*p_row = r; return true;
+				}
+			}
 		}
 	}
 	return false;

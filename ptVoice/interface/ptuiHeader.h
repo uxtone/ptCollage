@@ -12,18 +12,18 @@ class ptuiHeader: public ptui
 {
 private:
 
-	bool       _b_init;
-	WoiceUnit* _woice ;
+bool       _b_init;
+WoiceUnit* _woice ;
 
-	void _put ( const ptuiCursor *p_cur ) const override;
-	void _release();
+void _put ( const ptuiCursor *p_cur ) const override;
+void _release();
 
-public :
+public:
 
-	 ptuiHeader();
-	~ptuiHeader();
+ptuiHeader();
+~ptuiHeader();
 
-	bool init( WoiceUnit* woice );
+bool init( WoiceUnit* woice );
 };
 
 #endif

@@ -29,24 +29,24 @@ class pxLocalize
 {
 private:
 
-	bool          _b_init        ;
-	pxLOCALREGION _region        ;
-	TCHAR*        _dir_localize  ;
-	TCHAR*        _dir_region    ;
+bool          _b_init        ;
+pxLOCALREGION _region        ;
+TCHAR*        _dir_localize  ;
+TCHAR*        _dir_region    ;
 
-	void _release          ();
-	void _update_dir_region();
+void _release          ();
+void _update_dir_region();
 public:
 
-	 pxLocalize();
-	~pxLocalize();
+pxLocalize();
+~pxLocalize();
 
-	bool          init          ( const TCHAR*  dir_localize );
-	bool          read          ( pxDescriptor* desc );
-	bool          set_and_write ( pxLOCALREGION region,  pxDescriptor* desc );
-	bool          set           ( pxLOCALREGION region );
-	pxLOCALREGION get           () const;
-	const TCHAR*  get_region_dir() const;
+bool          init          ( const TCHAR*  dir_localize );
+bool          read          ( pxDescriptor* desc );
+bool          set_and_write ( pxLOCALREGION region,  pxDescriptor* desc );
+bool          set           ( pxLOCALREGION region );
+pxLOCALREGION get           () const;
+const TCHAR*  get_region_dir() const;
 };
 
 #endif

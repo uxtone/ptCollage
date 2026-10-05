@@ -19,14 +19,14 @@ static fRECT _rcPanel = {0};
 
 #define _ZOOM_NUM 6
 
-static const int32_t _zoom_table[ _ZOOM_NUM ] = 
+static const int32_t _zoom_table[ _ZOOM_NUM ] =
 {
 	80,
 	40,
 	20,
 	10,
-	 5,
-	 1,
+	5,
+	1,
 };
 
 #define _DEFAULT_ZOOM_INDEX 4
@@ -109,13 +109,13 @@ bool if_Panel_Scale_IsZoomButton( float x, float y )
 
 int32_t  if_Panel_Scale_GetZoom()
 {
-	return 	_zoom_table[ _zoom_index ];
+	return	_zoom_table[ _zoom_index ];
 }
 
 void if_Panel_Scale_SetZoom( int32_t zoom_index )
 {
 	if(  zoom_index < 0          ) return;
-	if(  zoom_index >= _ZOOM_NUM ) return; 
+	if(  zoom_index >= _ZOOM_NUM ) return;
 	_zoom_index = zoom_index;
 	_zoom_save();
 	if_PcmTable_SetParameter( _zoom_table[ _zoom_index ] );

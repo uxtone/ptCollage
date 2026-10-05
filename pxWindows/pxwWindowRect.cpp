@@ -50,7 +50,7 @@ void pxwWindowRect_center( HWND hWnd )
 	if( y                          < rcDesk.top    ) y = rcDesk.top;
 	if( x + (rcMe.right-rcMe.left) > rcDesk.right  ) x = rcDesk.right  - (rcMe.right-rcMe.left);
 	if( y + (rcMe.bottom-rcMe.top) > rcDesk.bottom ) y = rcDesk.bottom - (rcMe.bottom-rcMe.top);
-	
+
 	SetWindowPos( hWnd, NULL, x, y, 0, 0, SWP_NOSIZE|SWP_SHOWWINDOW|SWP_DRAWFRAME );
 
 	PostMessage( hWnd, WM_SIZE, SIZE_RESTORED, 0 );
@@ -122,7 +122,7 @@ term:
 
 	return TRUE;
 }
- 
+
 bool pxwWindowRect_save( HWND hWnd, const TCHAR* name )
 {
 	WINDOWPLACEMENT place = {   };
@@ -139,10 +139,10 @@ bool pxwWindowRect_save( HWND hWnd, const TCHAR* name )
 		if( !GetWindowRect( hWnd, &rc ) ) return false;
 		place.rcNormalPosition = rc;
 	}
-    static int32_t w;
-    w = place.rcNormalPosition.right - place.rcNormalPosition.left;
-    static int32_t h;
-    h = place.rcNormalPosition.bottom - place.rcNormalPosition.top;
+	static int32_t w;
+	w = place.rcNormalPosition.right - place.rcNormalPosition.left;
+	static int32_t h;
+	h = place.rcNormalPosition.bottom - place.rcNormalPosition.top;
 
 	if( !desc->w_asfile( &place.rcNormalPosition, sizeof(RECT), 1 ) ) return false;
 	if( !desc->w_asfile( &place.showCmd,          sizeof(LONG), 1 ) ) return false;

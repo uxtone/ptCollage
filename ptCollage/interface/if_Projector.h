@@ -19,7 +19,7 @@ void    if_Projector_SetFlags   ( int32_t flags );
 bool    if_Projector_IsOpen     ();
 void    if_Projector_SetOpen    ();
 void    if_Projector_Put        ();
-	    
+
 void    if_Projector_RedrawName ( const TCHAR* new_font_name );
 void    if_Projector_SetFocus   ();
 

@@ -12,16 +12,16 @@ void pxtnService::_moo_constructor()
 	_moo_b_end_vomit    = true ;
 	_moo_b_mute_by_unit = false;
 	_moo_b_loop         = true ;
-	
+
 	_moo_fade_fade      =     0;
 	_moo_master_vol     =  1.0f;
 	_moo_bt_clock       =     0;
 	_moo_bt_num         =     0;
-					    
+
 	_moo_freq           = NULL ;
 	_moo_group_smps     = NULL ;
 	_moo_p_eve          = NULL ;
-					    
+
 	_moo_smp_count      =     0;
 	_moo_smp_end        =     0;
 }
@@ -126,53 +126,53 @@ bool pxtnService::_moo_PXTONE_SAMPLE( void *p_data )
 
 		switch( _moo_p_eve->kind )
 		{
-		case EVENTKIND_ON       : 
+		case EVENTKIND_ON       :
+		{
+			int32_t on_count = (int32_t)( (_moo_p_eve->clock + _moo_p_eve->value - clock) * _moo_clock_rate );
+			if( on_count <= 0 ){ p_u->Tone_ZeroLives(); break; }
+
+			p_u->Tone_KeyOn();
+
+			if( !( p_wc = p_u->get_woice() ) ) break;
+			for( int32_t v = 0; v < p_wc->get_voice_num(); v++ )
 			{
-				int32_t on_count = (int32_t)( (_moo_p_eve->clock + _moo_p_eve->value - clock) * _moo_clock_rate );
-				if( on_count <= 0 ){ p_u->Tone_ZeroLives(); break; }
+				p_tone = p_u ->get_tone    ( v );
+				p_vi   = p_wc->get_instance( v );
 
-				p_u->Tone_KeyOn();
-
-				if( !( p_wc = p_u->get_woice() ) ) break;
-				for( int32_t v = 0; v < p_wc->get_voice_num(); v++ )
+				    // release..
+				if( p_vi->env_release )
 				{
-					p_tone = p_u ->get_tone    ( v );
-					p_vi   = p_wc->get_instance( v );
-
-					// release..
-					if( p_vi->env_release )
+					int32_t        max_life_count1 = (int32_t)( ( _moo_p_eve->value - ( clock - _moo_p_eve->clock ) ) * _moo_clock_rate ) + p_vi->env_release;
+					int32_t        max_life_count2;
+					int32_t        c    = _moo_p_eve->clock + _moo_p_eve->value + p_tone->env_release_clock;
+					EVERECORD* next = NULL;
+					for( EVERECORD* p = _moo_p_eve->next; p; p = p->next )
 					{
-						int32_t        max_life_count1 = (int32_t)( ( _moo_p_eve->value - ( clock - _moo_p_eve->clock ) ) * _moo_clock_rate ) + p_vi->env_release;
-						int32_t        max_life_count2;
-						int32_t        c    = _moo_p_eve->clock + _moo_p_eve->value + p_tone->env_release_clock;
-						EVERECORD* next = NULL;
-						for( EVERECORD* p = _moo_p_eve->next; p; p = p->next )
-						{
-							if( p->clock > c ) break;
-							if( p->unit_no == u && p->kind == EVENTKIND_ON ){ next = p; break; }
-						}
-						if( !next ) max_life_count2 = _moo_smp_end - (int32_t)( clock   * _moo_clock_rate );
-						else        max_life_count2 = (int32_t)( ( next->clock -      clock ) * _moo_clock_rate );
-						if( max_life_count1 < max_life_count2 ) p_tone->life_count = max_life_count1;
-						else                                    p_tone->life_count = max_life_count2;
+						if( p->clock > c ) break;
+						if( p->unit_no == u && p->kind == EVENTKIND_ON ){ next = p; break; }
 					}
-					// no-release..
-					else
-					{
-						p_tone->life_count = (int32_t)( ( _moo_p_eve->value - ( clock - _moo_p_eve->clock ) ) * _moo_clock_rate );
-					}
-
-					if( p_tone->life_count > 0 )
-					{
-						p_tone->on_count  = on_count;
-						p_tone->smp_pos   = 0;
-						p_tone->env_pos   = 0;
-						if( p_vi->env_size ) p_tone->env_volume = p_tone->env_start  =   0; // envelope
-						else                 p_tone->env_volume = p_tone->env_start  = 128; // no-envelope
-					}
+					if( !next ) max_life_count2 = _moo_smp_end - (int32_t)( clock   * _moo_clock_rate );
+					else        max_life_count2 = (int32_t)( ( next->clock -      clock ) * _moo_clock_rate );
+					if( max_life_count1 < max_life_count2 ) p_tone->life_count = max_life_count1;
+					else                                    p_tone->life_count = max_life_count2;
 				}
-				break;
+				    // no-release..
+				else
+				{
+					p_tone->life_count = (int32_t)( ( _moo_p_eve->value - ( clock - _moo_p_eve->clock ) ) * _moo_clock_rate );
+				}
+
+				if( p_tone->life_count > 0 )
+				{
+					p_tone->on_count  = on_count;
+					p_tone->smp_pos   = 0;
+					p_tone->env_pos   = 0;
+					if( p_vi->env_size ) p_tone->env_volume = p_tone->env_start  =   0; // envelope
+					else                 p_tone->env_volume = p_tone->env_start  = 128; // no-envelope
+				}
 			}
+			break;
+		}
 
 		case EVENTKIND_KEY       : p_u->Tone_Key       (              _moo_p_eve->value ); break;
 		case EVENTKIND_PAN_VOLUME: p_u->Tone_Pan_Volume( _dst_ch_num, _moo_p_eve->value ); break;
@@ -260,7 +260,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( void *p_data )
 
 
 ///////////////////////
-// get / set 
+// get / set
 ///////////////////////
 
 bool pxtnService::moo_is_valid_data() const
@@ -313,8 +313,8 @@ bool pxtnService::moo_preparation( const pxtnVOMITPREPARATION *p_prep )
 {
 	if( !_moo_b_init || !_moo_b_valid_data || !_dst_ch_num || !_dst_sps || !_dst_byte_per_smp )
 	{
-		 _moo_b_end_vomit = true ;
-		 return false;
+		_moo_b_end_vomit = true ;
+		return false;
 	}
 
 	bool    b_ret        = false;
@@ -332,9 +332,9 @@ bool pxtnService::moo_preparation( const pxtnVOMITPREPARATION *p_prep )
 		start_sample = p_prep->start_pos_sample;
 		start_float  = p_prep->start_pos_float ;
 
-		if( p_prep->meas_end     ) meas_end    	= p_prep->meas_end    ;
-		if( p_prep->meas_repeat  ) meas_repeat 	= p_prep->meas_repeat ;
-		if( p_prep->fadein_sec   ) fadein_sec  	= p_prep->fadein_sec  ;
+		if( p_prep->meas_end     ) meas_end		= p_prep->meas_end    ;
+		if( p_prep->meas_repeat  ) meas_repeat	= p_prep->meas_repeat ;
+		if( p_prep->fadein_sec   ) fadein_sec	= p_prep->fadein_sec  ;
 
 		if( p_prep->flags & pxtnVOMITPREPFLAG_unit_mute ) _moo_b_mute_by_unit = true ;
 		else                                              _moo_b_mute_by_unit = false;
@@ -417,7 +417,7 @@ bool pxtnService::moo_set_master_volume( float v )
 
 
 ////////////////////
-// 
+//
 ////////////////////
 
 bool pxtnService::Moo( void* p_buf, int32_t  size )

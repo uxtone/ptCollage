@@ -50,7 +50,7 @@ void NoiseTable_SetDefault( pxtnPulse_Noise *p_ptn )
 		p_unit->main.volume = 50;
 		p_unit->main.offset = 0;
 		p_unit->main.b_rev  = false;
-						   
+
 		p_unit->freq.type   = pxWAVETYPE_None;
 		p_unit->freq.freq   = 1;
 		p_unit->freq.volume = 0;

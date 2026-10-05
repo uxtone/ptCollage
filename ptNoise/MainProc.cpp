@@ -313,16 +313,16 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		break;
 
 	case WM_PAINT:
-		{
-			HDC         hdc;
-			PAINTSTRUCT ps;
+	{
+		HDC         hdc;
+		PAINTSTRUCT ps;
 
-			hdc = BeginPaint(  hWnd, &ps  );
-			Interface_Process( hWnd, true );
-			EndPaint(          hWnd, &ps  );
-			break;
-		}
+		hdc = BeginPaint(  hWnd, &ps  );
+		Interface_Process( hWnd, true );
+		EndPaint(          hWnd, &ps  );
 		break;
+	}
+	break;
 
 	case WM_ACTIVATE:
 		switch( LOWORD( w ) )
@@ -388,17 +388,17 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 
 	// minimum size
 	case WM_GETMINMAXINFO:
-		{
-			RECT rc_work;
-			SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
+	{
+		RECT rc_work;
+		SystemParametersInfo( SPI_GETWORKAREA, 0, &rc_work, 0 );
 
-			MINMAXINFO* pmm = (MINMAXINFO*)l;
-			pmm->ptMinTrackSize.x = g_MinimizeWidth ; // min w
-			pmm->ptMinTrackSize.y = g_MinimizeHeight; // min h
-			pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
-			pmm->ptMaxTrackSize.y = g_MinimizeHeight; // max h
-		}
-		break;
+		MINMAXINFO* pmm = (MINMAXINFO*)l;
+		pmm->ptMinTrackSize.x = g_MinimizeWidth ; // min w
+		pmm->ptMinTrackSize.y = g_MinimizeHeight; // min h
+		pmm->ptMaxTrackSize.x = rc_work.right   ; // max w
+		pmm->ptMaxTrackSize.y = g_MinimizeHeight; // max h
+	}
+	break;
 
 	case WM_KEYDOWN    :
 	case WM_KEYUP      :
@@ -415,5 +415,5 @@ LRESULT CALLBACK WindowProc_Main( HWND hWnd, UINT msg, WPARAM w, LPARAM l )
 		return DefWindowProc( hWnd, msg, w, l );
 	}
 
-    return 0;
+	return 0;
 }

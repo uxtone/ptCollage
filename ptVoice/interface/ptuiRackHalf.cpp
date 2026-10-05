@@ -16,7 +16,7 @@ void ptuiRackHalf::_release()
 {
 	_b_init = false;
 	pxMem_free( (void**)&_ani_nos );
-	
+
 	SAFE_DELETE( _knob_volume );
 
 	_base_release();
@@ -179,7 +179,7 @@ bool ptuiRackHalf::_cursor_drag_unit(  ptuiCursor* p_cur )
 	switch( idx )
 	{
 	case _KNOB_volume:
-		{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_volume->make_volume( &_rect, &now_x  , fx ); }
+	{ int32_t fx; p_cur->get_pos      ( &fx, NULL ); _knob_volume->make_volume( &_rect, &now_x  , fx ); }
 		{ int32_t fx; p_cur->get_pos_start( &fx, NULL ); _knob_volume->make_volume( &_rect, &start_x, fx ); }
 		_volume_set( (_KNOB_ID)idx, _start_volume + ( now_x - start_x ) );
 		break;

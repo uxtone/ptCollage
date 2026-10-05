@@ -91,8 +91,8 @@ void if_SelectNo_Woice_Update( float cur_x, float cur_y )
 	int32_t v_num      = (int32_t)_select.bottom / NAMEBOX_HEIGHT;
 
 	_select.no  = (int32_t)( cur_x - _select.left       ) / NAMEBOX_WIDTH  * v_num +
-				  (int32_t)( _select.bottom - cur_y - 1 ) / NAMEBOX_HEIGHT % v_num;
-	
+		(int32_t)( _select.bottom - cur_y - 1 ) / NAMEBOX_HEIGHT % v_num;
+
 	if( _select.no <           0 ) _select.no = 0;
 	if( _select.no >= enable_num ) _select.no = enable_num - 1;
 

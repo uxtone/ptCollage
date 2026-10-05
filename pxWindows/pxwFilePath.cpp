@@ -9,7 +9,7 @@ static bool _IsShiftJIS( unsigned char c )
 {
 	if( c >= 0x81 && c <= 0x9F ) return true;
 	if( c >= 0xE0 && c <= 0xEF ) return true;
-	
+
 	return false;
 }
 
@@ -78,8 +78,8 @@ bool pxwFilePath_ArgToPath( const TCHAR* arg, TCHAR* path_dst )
 
 void pxwFilePath_GetSpecial( TCHAR *path, SPECIALPATH special )
 {
-    ITEMIDLIST*    p_item  ;
-    IMalloc*       p_malloc;
+	ITEMIDLIST*    p_item  ;
+	IMalloc*       p_malloc;
 	unsigned short csidl   ;
 
 	switch( special )
@@ -89,13 +89,13 @@ void pxwFilePath_GetSpecial( TCHAR *path, SPECIALPATH special )
 	case SPECIALPATH_MYCOMPUTER: csidl = CSIDL_DRIVES  ; break;
 	}
 
-    if( SUCCEEDED( SHGetMalloc( &p_malloc ) ) )
+	if( SUCCEEDED( SHGetMalloc( &p_malloc ) ) )
 	{
 		SHGetSpecialFolderLocation( GetDesktopWindow(), csidl, &p_item );
-        SHGetPathFromIDList( p_item, path );
+		SHGetPathFromIDList( p_item, path );
 		p_malloc->Free(      p_item );
-        p_malloc->Release();
-    }
+		p_malloc->Release();
+	}
 }
 
 void pxwFilePath_GetDesktop( TCHAR *path )
@@ -104,21 +104,21 @@ void pxwFilePath_GetDesktop( TCHAR *path )
 }
 
 bool pxwFilePath_GetShortcutDirectory( const TCHAR* path_lnk, TCHAR* path_dst )
-{	
+{
 	bool            b_ret = false;
 	IShellLink*     psl   = NULL ;  // IShellLinkへのポインタ
 	IPersistFile*   ppf   = NULL ;  // IPersistFile へのポインタ
 	WIN32_FIND_DATA wfd   = { 0 };
 
 	wchar_t         path_unicode[ MAX_PATH ] = {0}; // Unicode 文字列へのバッファ
-	
-	if( CoCreateInstance   ( CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&psl ) ) goto End; // get IShellLink.	
+
+	if( CoCreateInstance   ( CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void**)&psl ) ) goto End; // get IShellLink.
 	if( psl->QueryInterface( IID_IPersistFile,                                            (void**)&ppf ) ) goto End; // ask IPersistFile.
 
 #ifdef UNICODE
 	_tcscpy( path_unicode, path_lnk );
 #else
-	MultiByteToWideChar( CP_ACP, 0, path_lnk, -1, (LPWSTR)path_unicode, MAX_PATH ); 
+	MultiByteToWideChar( CP_ACP, 0, path_lnk, -1, (LPWSTR)path_unicode, MAX_PATH );
 #endif
 
 	// ショートカットをロードする

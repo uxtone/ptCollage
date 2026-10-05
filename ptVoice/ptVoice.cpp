@@ -27,7 +27,7 @@ void ptv_put_value( float x, float y, int32_t value, const fRECT* rc_clip )
 		value = tbl9[_KETA-1];
 
 	if( value < 0 ){ value *= -1; bMinus = true; }
-	
+
 	xpos = x;
 
 	for( offset = _KETA-1; offset >= 0; offset-- )
@@ -40,7 +40,7 @@ void ptv_put_value( float x, float y, int32_t value, const fRECT* rc_clip )
 		if( bPut || a || !offset ) g_dxdraw->tex_Put_Clip( xpos,     y, &rc     , SURF_PARTS, rc_clip );
 		if(          a          ) bPut = true;
 		xpos += 4;
-	}	
+	}
 }
 
 void ptv_put_value( float x, float y, int32_t value )
@@ -94,7 +94,7 @@ void ptv_put_envesec( float x, float y, int32_t value, const fRECT* rc_clip )
 		value = tbl9[_KETA-1];
 
 	if( value < 0 ){ value *= -1; bMinus = true; }
-	
+
 	xpos = x;
 
 	for( offset = _KETA-1; offset >= 0; offset-- )
@@ -107,6 +107,6 @@ void ptv_put_envesec( float x, float y, int32_t value, const fRECT* rc_clip )
 		if( bPut || a || !offset ) g_dxdraw->tex_Put_Clip( xpos,     y, &rc     , SURF_PARTS, rc_clip );
 		if(          a          ) bPut = true;
 		xpos += 4;
-	}	
+	}
 	*/
 }

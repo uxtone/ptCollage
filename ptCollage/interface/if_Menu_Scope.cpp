@@ -153,19 +153,19 @@ enum_ScopeMenu if_Menu_Scope_GetMenu( float x, float y )
 			x <  _scope_menu.x + BUTTON_COPY_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_COPY_Y                 &&
 			y <  _scope_menu.y + BUTTON_COPY_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Paste;
-		}else if( 
+			_scope_menu.menu = enum_ScopeMenu_Paste;
+		}else if(
 			x >= _scope_menu.x + BUTTON_CUT_X                  &&
 			x <  _scope_menu.x + BUTTON_CUT_X  + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_CUT_Y                  &&
 			y <  _scope_menu.y + BUTTON_CUT_Y  + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Insert;
-		}else if( 
+			_scope_menu.menu = enum_ScopeMenu_Insert;
+		}else if(
 			x >= _scope_menu.x + BUTTON_CLEAR_X                 &&
 			x <  _scope_menu.x + BUTTON_CLEAR_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_CLEAR_Y                 &&
 			y <  _scope_menu.y + BUTTON_CLEAR_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Scope;
+			_scope_menu.menu = enum_ScopeMenu_Scope;
 		}else{
 			_scope_menu.menu = enum_ScopeMenu_None;
 		}
@@ -176,42 +176,42 @@ enum_ScopeMenu if_Menu_Scope_GetMenu( float x, float y )
 			x <  _scope_menu.x + BUTTON_COPY_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_COPY_Y                 &&
 			y <  _scope_menu.y + BUTTON_COPY_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Copy;
-		}else if( 
+			_scope_menu.menu = enum_ScopeMenu_Copy;
+		}else if(
 			x >= _scope_menu.x + BUTTON_CUT_X                  &&
 			x <  _scope_menu.x + BUTTON_CUT_X  + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_CUT_Y                  &&
 			y <  _scope_menu.y + BUTTON_CUT_Y  + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Cut;
+			_scope_menu.menu = enum_ScopeMenu_Cut;
 		}else if(
 			x >= _scope_menu.x + BUTTON_CLEAR_X                 &&
 			x <  _scope_menu.x + BUTTON_CLEAR_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_CLEAR_Y                 &&
 			y <  _scope_menu.y + BUTTON_CLEAR_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Clear;
+			_scope_menu.menu = enum_ScopeMenu_Clear;
 		}else if(
 			x >= _scope_menu.x + BUTTON_DELETE_X                 &&
 			x <  _scope_menu.x + BUTTON_DELETE_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_DELETE_Y                 &&
 			y <  _scope_menu.y + BUTTON_DELETE_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Delete;
+			_scope_menu.menu = enum_ScopeMenu_Delete;
 		}else if(
 			x >= _scope_menu.x + BUTTON_TRANSPOSE_X                 &&
 			x <  _scope_menu.x + BUTTON_TRANSPOSE_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_TRANSPOSE_Y                 &&
 			y <  _scope_menu.y + BUTTON_TRANSPOSE_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Transpose;
+			_scope_menu.menu = enum_ScopeMenu_Transpose;
 		}else if(
 			x >= _scope_menu.x + BUTTON_SCOPE_X                 &&
 			x <  _scope_menu.x + BUTTON_SCOPE_X + BUTTON_WIDTH  &&
 			y >= _scope_menu.y + BUTTON_SCOPE_Y                 &&
 			y <  _scope_menu.y + BUTTON_SCOPE_Y + BUTTON_HEIGHT ){
-				_scope_menu.menu = enum_ScopeMenu_Scope;
+			_scope_menu.menu = enum_ScopeMenu_Scope;
 		}else{
 			_scope_menu.menu = enum_ScopeMenu_None;
 		}
 	}
-	return 	_scope_menu.menu;
+	return	_scope_menu.menu;
 }
 
 void if_Menu_Scope_Put()

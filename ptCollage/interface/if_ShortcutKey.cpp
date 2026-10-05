@@ -46,7 +46,7 @@ bool if_ShortcutKey_Action( HWND hWnd )
 		else if( KeyControl_IsKeyTrigger( 'C' ) ){ if_Menu_Scope_SetActive( false ); if_ScopeField_GetSelected( &clock1, &clock2 ); ScopeEvent_Copy( clock1, clock2, if_Copier_GetEventKinds() ); } // copy.
 		else if( KeyControl_IsKeyTrigger( 'V' ) ){ if_Menu_Scope_SetActive( false ); if_ScopeField_GetSelected( &clock1, &clock2 ); ScopeEvent_Paste( clock1,     1, if_Copier_GetEventKinds() ); return true; }// paste.
 		else if( KeyControl_IsKeyTrigger( 'X' ) )
-		{ 
+		{
 			if_Copier_AllCheck();
 			if_Menu_Scope_SetActive( false );
 			if_ScopeField_GetSelected( &clock1, &clock2 );

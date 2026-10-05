@@ -9,11 +9,11 @@ private:
 
 public:
 
-	ptConfig_Font();
+ptConfig_Font();
 
-	TCHAR name[ BUFSIZE_FONTNAME ];
+TCHAR name[ BUFSIZE_FONTNAME ];
 
-	void set_default();
-	bool write( pxDescriptor* desc ) const;
-	bool read ( pxDescriptor* desc );
+void set_default();
+bool write( pxDescriptor* desc ) const;
+bool read ( pxDescriptor* desc );
 };

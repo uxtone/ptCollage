@@ -50,7 +50,7 @@ bool pxDateTime_get_now( pxDATETIME *p_datetime )
 {
 	struct tm t ;
 	time_t    tt; time( &tt );
-		
+
 	memcpy( &t, localtime( &tt ), sizeof(t) );
 
 	p_datetime->Y = t.tm_year - 100 + _thousands;

@@ -160,7 +160,7 @@ bool ptuiWaveHead::_cursor_click_hold( ptuiCursor* p_cur )
 		}
 		_unit_anime_set( idx, 0 );
 	}
-	else 
+	else
 	{
 		_unit_anime_set( idx, 2 );
 	}

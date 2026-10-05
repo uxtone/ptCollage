@@ -10,7 +10,7 @@ enum enum_ScopeMenu
 	enum_ScopeMenu_Paste    ,
 	enum_ScopeMenu_Insert   ,
 	enum_ScopeMenu_Transpose,
-	enum_ScopeMenu_Scope    , 
+	enum_ScopeMenu_Scope    ,
 };
 
 

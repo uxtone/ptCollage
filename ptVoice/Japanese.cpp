@@ -12,7 +12,7 @@ extern HINSTANCE g_hInst;
 
 static BOOL _bJapanese;
 
-typedef struct{
+typedef struct {
 	int id;
 	char *pTextE;
 	char *pTextJ;
@@ -30,13 +30,13 @@ DLGITEMIDTEXT _DlgItem_table[] = {
 //	{IDC_TEXT_AT_BPS           , "Bit/Sample",             "サンプルビット"               },
 	{IDC_TEXT_AT_SPS           , "Sample/Second",          "秒間サンプル"                 },
 	{IDC_TEXT_AT_BUFFER        , "Buffer",                 "バッファ"                     },
-														 
+
 	{IDC_TEXT_BUILD_QUALITY    , "Build Quality",          "ビルド音質"                   },
 	{IDC_TEXT_BUILD_CHANNEL    , "Channel",                "チャンネル"                   },
 //	{IDC_TEXT_BUILD_BPS        , "Bit/Sample",             "サンプルビット"               },
 	{IDC_TEXT_BUILD_SPS        , "Sample/Second",          "秒間サンプル"                 },
 	{IDC_TEXT_SECOND           , "sec",                    "秒"                           },
-														 
+
 	{IDC_TEXT_CONFIGTITLE      , "== Unit Config ==",      "≪波形の設定≫"               },
 	{IDC_TEXT_BASICKEY         , "basic key"        ,      "基本キー"                     },
 	{IDC_TEXT_HEARSELECT       , "== Select File ==",      "≪音源の選択≫"               },
@@ -49,14 +49,14 @@ DLGITEMIDTEXT _DlgItem_table[] = {
 
 void Japanese_DialogItem_Change( HWND hWnd )
 {
-    long i;
+	long i;
 
-    for( i = 0; i < CTRLNUM; i++ ){
-        if( GetDlgItem( hWnd, _DlgItem_table[i].id ) ){
-            if( _bJapanese ) SetDlgItemText( hWnd, _DlgItem_table[i].id, (LPTSTR)_DlgItem_table[i].pTextJ );
-            else             SetDlgItemText( hWnd, _DlgItem_table[i].id, (LPTSTR)_DlgItem_table[i].pTextE );
-        }
-    }
+	for( i = 0; i < CTRLNUM; i++ ){
+		if( GetDlgItem( hWnd, _DlgItem_table[i].id ) ){
+			if( _bJapanese ) SetDlgItemText( hWnd, _DlgItem_table[i].id, (LPTSTR)_DlgItem_table[i].pTextJ );
+			else             SetDlgItemText( hWnd, _DlgItem_table[i].id, (LPTSTR)_DlgItem_table[i].pTextE );
+		}
+	}
 }
 
 
@@ -85,50 +85,50 @@ DLGITEMIDTEXT _MenuItem_table[] = {
 
 void Japanese_MenuItem_Change( HMENU hMenu )
 {
-    long pos;
-    long i;
-    long id;
-    char str[32];
+	long pos;
+	long i;
+	long id;
+	char str[32];
 
-    HMENU hSub;
+	HMENU hSub;
 
 
-    for( pos = 0; pos < MENUNUM; pos++ ){
-        if( GetMenuString( hMenu, pos, (LPTSTR)str, 32, MF_BYPOSITION ) ){
+	for( pos = 0; pos < MENUNUM; pos++ ){
+		if( GetMenuString( hMenu, pos, (LPTSTR)str, 32, MF_BYPOSITION ) ){
 
-            // 該当を探す
-            for( i = 0; i < MENUNUM; i++ ){
-                if( _bJapanese ){
-                    if( !strcmp( str, _MenuItem_table[i].pTextE ) ) break;
-                }else{
-                    if( !strcmp( str, _MenuItem_table[i].pTextJ ) ) break;
-                }
-            }
-            // 書きかえ
-            if( i != MENUNUM ){
+			// 該当を探す
+			for( i = 0; i < MENUNUM; i++ ){
+				if( _bJapanese ){
+					if( !strcmp( str, _MenuItem_table[i].pTextE ) ) break;
+				}else{
+					if( !strcmp( str, _MenuItem_table[i].pTextJ ) ) break;
+				}
+			}
+			// 書きかえ
+			if( i != MENUNUM ){
 
-                id = GetMenuItemID( hMenu, pos );
-                if( id == 0xffffffff ){
-                    hSub = GetSubMenu( hMenu, pos );
-                    if( hSub ){
-                        if( _bJapanese ){
-                            ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (INT_PTR)hSub, (LPTSTR)_MenuItem_table[i].pTextJ );
-                        }else{
-                            ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (INT_PTR)hSub, (LPTSTR)_MenuItem_table[i].pTextE );
-                        }
-                        // 再帰！！
-                        Japanese_MenuItem_Change( hSub );
-                    }
-                }else{
-                    if( _bJapanese ){
-                        ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id,   (LPTSTR)_MenuItem_table[i].pTextJ );
-                    }else{
-                        ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id,   (LPTSTR)_MenuItem_table[i].pTextE );
-                    }
-                }
-            }
-        }
-    }
+				id = GetMenuItemID( hMenu, pos );
+				if( id == 0xffffffff ){
+					hSub = GetSubMenu( hMenu, pos );
+					if( hSub ){
+						if( _bJapanese ){
+							ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (INT_PTR)hSub, (LPTSTR)_MenuItem_table[i].pTextJ );
+						}else{
+							ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, (INT_PTR)hSub, (LPTSTR)_MenuItem_table[i].pTextE );
+						}
+						// 再帰！！
+						Japanese_MenuItem_Change( hSub );
+					}
+				}else{
+					if( _bJapanese ){
+						ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id,   (LPTSTR)_MenuItem_table[i].pTextJ );
+					}else{
+						ModifyMenu( hMenu, pos, MF_BYPOSITION|MFT_STRING, id,   (LPTSTR)_MenuItem_table[i].pTextE );
+					}
+				}
+			}
+		}
+	}
 }
 
 
@@ -148,15 +148,15 @@ void Japanese_MessageBox( HWND hWnd, const char *message, const char *title )
 	MESSAGEDIALOGSTRUCT msg;
 	long i;
 
-    msg.p_message = (LPTSTR)message;
-    msg.p_title   = (LPTSTR)title;
+	msg.p_message = (LPTSTR)message;
+	msg.p_title   = (LPTSTR)title;
 
 	if( _bJapanese ){
 		for( i = 0; i < MESSAGENUM; i++ ){ if( !stricmp( message, _Message_table[ i ].pTextE ) ) break; }
-        if(         i < MESSAGENUM ) msg.p_message = (LPTSTR)_Message_table[ i ].pTextJ;
+		if(         i < MESSAGENUM ) msg.p_message = (LPTSTR)_Message_table[ i ].pTextJ;
 
 		for( i = 0; i < MESSAGENUM; i++ ){ if( !stricmp( title,   _Message_table[ i ].pTextE ) ) break; }
-        if(         i < MESSAGENUM ) msg.p_title   = (LPTSTR)_Message_table[ i ].pTextJ;
+		if(         i < MESSAGENUM ) msg.p_title   = (LPTSTR)_Message_table[ i ].pTextJ;
 	}
 
 //TODO: find out where this symbol comes from
