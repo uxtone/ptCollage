@@ -30,11 +30,11 @@ int32_t pxwDx09Draw::SceneCount() const{ return _scene_count; }
 
 typedef struct
 {
-    float x;
-    float y;
-    float z;
-    float rhw;
-    DWORD color;
+	float x;
+	float y;
+	float z;
+	float rhw;
+	DWORD color;
 }
 _VERTEXBOX;
 
@@ -60,7 +60,7 @@ pxwDx09Draw::pxwDx09Draw( const pxFile2* file_data )
 	_b_on_scene      = false;
 	_b_on_sprite     = false;
 	_delay_fullscreen_text = _DELAY_FULLSCREENTEXT;
-	
+
 	_client_rect_w =     0;
 	_client_rect_h =     0;
 
@@ -78,12 +78,13 @@ pxwDx09Draw::pxwDx09Draw( const pxFile2* file_data )
 	memset( &_d3dprm_fullscreen, 0, sizeof(_d3dprm_fullscreen) );
 
 	_texs = NULL;
-	
+
 	memset( &_view_clip, 0, sizeof(_view_clip) );
 	_view_ofs_x = 0;
 	_view_ofs_y = 0;
 
-	_def_pal    = NULL;}
+	_def_pal    = NULL;
+}
 
 pxwDx09Draw::~pxwDx09Draw()
 {
@@ -271,11 +272,11 @@ bool pxwDx09Draw::init( HWND hWnd )
 
 	_d3dprm = _b_fullscreen ? _d3dprm_fullscreen : _d3dprm_window;
 
-    if( FAILED( _d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,D3DCREATE_HARDWARE_VERTEXPROCESSING, &_d3dprm, &_device ) ) &&
-        FAILED( _d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &_d3dprm, &_device ) ) )
+	if( FAILED( _d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,D3DCREATE_HARDWARE_VERTEXPROCESSING, &_d3dprm, &_device ) ) &&
+		FAILED( _d3d->CreateDevice( D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hWnd,D3DCREATE_SOFTWARE_VERTEXPROCESSING, &_d3dprm, &_device ) ) )
 	{
 		return false;
-    }
+	}
 
 	if( FAILED(D3DXCreateSprite( _device, &_sprt ) ) ) return false;
 
@@ -297,7 +298,7 @@ void pxwDx09Draw::release()
 	SAFE_RELEASE( _device   );
 	SAFE_RELEASE( _d3d      );
 
-	if( _texs         ) free( _texs                ); _texs         = NULL; 
+	if( _texs         ) free( _texs                ); _texs         = NULL;
 }
 
 void pxwDx09Draw::GetViewOffset( float *px, float *py )
@@ -347,8 +348,8 @@ bool pxwDx09Draw::Begin( bool* pb_tex_reloaded )
 		if( pb_tex_reloaded ) *pb_tex_reloaded = true;
 	}
 
-    if( FAILED( _device->BeginScene() ) ) return false;
-	
+	if( FAILED( _device->BeginScene() ) ) return false;
+
 	_b_on_scene = true ;
 
 	if( _b_fullscreen )
@@ -527,7 +528,7 @@ bool pxwDx09Draw::d3d_font_init( const TCHAR *font_name, int32_t font_size )
 		&_d3d_font               // フォントポインタ
 		);
 
-	if FAILED(hr) return false;
+	if( FAILED(hr) ) return false;
 	return true;
 }
 
@@ -781,7 +782,7 @@ uint32_t  pxwDx09Draw::tex_load( const TCHAR *dir, const TCHAR *name, int32_t tx
 
 	{
 		TCHAR* p_name = pt->p_name;
-		TCHAR* p_dir  = pt->p_dir ;		
+		TCHAR* p_dir  = pt->p_dir ;
 		if( name && !pxStrT_copy_allocate( &pt->p_name, name ) ) goto term;
 		if( dir  && !pxStrT_copy_allocate( &pt->p_dir , dir  ) ) goto term;
 		pxStrT_free( &p_name );
@@ -950,19 +951,19 @@ bool pxwDx09Draw::FillRect( const fRECT *p_rc, float a, float r, float g, float 
 	rc.t += _view_ofs_y;
 	rc.b += _view_ofs_y;
 
-	DWORD clr = 
-		((DWORD)(255.f*a)) << 24 | 
-		((DWORD)(255.f*r)) << 16 |
-		((DWORD)(255.f*g)) <<  8 |
-		((DWORD)(255.f*b)) <<  0;
+	DWORD clr =
+		((DWORD)(255.f*a)) << 24 |
+				((DWORD)(255.f*r)) << 16 |
+				((DWORD)(255.f*g)) <<  8 |
+				((DWORD)(255.f*b)) <<  0;
 
 	const _VERTEXBOX vtxs[4] =
 	{
-        { rc.l * _screen_mag, rc.t * _screen_mag, 0.f, 1.f, clr },
-        { rc.r * _screen_mag, rc.t * _screen_mag, 0.f, 1.f, clr },
-        { rc.l * _screen_mag, rc.b * _screen_mag, 0.f, 1.f, clr },
-        { rc.r * _screen_mag, rc.b * _screen_mag, 0.f, 1.f, clr }
-    };
+		{ rc.l * _screen_mag, rc.t * _screen_mag, 0.f, 1.f, clr },
+		{ rc.r * _screen_mag, rc.t * _screen_mag, 0.f, 1.f, clr },
+		{ rc.l * _screen_mag, rc.b * _screen_mag, 0.f, 1.f, clr },
+		{ rc.r * _screen_mag, rc.b * _screen_mag, 0.f, 1.f, clr }
+	};
 	_device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
 
 	_device->SetRenderState(D3DRS_ALPHABLENDENABLE,TRUE           ); //アルファブレンディングの有効化

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Formats the staged first-party C/C++ files with uncrustify (see uncrustify.cfg)
+# and re-stages them, so a commit never adds unformatted code.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+# Skip for one commit:    git commit --no-verify
+set -u
+
+root=$(git rev-parse --show-toplevel) || exit 1
+cd "$root" || exit 1
+cfg="$root/uncrustify.cfg"
+
+# uncrustify lives in the flake's dev shell; fall back to direnv when the hook
+# is run from somewhere that doesn't have that environment (an editor, a GUI).
+if command -v uncrustify >/dev/null 2>&1; then
+	fmt=(uncrustify)
+elif command -v direnv >/dev/null 2>&1 && direnv exec "$root" uncrustify --version >/dev/null 2>&1; then
+	fmt=(direnv exec "$root" uncrustify)
+else
+	echo "pre-commit: uncrustify not found, skipping the format step." >&2
+	exit 0
+fi
+
+tmp=$(mktemp -d) || exit 1
+trap 'rm -rf "$tmp"' EXIT
+
+status=0
+while IFS= read -r -d '' file; do
+	case "$file" in
+		# third-party sources are never reformatted.
+		lpng/*|zlib/*|libogg/*|libvorbis/*|DirectX9/*) continue ;;
+		*.cpp|*.h|*.c) ;;
+		*) continue ;;
+	esac
+
+	git show ":$file" > "$tmp/staged" 2>/dev/null || continue
+	[ -s "$tmp/staged" ] || continue
+
+	# format what is staged, not what is in the working tree.
+	if ! "${fmt[@]}" -q -c "$cfg" -l CPP < "$tmp/staged" > "$tmp/formatted" 2>/dev/null || [ ! -s "$tmp/formatted" ]; then
+		echo "pre-commit: uncrustify could not parse $file, left as is." >&2
+		continue
+	fi
+	cmp -s "$tmp/staged" "$tmp/formatted" && continue
+
+	if git diff --quiet -- "$file"; then
+		# nothing unstaged in this file: safe to rewrite it and stage the result.
+		cat "$tmp/formatted" > "$file"
+		git add -- "$file"
+		echo "pre-commit: formatted $file"
+	else
+		# partially staged: rewriting would mix in the unstaged part.
+		echo "pre-commit: $file needs formatting but has unstaged changes." >&2
+		echo "            run: uncrustify -c uncrustify.cfg -l CPP --no-backup $file" >&2
+		status=1
+	fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+
+exit $status

@@ -1,4 +1,4 @@
-project(pxtone-works)
+project(pxtone-works2)
 
 set(PROJECT_SOURCES
     uxWindowMenu.cpp

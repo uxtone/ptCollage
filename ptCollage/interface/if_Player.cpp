@@ -97,7 +97,9 @@ bool if_Player_SavePosition()
 	bool          b_ret = false;
 	pxDescriptor* desc  = NULL ;
 
-	if( _ref_file_profile->open_w( &desc, _status_name, NULL, NULL ) )
+	// was "if( open_w(..) )" with no braces: it only guarded the first write, so a failed
+	// open (read-only folder) went on to write through a NULL descriptor.
+	if( !_ref_file_profile->open_w( &desc, _status_name, NULL, NULL ) ) goto term;
 	if( !desc->w_asfile( &_player.x     , sizeof(int32_t), 1 ) ) goto term;
 	if( !desc->w_asfile( &_player.y     , sizeof(int32_t), 1 ) ) goto term;
 	if( !desc->w_asfile( &_player.flags , sizeof(int32_t), 1 ) ) goto term;
@@ -159,7 +161,7 @@ bool if_Player_CheckButton( float x, float y )
 	{
 		if( _player.flags & _PLAYERFLAG_CHECK_LOOP ){ _player.flags &= ~_PLAYERFLAG_CHECK_LOOP; g_strm_xa2->tune_order_loop( false ); }
 		else                                        { _player.flags |=  _PLAYERFLAG_CHECK_LOOP; g_strm_xa2->tune_order_loop( true  ); }
-		 
+
 		return true;
 	}
 
@@ -236,7 +238,7 @@ void if_Player_Put()
 	g_dxdraw->tex_Put_View( _player.x, _player.y, &rc_frame, SURF_DIALOGS );
 
 	g_dxdraw->tex_Put_View( _player.x + _BUTTON_PLAY_X, _player.y + _BUTTON_PLAY_Y,
-					&rcPlayButton[ _player.play_button_anime ], SURF_DIALOGS );
+							&rcPlayButton[ _player.play_button_anime ], SURF_DIALOGS );
 	if( _player.flags & _PLAYERFLAG_CHECK_LOOP )
 		g_dxdraw->tex_Put_View( _player.x + _BUTTON_LOOP_X, _player.y + _BUTTON_LOOP_Y, &rc_switch, SURF_DIALOGS );
 	if( _player.flags & _PLAYERFLAG_CHECK_SCRL )
@@ -248,7 +250,7 @@ void if_Player_Put()
 	rcVolume.r = rcVolume.l + v;
 	g_dxdraw->tex_Put_View( _player.x + _BUTTON_VOLUME_X, _player.y + _BUTTON_VOLUME_Y, &rcVolume, SURF_DIALOGS );
 	g_dxdraw->tex_Put_View( _player.x + _BUTTON_VOLUME_X + v - 2, _player.y + _BUTTON_VOLUME_Y-2, &rcVoltab, SURF_DIALOGS );
-	
+
 #ifdef _DEBUG
 	if_gen_num6( _player.x, _player.y    , _player.x, 3 );
 	if_gen_num6( _player.x, _player.y + 8, _player.y, 3 );

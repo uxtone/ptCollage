@@ -25,7 +25,7 @@ static fRECT        _rcPanel   = {0};
 #define _ZOOM_NUM  4
 
 static const int _divi_table[ _DIVI_NUM ] = {1,2,3,4,6,8,12,16,24,48};
-static const int _zoom_table[ _ZOOM_NUM ] = 
+static const int _zoom_table[ _ZOOM_NUM ] =
 {
 	DEFAULT_BEATWIDTH/2,
 	DEFAULT_BEATWIDTH*1,
@@ -66,7 +66,8 @@ bool if_Panel_Scale_Save()
 	bool          b_ret = false;
 	pxDescriptor* desc  = NULL ;
 
-	if( _ref_file_profile->open_w( &desc, _file_name, NULL, NULL ) )
+	// was "if( open_w(..) )" with no braces: only the first write was guarded (see if_Player_SavePosition).
+	if( !_ref_file_profile->open_w( &desc, _file_name, NULL, NULL ) ) goto term;
 	if( !desc->w_asfile( &_divi_index, sizeof(int), 1 )  ) goto term;
 	if( !desc->w_asfile( &_zoom_index, sizeof(int), 1 )  ) goto term;
 
@@ -132,7 +133,7 @@ bool if_Panel_Scale_IsDiviButton( float x, float y )
 
 int32_t  if_Panel_Scale_GetDivision()
 {
-	return 	_divi_table[ _divi_index ];
+	return	_divi_table[ _divi_index ];
 }
 
 void if_Panel_Scale_SetDivision( int32_t divi_index )
@@ -145,7 +146,7 @@ void if_Panel_Scale_SetDivision( int32_t divi_index )
 
 int32_t  if_Panel_Scale_GetZoom()
 {
-	return 	_zoom_table[ _zoom_index ];
+	return	_zoom_table[ _zoom_index ];
 }
 
 void if_Panel_Scale_SetZoom( int32_t zoom_index )
