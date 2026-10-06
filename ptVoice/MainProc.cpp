@@ -1,7 +1,8 @@
 ﻿
 
 #include <pxwDx09Draw.h>
-#include <uxStr.h>
+
+
 #include <pxPath.h>
 extern pxwDx09Draw*    g_dxdraw  ;
 

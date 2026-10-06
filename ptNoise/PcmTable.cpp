@@ -1,6 +1,7 @@
 ﻿
 #include <pxtnPulse_NoiseBuilder.h>
-#include <uxStr.h>
+
+
 extern pxtnPulse_NoiseBuilder* g_noise_bldr;
 
 #include <pxtonewinXA2.h>

@@ -1,7 +1,8 @@
 ﻿#ifndef PX_JAPANESE_INIT
 
 #include <pxStdDef.h>
-#include <uxStr.h>
+
+
 
 #include "Japanese.h"
 

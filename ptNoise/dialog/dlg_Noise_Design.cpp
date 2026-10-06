@@ -1,6 +1,7 @@
-﻿
+
 #include <pxtnPulse_NoiseBuilder.h>
-#include <uxStr.h>
+
+
 #include <pxPath.h>
 extern pxtnPulse_NoiseBuilder *g_noise_bldr;
 
@@ -271,9 +272,9 @@ static bool _GetInputParameter( HWND hDlg )
 
 	if( !( p_unit = _p_noise->get_unit( _u ) ) ) return false;
 
-	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_1, uxTOut( str ), 10 ); f = (float)_ttof( uxT( str ) ); p_unit->enves[ 0 ].x = (int32_t)( f * 1000 + 0.5 );
-	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_2, uxTOut( str ), 10 ); f = (float)_ttof( uxT( str ) ); p_unit->enves[ 1 ].x = (int32_t)( f * 1000 + 0.5 );
-	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_3, uxTOut( str ), 10 ); f = (float)_ttof( uxT( str ) ); p_unit->enves[ 2 ].x = (int32_t)( f * 1000 + 0.5 );
+	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_1, uxTOut( str ), 10 ); f = (float)ux_S::to_double( str ); p_unit->enves[ 0 ].x = (int32_t)( f * 1000 + 0.5 );
+	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_2, uxTOut( str ), 10 ); f = (float)ux_S::to_double( str ); p_unit->enves[ 1 ].x = (int32_t)( f * 1000 + 0.5 );
+	GetDlgItemText( hDlg, IDC_ENVELOPE_SEC_3, uxTOut( str ), 10 ); f = (float)ux_S::to_double( str ); p_unit->enves[ 2 ].x = (int32_t)( f * 1000 + 0.5 );
 
 	p_unit->enves[ 0 ].y = GetDlgItemInt( hDlg, IDC_ENVELOPE_VOL_1, NULL, true );
 	p_unit->enves[ 1 ].y = GetDlgItemInt( hDlg, IDC_ENVELOPE_VOL_2, NULL, true );
@@ -282,23 +283,23 @@ static bool _GetInputParameter( HWND hDlg )
 	// main
 	p_unit->main.type     = (pxWAVETYPE)SendDlgItemMessage( hDlg, IDC_COMBO_TYPE_MAIN    , CB_GETCURSEL, 0, 0 );
 	p_unit->main.b_rev = IsDlgButtonChecked( hDlg, IDC_CHECK_REVERSE_MAIN ) ? true : false;
-	GetDlgItemText( hDlg, IDC_FREQUENCY_MAIN  , uxTOut( str ), 10 ); p_unit->main.freq   = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_VOLUME_MAIN     , uxTOut( str ), 10 ); p_unit->main.volume = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_OFFSET_MAIN     , uxTOut( str ), 10 ); p_unit->main.offset = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_FREQUENCY_MAIN  , uxTOut( str ), 10 ); p_unit->main.freq   = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_VOLUME_MAIN     , uxTOut( str ), 10 ); p_unit->main.volume = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_OFFSET_MAIN     , uxTOut( str ), 10 ); p_unit->main.offset = (float)ux_S::to_double( str );
 
 	// freq
 	p_unit->freq.type     = (pxWAVETYPE)SendDlgItemMessage( hDlg, IDC_COMBO_TYPE_FREQ    , CB_GETCURSEL, 0, 0 );
 	p_unit->freq.b_rev = IsDlgButtonChecked( hDlg, IDC_CHECK_REVERSE_FREQ ) ? true : false;
-	GetDlgItemText( hDlg, IDC_FREQUENCY_FREQ  , uxTOut( str ), 10 ); p_unit->freq.freq   = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_VOLUME_FREQ     , uxTOut( str ), 10 ); p_unit->freq.volume = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_OFFSET_FREQ     , uxTOut( str ), 10 ); p_unit->freq.offset = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_FREQUENCY_FREQ  , uxTOut( str ), 10 ); p_unit->freq.freq   = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_VOLUME_FREQ     , uxTOut( str ), 10 ); p_unit->freq.volume = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_OFFSET_FREQ     , uxTOut( str ), 10 ); p_unit->freq.offset = (float)ux_S::to_double( str );
 
 	// volume
 	p_unit->volu.type     = (pxWAVETYPE)SendDlgItemMessage( hDlg, IDC_COMBO_TYPE_VOLUME, CB_GETCURSEL, 0, 0 );
 	p_unit->volu.b_rev = IsDlgButtonChecked( hDlg, IDC_CHECK_REVERSE_VOLUME ) ? true : false;
-	GetDlgItemText( hDlg, IDC_FREQUENCY_VOLUME, uxTOut( str ), 10 ); p_unit->volu.freq   = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_VOLUME_VOLUME   , uxTOut( str ), 10 ); p_unit->volu.volume = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_OFFSET_VOLUME   , uxTOut( str ), 10 ); p_unit->volu.offset = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_FREQUENCY_VOLUME, uxTOut( str ), 10 ); p_unit->volu.freq   = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_VOLUME_VOLUME   , uxTOut( str ), 10 ); p_unit->volu.volume = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_OFFSET_VOLUME   , uxTOut( str ), 10 ); p_unit->volu.offset = (float)ux_S::to_double( str );
 
 	_p_noise->set_smp_num_44k( GetDlgItemInt( hDlg, IDC_SAMPLENUM , NULL, true ) );
 	p_unit->bEnable     = IsDlgButtonChecked( hDlg, IDC_CHECK_ENABLE ) ? true : false;

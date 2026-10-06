@@ -2,7 +2,8 @@
 #ifndef pxSTDAFX_H
 #include <string.h> // strlen
 #endif
-#include <uxStr.h>
+
+
 
 #include "./pxShiftJIS.h"
 #include "./pxUTF8.h"

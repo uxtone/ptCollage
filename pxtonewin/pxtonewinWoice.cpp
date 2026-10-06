@@ -1,6 +1,7 @@
 ﻿
 #include <stdio.h>
-#include <uxStr.h>
+
+
 #include <cstdint>
 
 #pragma comment(lib, "shlwapi" )

@@ -3,7 +3,8 @@
 #pragma comment(lib, "d3dx9"  )
 
 #include <pxMem.h>
-#include <uxStr.h>
+
+
 #include <pxDebugLog.h>
 
 #include <pxStrT.h>

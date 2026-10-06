@@ -6,7 +6,8 @@ extern pxtnService *g_pxtn;
 #include <pxwUTF8.h>
 
 // #include <pxTText.h>
-#include <uxStr.h>
+
+
 #include <pxStr.h>
 #include <pxMem.h>
 

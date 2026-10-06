@@ -1,6 +1,7 @@
 ﻿
 #include <pxtnService.h>
-#include <uxStr.h>
+
+
 #include <pxPath.h>
 extern pxtnService*            g_pxtn    ;
 
@@ -12,7 +13,8 @@ extern pxtonewinXA2*           g_strm_xa2;
 
 #include <pxDebugLog.h>
 // #include <pxTText.h>
-#include <uxStr.h>
+
+
 
 #include <pxwPathDialog.h>
 extern pxwPathDialog* g_path_dlg_proj;

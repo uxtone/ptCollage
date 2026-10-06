@@ -2,7 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxError.h"
-#include <uxStr.h>
+
+
 #include "./pxMem.h"
 
 #include "./pxPlayPCM.h"

@@ -1,6 +1,7 @@
-﻿
+
 #include <pxwWindowRect.h>
-#include <uxStr.h>
+
+
 #include <pxwFilePath.h>
 
 #include "../../Generic/Japanese.h"
@@ -33,7 +34,7 @@ static bool _GetInputParameter( HWND hDlg, ptConfig *p_c )
 {
 	p_c->set_default();
 
-	uxSS<10> str; GetDlgItemText( hDlg, IDC_AT_BUFFER, uxTOut( str ), 10 ); p_c->strm->buf_sec = (float)_ttof( uxT( str ) );
+	uxSS<10> str; GetDlgItemText( hDlg, IDC_AT_BUFFER, uxTOut( str ), 10 ); p_c->strm->buf_sec = (float)ux_S::to_double( str );
 
 	ptConfig_cmb_quality_get( hDlg,
 							  IDC_COMBO_AT_CHANNEL, &p_c->strm->ch_num,

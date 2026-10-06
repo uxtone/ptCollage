@@ -1,6 +1,7 @@
-﻿
+
 #include <pxtnService.h>
-#include <uxStr.h>
+
+
 extern pxtnService* g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -103,9 +104,9 @@ static bool _GetInputParameter( HWND hDlg, ptConfig_Build *p_c )
 	p_c->scope_mode = (BUILDSCOPEMODE) SendDlgItemMessage( hDlg, IDC_COMBO_PLAYSCOPE, CB_GETCURSEL, 0, 0 );
 
 	uxSS<10> str;
-	GetDlgItemText( hDlg, IDC_PLAYTIME , uxTOut( str ), 10 ); p_c->sec_playtime  = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_EXTRAFADE, uxTOut( str ), 10 ); p_c->sec_extrafade = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_VOLUME   , uxTOut( str ), 10 ); p_c->volume        = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_PLAYTIME , uxTOut( str ), 10 ); p_c->sec_playtime  = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_EXTRAFADE, uxTOut( str ), 10 ); p_c->sec_extrafade = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_VOLUME   , uxTOut( str ), 10 ); p_c->volume        = (float)ux_S::to_double( str );
 
 	return true;
 }

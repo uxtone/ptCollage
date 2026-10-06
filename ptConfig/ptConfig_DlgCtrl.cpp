@@ -1,4 +1,5 @@
-﻿#include <uxStr.h>
+﻿
+
 
 void ptConfig_cmb_quality_init( HWND hdlg, int id_ch, int id_sps, bool b_jp )
 {

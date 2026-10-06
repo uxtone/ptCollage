@@ -1,4 +1,5 @@
-﻿#include <uxStr.h>
+﻿
+
 // '16/01/28 pxwThread.
 
 #include "./pxwThread.h"

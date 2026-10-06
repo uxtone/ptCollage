@@ -1,7 +1,8 @@
 ﻿#include "StdAfx.h"
 
 #include <pxDebugLog.h>
-#include <uxStr.h>
+
+
 
 void mbox_c_ERR( HWND hWnd, const char *fmt, ... )
 {

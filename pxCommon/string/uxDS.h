@@ -1,9 +1,10 @@
-// uxDS: an owning UTF-8 string (RAII over an sds). Included by pxStdDef.h, after sds.h.
-//
-// Pass it by reference: "const uxDS& name" to read, "uxDS& name" to fill or change.
-// Copying is a deep copy (sdsdup) and moving is free, so returning one by value is fine.
-// A default-constructed uxDS is "unset" (NULL), the same as the NULL pointers the old TCHAR code passed around:
-// `if( s )` tests that, and it converts to NULL for const char* parameters.
+// uxtone dynamic string
+
+// pass it by reference: "const uxDS& name" to read, "uxDS& name" to fill or change
+// copying is a deep copy (sdsdup) and moving is free, so returning one by value is fine
+// a default-constructed uxDS is "unset" (NULL), the same as the NULL pointers the old TCHAR code passed around:
+// `if( s )` tests that, and it converts to NULL for const char* parameters
+
 #pragma once
 
 #ifdef __cplusplus
@@ -11,7 +12,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-class uxDS
+class uxDS : public ux_S
 {
 sds _s;
 
@@ -21,7 +22,7 @@ uxDS( const char* utf8 ) : _s( utf8 ? sdsnew( utf8 ) : NULL ){}                 
 uxDS( const char* utf8, size_t len ) : _s( utf8 ? sdsnewlen( utf8, len ) : NULL ){}
 uxDS( const uxDS& o ) : _s( o._s ? sdsdup( o._s ) : NULL ){}
 uxDS( uxDS&& o ) noexcept : _s( o._s ){ o._s = NULL; }
-~uxDS(){ sdsfree( _s ); }                                                          // sdsfree( NULL ) is a no-op
+~uxDS() override { sdsfree( _s ); }                                                // sdsfree( NULL ) is a no-op
 
 uxDS& operator=( const uxDS& o ){ uxDS t( o ); swap( t ); return *this; }
 uxDS& operator=( uxDS&& o ) noexcept { swap( o ); return *this; }
@@ -41,11 +42,11 @@ sds         release()     { sds s = _s; _s = NULL; return s; }
     // access
 explicit operator bool() const { return _s != NULL; }
 operator const char*()   const { return _s; }                                      // NULL when unset, like the old pointers
-const char* c_str()      const { return _s ? _s : ""; }                            // never NULL
+const char* c_str()      const override { return _s ? _s : ""; }                            // never NULL
 const char* operator*()  const { return c_str(); }                                  // printf( "%s", *s ): a class cannot go through "..."
 sds         raw()        const { return _s; }                                      // for the sds*() functions
-size_t      size()       const { return _s ? sdslen( _s ) : 0; }
-bool        empty()      const { return !_s || !sdslen( _s ); }
+size_t      size()       const override { return _s ? sdslen( _s ) : 0; }
+bool        empty()      const override { return !_s || !sdslen( _s ); }
 
     // change
 void   clear(){ if( _s ) sdsclear( _s ); }
@@ -82,6 +83,7 @@ uxDS&  format( const char* fmt, ... )   // replace the content with printf text 
 __attribute__(( format( printf, 2, 3 ) ))
 #endif
 ;
+uxDS&  vformat( const char* fmt, va_list ap );
 };
 
 // Compared by text, never by address (the implicit const char* conversion would otherwise compare pointers).
@@ -101,13 +103,20 @@ inline uxDS& uxDS::catprintf( const char* fmt, ... )
 	return *this;
 }
 
+inline uxDS& uxDS::vformat( const char* fmt, va_list ap )
+{
+	if( !_s ) _s = sdsempty(); else sdsclear( _s );
+	_s = sdscatvprintf( _s, fmt, ap );
+	return *this;
+}
+
 inline uxDS& uxDS::format( const char* fmt, ... )
 {
 	va_list ap; va_start( ap, fmt );
-	if( !_s ) _s = sdsempty(); else sdsclear( _s );
-	_s = sdscatvprintf( _s, fmt, ap );
+	vformat( fmt, ap );
 	va_end( ap );
 	return *this;
 }
 
 #endif // __cplusplus
+

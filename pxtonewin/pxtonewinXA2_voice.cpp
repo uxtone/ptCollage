@@ -1,6 +1,7 @@
 ﻿
 #include <stdio.h>
-#include <uxStr.h>
+
+
 #include <tchar.h>
 
 #include <pxMem.h>

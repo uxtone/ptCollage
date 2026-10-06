@@ -2,7 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxMem.h"
-#include <uxStr.h>
+
+
 
 #include "./pxUTF8.h"
 

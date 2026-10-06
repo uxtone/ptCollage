@@ -37,11 +37,7 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
-// UTF-8 strings. The code base keeps all text as UTF-8 and only converts at an OS boundary (see uxStr.h).
-// Dynamic string: an owning UTF-8 string (RAII over an sds). Pass it by reference; see uxDS.h.
-#include "uxDS.h"
-// Static string of N bytes (including the terminator): uxSS<MAX_PATH> path; uxSS<15> name = "Save Project..";
-template <size_t N> using uxSS = char[N];
+#include "uxString.h"
 #endif
 
 #include <stdio.h>

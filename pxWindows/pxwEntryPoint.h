@@ -2,7 +2,8 @@
 
 #include <windows.h>
 #include <shellapi.h>   // CommandLineToArgvW
-#include <uxStr.h>
+
+
 
 // Defines the program entry point with a TCHAR-correct command line
 //

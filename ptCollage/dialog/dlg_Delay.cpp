@@ -1,6 +1,7 @@
-﻿
+
 #include <pxtnService.h>
-#include <uxStr.h>
+
+
 extern pxtnService *g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -55,8 +56,8 @@ static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_DELAY* p_delay )
 	uxSS<10> str;
 
 	// delay
-	GetDlgItemText( hDlg, IDC_DELAYRATE, uxTOut( str ), 10 ); p_delay->rate = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_DELAYFREQ, uxTOut( str ), 10 ); p_delay->freq = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_DELAYRATE, uxTOut( str ), 10 ); p_delay->rate = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_DELAYFREQ, uxTOut( str ), 10 ); p_delay->freq = (float)ux_S::to_double( str );
 
 	if( p_delay->rate < 0 ) p_delay->rate *= -1;
 	if( p_delay->freq < 0 ) p_delay->freq *= -1;

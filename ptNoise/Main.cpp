@@ -3,7 +3,8 @@
 #pragma comment(lib, "d3dx9"  )
 
 #include <pxDebugLog.h>
-#include <uxStr.h>
+
+
 
 #include <pxFile2.h>
 static pxFile2* _app_file_common  = NULL;

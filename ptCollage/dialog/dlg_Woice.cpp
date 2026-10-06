@@ -1,6 +1,7 @@
-﻿
+
 #include <pxtnPulse_Oggv.h>
-#include <uxStr.h>
+
+
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -9,7 +10,8 @@ extern pxtnService *g_pxtn;
 
 #include <pxShiftJIS.h>
 // #include <pxTText.h>
-#include <uxStr.h>
+
+
 
 #include "../../Generic/Japanese.h"
 #include "../../Generic/MessageBox.h"
@@ -139,7 +141,7 @@ static bool _GetParameter( HWND hDlg, int32_t woice_index )
 	}
 
 	uxSS<10> str = {0};
-	GetDlgItemText( hDlg, IDC_TUNING,  uxTOut( str ), 10 ); p_vc->tuning = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_TUNING,  uxTOut( str ), 10 ); p_vc->tuning = (float)ux_S::to_double( str );
 	if( p_vc->tuning <   0 ) p_vc->tuning *=  -1;
 	if( p_vc->tuning > 256 ) p_vc->tuning  = 256;
 

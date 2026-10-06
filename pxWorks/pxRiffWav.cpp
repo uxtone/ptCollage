@@ -3,7 +3,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "./pxRiffWav.h"
-#include <uxStr.h>
+
+
 
 typedef struct
 {

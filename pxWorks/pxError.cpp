@@ -11,7 +11,8 @@
 #endif
 
 // #include "./pxTText.h"
-#include <uxStr.h>
+
+
 
 #include "./pxMem.h"
 #include "./pxError.h"

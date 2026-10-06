@@ -1,4 +1,4 @@
-{nixpkgs, flake-utils, ...}: flake-utils.lib.eachDefaultSystem (
+{nixpkgs, nixpkgs-wine, flake-utils, ...}: flake-utils.lib.eachDefaultSystem (
    system:
    let
     pkgs = import nixpkgs { inherit system; };
@@ -52,7 +52,7 @@
       dontPatchELF = true;
       allowedReferences = [ ];
     });
-    wineWow = pkgs.wineWow64Packages.stable;
+    wineWow = (import nixpkgs-wine { inherit system; }).wineWow64Packages.staging;
     winelibDependencies = p: with p; [ libpng zlib libogg libvorbis ];
    in {
      inherit mkWinelibToolchain mkWinelibPackage wineWow;

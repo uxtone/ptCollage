@@ -1,7 +1,8 @@
 ﻿
 #ifdef WIN32
 #include <pxwFilePath.h>
-#include <uxStr.h>
+
+
 #endif
 
 #include <pxwrDirectory.h>
@@ -9,7 +10,8 @@
 #include "./pxStrT.h"
 #include "./pxMem.h"
 // #include "./pxTText.h"
-#include <uxStr.h>
+
+
 
 #include "./pxFile2.h"
 

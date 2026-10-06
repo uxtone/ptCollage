@@ -1,6 +1,7 @@
 ﻿
 #include <pxwFilePath.h>
-#include <uxStr.h>
+
+
 
 
 // コンパイル日の取得

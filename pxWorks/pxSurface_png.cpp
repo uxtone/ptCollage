@@ -1,6 +1,7 @@
 ﻿
 #include <png.h>
-#include <uxStr.h>
+
+
 
 #include "./pxError.h"
 #include "./pxMem.h"

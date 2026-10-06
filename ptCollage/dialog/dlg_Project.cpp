@@ -1,7 +1,9 @@
-﻿
+
 // #include <pxTText.h>
-#include <uxStr.h>
-#include <uxStr.h>
+
+
+
+
 
 #include <pxtnService.h>
 extern pxtnService *g_pxtn;
@@ -84,7 +86,7 @@ static void _GetParameter( HWND hDlg,
 
 	GetDlgItemText( hDlg, IDC_TEMPO,  uxTOut( str ), 10 );
 
-	*p_beat_tempo = (float)_ttof( uxT( str ) );
+	*p_beat_tempo = (float)ux_S::to_double( str );
 	*p_meas_num   = GetDlgItemInt( hDlg, IDC_MEASNUM  , NULL, true );
 	*p_beat_clock = GetDlgItemInt( hDlg, IDC_BEATCLOCK, NULL, true );
 

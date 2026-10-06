@@ -1,6 +1,7 @@
 ﻿
 #include <pxwWindowRect.h>
-#include <uxStr.h>
+
+
 #include <pxPath.h>
 #include <pxwPathDialog.h>
 extern pxwPathDialog* g_path_dlg_ptn;

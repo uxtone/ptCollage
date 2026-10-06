@@ -4,10 +4,11 @@
       submodules = true;
     };
     nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs-wine.url = "github:nixos/nixpkgs/1a79c9a3bc6728831b4ae61c4172f3ee0e6af003";
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs =
-    { self, flake-utils, nixpkgs, ... }@inputs:
+    { self, flake-utils, nixpkgs, nixpkgs-wine, ... }@inputs:
     import ./winelib.nix inputs
     // flake-utils.lib.eachDefaultSystem (
       system:

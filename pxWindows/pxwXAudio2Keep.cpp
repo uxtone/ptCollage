@@ -1,7 +1,8 @@
 ﻿
 #include "./pxwXAudio2Keep.h"
 
-#include <uxStr.h>
+
+
 #include <pxwUTF8.h>
 
 pxwXAudio2Keep_loadlib::pxwXAudio2Keep_loadlib(void)

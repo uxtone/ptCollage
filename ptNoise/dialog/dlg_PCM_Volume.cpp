@@ -1,6 +1,7 @@
-﻿
+
 #include <pxwWindowRect.h>
-#include <uxStr.h>
+
+
 #include <pxwFile.h>
 
 #include "../../Generic/Japanese.h"
@@ -25,7 +26,7 @@ static void _SetParameter( HWND hDlg, float *p_v )
 
 static bool _GetInputParameter( HWND hDlg, float *p_v )
 {
-	uxSS<10> str = {0}; GetDlgItemText( hDlg, IDC_VOLUME_RATE, uxTOut( str ), 10 ); *p_v = _ttof( uxT( str ) );
+	uxSS<10> str = {0}; GetDlgItemText( hDlg, IDC_VOLUME_RATE, uxTOut( str ), 10 ); *p_v = (float)ux_S::to_double( str );
 	return true;
 }
 

@@ -1,6 +1,7 @@
-﻿
+
 #include <pxtnService.h>
-#include <uxStr.h>
+
+
 extern pxtnService *g_pxtn;
 
 #include <pxwWindowRect.h>
@@ -32,8 +33,8 @@ static bool _GetParameter( HWND hDlg, EFFECTSTRUCT_OVERDRIVE* p_over )
 {
 	uxSS<10> str;
 
-	GetDlgItemText( hDlg, IDC_CUT, uxTOut( str ), 10 ); p_over->cut = (float)_ttof( uxT( str ) );
-	GetDlgItemText( hDlg, IDC_AMP, uxTOut( str ), 10 ); p_over->amp = (float)_ttof( uxT( str ) );
+	GetDlgItemText( hDlg, IDC_CUT, uxTOut( str ), 10 ); p_over->cut = (float)ux_S::to_double( str );
+	GetDlgItemText( hDlg, IDC_AMP, uxTOut( str ), 10 ); p_over->amp = (float)ux_S::to_double( str );
 
 	p_over->group = GetDlgItemInt( hDlg, IDC_GROUP, NULL, true );
 

@@ -1,6 +1,7 @@
 ﻿
 #include <pxwAlteration.h>
-#include <uxStr.h>
+
+
 extern pxwAlteration* g_alte  ;
 
 #include "../ptVoice.h"
